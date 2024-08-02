@@ -1,0 +1,9 @@
+{
+    "title": "Digistore",
+    "versioncode": 1,
+    "versionname": "1.0.0",
+    "organization_name": "CodeArt Studios",
+    "organization_domain": "net.codeartstudios",
+    "encryption_key":"",
+    "encryption_salt":""
+}

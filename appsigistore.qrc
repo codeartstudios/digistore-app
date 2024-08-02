@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/imgs/logo.png</file>
+        <file>assets/imgs/logo-nobg.png</file>
+        <file>ui/Main.qml</file>
+        <file>assets/fonts/tabler-icons.ttf</file>
+        <file>ui/config.json</file>
+    </qresource>
+</RCC>
