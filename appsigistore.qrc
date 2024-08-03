@@ -5,5 +5,18 @@
         <file>ui/Main.qml</file>
         <file>assets/fonts/tabler-icons.ttf</file>
         <file>ui/config.json</file>
+        <file>ui/Theme.qml</file>
+        <file>ui/controls/DsIcon.qml</file>
+        <file>ui/controls/DsButton.qml</file>
+        <file>ui/controls/DsIconButton.qml</file>
+        <file>ui/controls/DsTextButton.qml</file>
+        <file>ui/controls/DsRightDrawer.qml</file>
+        <file>ui/IconType.qml</file>
+        <file>ui/views/auth/Login.qml</file>
+        <file>ui/controls/DsPage.qml</file>
+        <file>ui/controls/DsNavigationStack.qml</file>
+        <file>ui/controls/DsLabel.qml</file>
+        <file>ui/store/Store.qml</file>
+        <file>ui/flow/ApplicationFlow.qml</file>
     </qresource>
 </RCC>
