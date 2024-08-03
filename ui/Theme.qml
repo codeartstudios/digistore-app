@@ -3,38 +3,53 @@ import QtQuick
 Item {
     property bool isDarkTheme: false
 
-    property string primary: isDarkTheme ? dark.primary : light.primary
-    property string secondary: isDarkTheme ? dark.secondary : light.secondary
-    property string tertiary: isDarkTheme ? dark.tertiary : light.tertiary
-    property string accent: isDarkTheme ? dark.accent : light.accent
-    property string foreground: isDarkTheme ? dark.foreground : light.foreground
+    // property string primary: "#d1dbe4"
+    // property string secondary: "#a3b7ca"
+    // property string tertiary: "#7593af"
+    // property string accent: "#476f95"
+    // property string foreground: "#194a7a"
 
-    // QtObject {
-    //     id: dark
-    //     property string primary: "#433741" //
-    //     property string secondary: "#69696B"
-    //     property string tertiary: "#A9A8A9"
-    //     property string accent: "#DAD7D2"
-    //     property string foreground: "#C9A276"
-    // }
+    property string txtPrimaryColor:    "#16161a"
+    property string txtHintColor:       "#666f75"
+    property string txtDisabledColor:   "#a0a6ac"
 
-    QtObject {
-        id: dark
-        property string primary: "#0D1B2A"
-        property string secondary: "#1B263B"
-        property string tertiary: "#415A77"
-        property string accent: "#778DA9"
-        property string foreground: "#778DA9"
-    }
+    property string primaryColor:       "#16161a"
 
-    QtObject {
-        id: light
-        property string primary: "#d1dbe4"
-        property string secondary: "#a3b7ca"
-        property string tertiary: "#7593af"
-        property string accent: "#476f95"
-        property string foreground: "#194a7a"
-    }
+    property string bodyColor:          "#f8f9fa"
+
+    property string baseColor:          "#ffffff"
+    property string baseAlt1Color:      "#e4e9ec"
+    property string baseAlt2Color:      "#d7dde4"
+    property string baseAlt3Color:      "#c6cdd7"
+    property string baseAlt4Color:      "#a5b0c0"
+
+    property string infoColor:          "#5499e8"
+    property string infoAltColor:       "#cee2f8"
+    property string successColor:       "#32ad84"
+    property string successAltColor:    "#c4eedc"
+    property string dangerColor:        "#e34562"
+    property string dangerAltColor:     "#f7cad2"
+    property string warningColor:       "#ff944d"
+    property string warningAltColor:    "#ffd4b8"
+
+    property real h1:               22 // px
+    property real h1LineHeight:     28 // px
+
+    property real h2:               20 // px
+    property real h2LineHeight:     26 // px
+
+    property real h3:               19 // px
+    property real h3LineHeight:     24 // px
+
+    property real h4:               18 // px
+    property real h4LineHeight:     24 // px
+
+    property real h5:               17 // px
+    property real h5LineHeight:     24 // px
+
+    property real h6:               16 // px
+    property real h6LineHeight:     22 // px
+
 
     // dimensions
     property real baseFontSize:     14.5 // px
@@ -63,78 +78,35 @@ Item {
     property real baseRadius:       4   // px
     property real lgRadius:         12  // px
     property real btnRadius:        4   // px
+
+    property color overlayColor: Qt.rgba(53, 71, 104, 0.28)
+    property color tooltipColor: Qt.rgba(0, 0, 0, 0.85)
+    property color shadowColor: Qt.rgba(0, 0, 0, 0.06)
+    
+    property real appSidebarWidth: 75
+    property real pageSidebarWidth: 235
+    
+
+    
+    //     // https://developer.mozilla.org/en-US/docs/Web/CSS/accent-color
+    //     accent-color: var(--primaryColor);
 }
 
 // :root {
-//     --baseFontFamily: 'Source Sans Pro', sans-serif, emoji;
-//     --monospaceFontFamily: 'Ubuntu Mono', monospace, emoji;
-//     --iconFontFamily: 'remixicon';
 
-//     --txtPrimaryColor:  #16161a;
-//     --txtHintColor:     #666f75;
-//     --txtDisabledColor: #a0a6ac;
-
-//     --primaryColor: #16161a;
-
-//     --bodyColor: #f8f9fa;
-
-//     --baseColor:     #ffffff;
-//     --baseAlt1Color: #e4e9ec;
-//     --baseAlt2Color: #d7dde4;
-//     --baseAlt3Color: #c6cdd7;
-//     --baseAlt4Color: #a5b0c0;
-
-//     --infoColor:       #5499e8;
-//     --infoAltColor:    #cee2f8;
-//     --successColor:    #32ad84;
-//     --successAltColor: #c4eedc;
-//     --dangerColor:     #e34562;
-//     --dangerAltColor:  #f7cad2;
-//     --warningColor:    #ff944d;
-//     --warningAltColor: #ffd4b8;
-
-//     --overlayColor:   rgba(53, 71, 104, 0.28);
-//     --tooltipColor:   rgba(0, 0, 0, 0.85);
-//     --shadowColor:    rgba(0, 0, 0, 0.06);
-
-//     --baseFontSize: 14.5px;
-//     --xsFontSize:   12px;
-//     --smFontSize:   13px;
-//     --lgFontSize:   15px;
-//     --xlFontSize:   16px;
-
-//     --baseLineHeight: 22px;
-//     --smLineHeight:   16px;
-//     --lgLineHeight:   24px;
-
-//     --inputHeight: 34px;
-
-//     --btnHeight:   40px;
-//     --xsBtnHeight: 22px;
-//     --smBtnHeight: 30px;
-//     --lgBtnHeight: 54px;
-
-//     --baseSpacing: 30px;
-//     --xsSpacing:   15px;
-//     --smSpacing:   20px;
-//     --lgSpacing:   50px;
-//     --xlSpacing:   60px;
-
-//     --wrapperWidth:   850px;
-//     --smWrapperWidth: 420px;
-//     --lgWrapperWidth: 1200px;
-
-//     --appSidebarWidth: 75px;
-//     --pageSidebarWidth: 235px;
-
-//     --baseAnimationSpeed: 150ms;
-//     --activeAnimationSpeed: 70ms;
-//     --entranceAnimationSpeed: 250ms;
-
-//     // https://developer.mozilla.org/en-US/docs/Web/CSS/accent-color
-//     accent-color: var(--primaryColor);
 // }
 
+// property string baseFontFamily: 'Source Sans Pro', sans-serif, emoji;
+// property string monospaceFontFamily: 'Ubuntu Mono', monospace, emoji;
+// property string iconFontFamily: 'remixicon';
+
+// property var baseAnimationSpeed: 150ms;
+// property var activeAnimationSpeed: 70ms;
+// property var entranceAnimationSpeed: 250ms;
+
+// property var wrapperWidth:   850px;
+// property var smWrapperWidth: 420px;
+// property var lgWrapperWidth: 1200px;
 
 // // Maps
 // // ----

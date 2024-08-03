@@ -28,9 +28,13 @@ Item {
             // Back Button, shown when the stack view has more than 1 page added
             DsIconButton {
                 id: backButton
-                width: 48
-                height: 48
+                bgColor: "transparent"
+                radius: height/2
+                bgHover: theme.baseAlt3Color
+                textColor: theme.txtPrimaryColor
                 anchors.left: parent.left
+                anchors.leftMargin: theme.xsSpacing
+                iconType: dsIconType.arrowNarrowLeft
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -49,6 +53,14 @@ Item {
             }
 
             /// TODO add drop shadow to the header
+
+            Rectangle {
+                height: 1
+                width: parent.width
+                color: "silver"
+                opacity: 0.8
+                anchors.top: parent.bottom
+            }
         }
 
         StackView {

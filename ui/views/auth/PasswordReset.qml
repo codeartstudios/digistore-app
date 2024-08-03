@@ -5,7 +5,7 @@ import "../../controls"
 DsPage {
     id: loginPage
 
-    title: qsTr("Login Page")
+    title: qsTr("Password Reset")
 
     Item {
         width: 400
@@ -28,32 +28,25 @@ DsPage {
             DsLabel {
                 topPadding: theme.baseSpacing
                 bottomPadding: theme.smSpacing
-                text: qsTr("User Sign in")
+                text: qsTr("Forgotten Password")
                 fontSize: theme.h2
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            DsLabel {
+                fontSize: theme.smFontSize
+                width: parent.width * 0.8
+                wrapMode: DsLabel.WordWrap
+                bottomPadding: theme.xsSpacing
+                horizontalAlignment: DsLabel.AlignHCenter
+                text: qsTr("Enter email associated with your account. We will send you a reset link.")
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             DsInputWithLabel {
                 width: parent.width
-                label: qsTr("Username")
+                label: qsTr("Email")
                 input.placeholderText: qsTr("user@example.com")
-            }
-
-            DsInputWithLabel {
-                width: parent.width
-                isPasswordInput: true
-                label: qsTr("Password")
-                input.placeholderText: qsTr("********")
-            }
-
-            DsLabel {
-                fontSize: theme.smFontSize
-                text: qsTr("Forgot password?")
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/PasswordReset.qml")
-                }
             }
 
             Item { height: 1; width: 1}
@@ -62,7 +55,8 @@ DsPage {
                 height: theme.lgBtnHeight
                 fontSize: theme.xlFontSize
                 width: parent.width
-                text: qsTr("Login")
+                iconType: dsIconType.mailForward
+                text: qsTr("Send recovery link")
             }
         }
     }

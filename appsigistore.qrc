@@ -18,5 +18,7 @@
         <file>ui/controls/DsLabel.qml</file>
         <file>ui/store/Store.qml</file>
         <file>ui/flow/ApplicationFlow.qml</file>
+        <file>ui/controls/DsInputWithLabel.qml</file>
+        <file>ui/views/auth/PasswordReset.qml</file>
     </qresource>
 </RCC>

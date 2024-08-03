@@ -1,8 +1,8 @@
 import QtQuick.Controls
 
 Label {
-    color: theme.foreground
+    color: theme.txtPrimaryColor
     font.pixelSize: fontSize
 
-    property real fontSize: theme.xlFontSize
+    property real fontSize: theme.h1
 }

@@ -10,7 +10,7 @@ Window {
     height: 480
     visibility: "Maximized"
     visible: true
-    color: theme.primary
+    color: theme.bodyColor
 
     // Theme object
     property Theme theme: Theme{}
@@ -40,5 +40,5 @@ Window {
         id: appFlow
     }
 
-    Component.onCompleted: rightDrawer.open()
+    // Component.onCompleted: rightDrawer.open()
 }
