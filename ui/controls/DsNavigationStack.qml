@@ -22,20 +22,25 @@ Item {
             id: header
             color: "transparent"
             implicitHeight: 48
+            visible: headerShown
             Layout.fillWidth: true
             Layout.preferredHeight: headerShown ? implicitHeight : 0
 
             // Back Button, shown when the stack view has more than 1 page added
             DsIconButton {
                 id: backButton
-                bgColor: "transparent"
                 radius: height/2
+                visible: stack.depth > 1
+                bgColor: "transparent"
                 bgHover: theme.baseAlt3Color
+                bgDown: theme.baseAlt3Color
                 textColor: theme.txtPrimaryColor
                 anchors.left: parent.left
                 anchors.leftMargin: theme.xsSpacing
                 iconType: dsIconType.arrowNarrowLeft
                 anchors.verticalCenter: parent.verticalCenter
+
+                onClicked: stack.pop()
             }
 
             Item {
@@ -46,6 +51,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
 
                 DsLabel {
+                    id: headerTitle
                     visible: headerTitleShown
                     anchors.centerIn: parent
                     text: stack.currentItem.title ? stack.currentItem.title : qsTr("New Page")
@@ -69,7 +75,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Component.onCompleted: console.log(depth, currentItem)
+            onCurrentItemChanged:  {
+                currentItem.navigationStack = stack
+                headerShown = currentItem.headerShown
+                currentItem.navigationHeader = header
+                headerTitleShown = currentItem.headerTitleShown
+            }
         }
     }
 }

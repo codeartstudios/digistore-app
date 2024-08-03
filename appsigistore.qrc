@@ -20,5 +20,6 @@
         <file>ui/flow/ApplicationFlow.qml</file>
         <file>ui/controls/DsInputWithLabel.qml</file>
         <file>ui/views/auth/PasswordReset.qml</file>
+        <file>ui/views/auth/CreateAccount.qml</file>
     </qresource>
 </RCC>

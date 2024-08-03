@@ -6,22 +6,23 @@ Button {
     enabled: !busy
     implicitHeight: theme.btnHeight
     implicitWidth: theme.btnHeight
+    height: implicitHeight
+    width: implicitWidth
 
     property bool busy: false
     property string iconType
     property alias iconSize: ico.iconSize
-    property real radius: bg.radius
+    property alias radius: bg.radius
     property string textColor: theme.baseColor
     property string bgColor: theme.primaryColor
-    property string bgHover: bgColor
+    property string bgHover: withOpacity(bgColor, 0.8)
+    property string bgDown: withOpacity(bgColor, 0.6)
 
     background: Rectangle {
         id: bg
-        color: enabled ? hovered ? bgHover : bgColor : bgColor
+        color: down ? bgDown : hovered ? bgHover : bgColor
         radius: theme.btnRadius
-        opacity: enabled ? (hovered ? 0.8 : down ? 0.6 : 1) : 0.4
-
-        Behavior on color { NumberAnimation {} }
+        opacity: enabled ? 1 : 0.4
     }
 
     contentItem: Item {

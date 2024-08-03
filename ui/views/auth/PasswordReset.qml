@@ -2,10 +2,22 @@ import QtQuick
 
 import "../../controls"
 
+/*
+  PasswordReset Page
+
+  Allow users to reset their passwords, this should trigger
+  the send reset link via email. The page requires that the user
+  is registered, and consequently, the provided email is already
+  associated with their account.
+
+  Note: popping the stack should** go back to the login page (
+  previos page)
+*/
+
 DsPage {
     id: loginPage
-
     title: qsTr("Password Reset")
+    headerShown: false
 
     Item {
         width: 400
@@ -57,6 +69,22 @@ DsPage {
                 width: parent.width
                 iconType: dsIconType.mailForward
                 text: qsTr("Send recovery link")
+            }
+
+            // Pop this page to go back to login page
+            // which is presumed to be the previous page
+            DsLabel {
+                fontSize: theme.smFontSize
+                text: qsTr("Back to login")
+                height: theme.btnHeight
+                width: parent.width
+                horizontalAlignment: DsLabel.AlignHCenter
+                verticalAlignment: DsLabel.AlignVCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: navigationStack.pop()
+                }
             }
         }
     }
