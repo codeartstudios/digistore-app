@@ -59,6 +59,11 @@ DsPage {
                 fontSize: theme.xlFontSize
                 width: parent.width
                 text: qsTr("Register")
+
+                onClicked: {
+                    navigationStack.pop(null)
+                    navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
+                }
             }
 
             // Pop this page to go back to login page

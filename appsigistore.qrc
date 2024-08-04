@@ -21,5 +21,6 @@
         <file>ui/controls/DsInputWithLabel.qml</file>
         <file>ui/views/auth/PasswordReset.qml</file>
         <file>ui/views/auth/CreateAccount.qml</file>
+        <file>ui/views/auth/ConfirmEmail.qml</file>
     </qresource>
 </RCC>
