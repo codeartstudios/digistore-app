@@ -22,5 +22,11 @@
         <file>ui/views/auth/PasswordReset.qml</file>
         <file>ui/views/auth/CreateAccount.qml</file>
         <file>ui/views/auth/ConfirmEmail.qml</file>
+        <file>ui/views/DashboardPage.qml</file>
+        <file>ui/views/Settings.qml</file>
+        <file>ui/views/AccountsPage.qml</file>
+        <file>ui/views/InventoryPage.qml</file>
+        <file>ui/views/TellerPage.qml</file>
+        <file>ui/views/SalesPage.qml</file>
     </qresource>
 </RCC>
