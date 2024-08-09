@@ -2,6 +2,7 @@ import QtQuick 2.15
 
 // User imports
 import "../controls"
+import "../views"
 import "../views/auth"
 
 Item {
@@ -32,7 +33,7 @@ Item {
         DsNavigationStack {
             id: dashStack
 
-            Login {
+            TellerPage {
 
             }
         }
