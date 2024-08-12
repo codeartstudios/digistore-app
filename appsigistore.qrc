@@ -28,5 +28,6 @@
         <file>ui/views/InventoryPage.qml</file>
         <file>ui/views/TellerPage.qml</file>
         <file>ui/views/SalesPage.qml</file>
+        <file>ui/controls/DsSearchInput.qml</file>
     </qresource>
 </RCC>

@@ -20,6 +20,10 @@ DsPage {
             width: parent.width - 2*theme.baseSpacing
             spacing: theme.xsSpacing
             anchors.centerIn: parent
+
+            DsSearchInput {
+                placeHolderText: qsTr("What are you looking for?")
+            }
         }
     }
 }
