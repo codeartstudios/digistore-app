@@ -29,5 +29,6 @@
         <file>ui/views/TellerPage.qml</file>
         <file>ui/views/SalesPage.qml</file>
         <file>ui/controls/DsSearchInput.qml</file>
+        <file>ui/controls/DsTopNavigationBar.qml</file>
     </qresource>
 </RCC>

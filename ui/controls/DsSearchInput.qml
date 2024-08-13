@@ -51,6 +51,17 @@ Item {
                     }
                 }
             }
+
+            DsIconButton {
+                radius: height/2
+                visible: input.text !== ""
+                iconSize: input.font.pixelSize
+                iconType: dsIconType.x
+                Layout.rightMargin: theme.xsSpacing
+                Layout.alignment: Qt.AlignVCenter
+
+                onClicked: input.clear()
+            }
         }
     }
 
