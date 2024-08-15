@@ -30,5 +30,6 @@
         <file>ui/views/SalesPage.qml</file>
         <file>ui/controls/DsSearchInput.qml</file>
         <file>ui/controls/DsTopNavigationBar.qml</file>
+        <file>ui/controls/DsCheckBox.qml</file>
     </qresource>
 </RCC>
