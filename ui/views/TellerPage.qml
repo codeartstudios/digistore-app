@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Universal as QQCC2
 import QtQuick.Layouts
 import Qt.labs.qmlmodels
 
@@ -110,6 +111,7 @@ DsPage {
                             implicitHeight: theme.lgBtnHeight
 
                             DsLabel {
+                                fontSize: theme.h2
                                 text: model.modelData
                                 anchors.centerIn: parent
                             }
@@ -123,9 +125,10 @@ DsPage {
                             implicitHeight: theme.lgBtnHeight
 
                             DsLabel {
+                                fontSize: theme.h2
                                 text: model.modelData
-                                leftPadding: theme.btnRadius
-                                rightPadding: theme.btnRadius
+                                leftPadding: theme.smSpacing/2
+                                rightPadding: theme.smSpacing/2
 
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -157,7 +160,6 @@ DsPage {
                                          var workingWidth = tableView.width - widthSum - ((tableView.columns-1) * tableView.columnSpacing)
                                          return workingWidth * (obj.flex/flexSum)
                                      }
-
                 anchors.left: parent.left
                 anchors.top: horizontalHeader.bottom
                 anchors.right: parent.right
@@ -167,7 +169,7 @@ DsPage {
                     TableModelColumn { display: "checked" }
                     TableModelColumn { display: "index" }
                     TableModelColumn { display: "name" }
-                    TableModelColumn { display: "quantity" }
+                    TableModelColumn { display: "quantity"; edit: () => {} }
                     TableModelColumn { display: "price" }
                     TableModelColumn { display: "totals" }
 
@@ -199,13 +201,12 @@ DsPage {
                     ]
                 }
 
-                delegate: DelegateChooser {
-                    Component.onCompleted: console.log(role)
 
+                delegate: DelegateChooser {
                     DelegateChoice {
                         column: 0
                         delegate: Item {
-                            implicitHeight: theme.btnHeight
+                            implicitHeight: theme.lgBtnHeight
 
                             DsCheckBox {
                                 size: theme.btnHeight
@@ -214,53 +215,118 @@ DsPage {
 
                                 anchors.centerIn: parent
                             }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
 
                     DelegateChoice {
                         column: 1
-                        delegate: DsLabel {
-                            text: (row+1).toString()+"."
-                            leftPadding: theme.btnRadius
-                            rightPadding: theme.btnRadius
+                        delegate: Item {
+                            implicitHeight: theme.lgBtnHeight
+
+                            DsLabel {
+                                fontSize: theme.baseFontSize
+                                text: (row+1).toString()+"."
+                                width: parent.width - theme.baseSpacing
+                                anchors.centerIn: parent
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
 
                     DelegateChoice {
                         column: 2
-                        delegate: DsLabel {
-                            text: model.display
-                            leftPadding: theme.btnRadius
-                            rightPadding: theme.btnRadius
+                        delegate: Item {
+                            implicitHeight: theme.lgBtnHeight
+
+                            DsLabel {
+                                fontSize: theme.baseFontSize
+                                text: model.display
+                                width: parent.width - theme.baseSpacing
+                                anchors.centerIn: parent
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
 
                     DelegateChoice {
                         column: 3
-                        delegate: SpinBox {
-                            implicitWidth: 200
-                            height: theme.btnHeight
-                            value: model.display
-                            onValueModified: model.display = value
+                        delegate: Item {
+                            implicitHeight: theme.lgBtnHeight
+
+                            QQCC2.SpinBox {
+                                from: 1
+                                editable: true
+                                value: model.display
+                                height: theme.btnHeight
+                                width: parent.width - theme.baseSpacing
+                                onValueModified: model.display = value
+
+                                anchors.centerIn: parent
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
 
 
                     DelegateChoice {
                         column: 4
-                        delegate: DsLabel {
-                            text: model.display
-                            leftPadding: theme.btnRadius
-                            rightPadding: theme.btnRadius
+                        delegate: Item {
+                            implicitHeight: theme.lgBtnHeight
+
+                            DsLabel {
+                                text: model.display
+                                fontSize: theme.baseFontSize
+                                width: parent.width - theme.baseSpacing
+                                anchors.centerIn: parent
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
 
                     DelegateChoice {
                         column: 5
-                        delegate: DsLabel {
-                            text: model.display
-                            leftPadding: theme.btnRadius
-                            rightPadding: theme.btnRadius
+                        delegate: Item {
+                            implicitHeight: theme.lgBtnHeight
+
+                            DsLabel {
+                                fontSize: theme.baseFontSize
+                                text: model.display
+                                width: parent.width - theme.baseSpacing
+                                anchors.centerIn: parent
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width; height: 1
+                                color: theme.baseAlt1Color
+                            }
                         }
                     }
                 }
