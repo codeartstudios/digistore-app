@@ -33,5 +33,7 @@
         <file>ui/controls/DsCheckBox.qml</file>
         <file>ui/controls/DsSideBar.qml</file>
         <file>ui/controls/DsToolTip.qml</file>
+        <file>ui/views/OrganizationPage.qml</file>
+        <file>ui/controls/DsFormTextElement.qml</file>
     </qresource>
 </RCC>

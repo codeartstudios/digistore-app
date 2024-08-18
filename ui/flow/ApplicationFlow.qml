@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 // User imports
@@ -28,6 +29,7 @@ Item {
             Layout.fillHeight: true
 
             DsSideBar {
+                id: sideBar
                 Layout.preferredWidth: sidebarShown ? theme.appSidebarWidth : 0
                 Layout.fillHeight: true
             }
@@ -35,7 +37,7 @@ Item {
             Loader {
                 id: applicationLoader
                 active: true
-                sourceComponent: store.userLoggedIn ? dashboardComponent : authComponent
+                sourceComponent: store.userLoggedIn ? postAuthComponent : preAuthComponent
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
@@ -46,25 +48,125 @@ Item {
         id: authComponent
 
         DsNavigationStack {
-            id: authStack
+            id: preAuthStack
 
             Login {
-
+                id: loginPage
             }
         }
     }
 
     Component {
-        id: dashboardComponent
+        id: postAuthComponent
 
-        DsNavigationStack {
-            id: dashStack
+        StackView {
+            id: mainStack
+            initialItem: StackLayout {
+                anchors.fill: parent
 
-            TellerPage {
+                Connections {
+                    target: sideBar
 
+                    function onMenuSelected(label) {
+                        switch(label) {
+                        case "dashboard": {
+                            postAuthLoader.sourceComponent = dashboardStackComponent;
+                            break;
+                        }
+
+                        case "teller": {
+                            postAuthLoader.sourceComponent = tellerStackComponent;
+                            break;
+                        }
+
+                        case "inventory": {
+                            postAuthLoader.sourceComponent = inventoryStackComponent;
+                            break;
+                        }
+
+                        case "organization": {
+                            postAuthLoader.sourceComponent = organizationStackComponent;
+                            break;
+                        }
+
+                        case "sales": {
+                            postAuthLoader.sourceComponent = salesStackComponent;
+                            break;
+                        }
+                        }
+                    }
+                }
+
+                Loader {
+                    id: postAuthLoader
+                    active: true
+                    sourceComponent: dashboardStackComponent
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
             }
         }
     }
+
+    Component {
+        id: dashboardStackComponent
+
+        DsNavigationStack {
+            id: dashboardStack
+
+            DashboardPage {
+                id: dashboardPage
+            }
+        }
+    }
+
+    Component {
+        id: tellerStackComponent
+
+        DsNavigationStack {
+            id: tellerStack
+
+            TellerPage {
+                id: tellerPage
+            }
+        }
+    } // Teller Component [Checkout]
+
+    Component {
+        id: inventoryStackComponent
+
+        DsNavigationStack {
+            id: inventoryStack
+
+            InventoryPage {
+                id: inventoryPage
+            }
+        }
+    } // Inventory Component
+
+    Component {
+        id: organizationStackComponent
+
+        DsNavigationStack {
+            id: organizationStack
+
+            OrganizationPage {
+                id: organizationPage
+            }
+        }
+    } // Organization Component
+
+    Component {
+        id: salesStackComponent
+
+        DsNavigationStack {
+            id: salesStack
+
+            SalesPage {
+                id: salesPage
+            }
+        }
+    } // Sales Component
 
     function withOpacity(color, opacity) {
         var r, g, b;

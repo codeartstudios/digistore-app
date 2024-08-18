@@ -70,12 +70,13 @@ Item {
         }
     }
 
+    // Right Border line for the sidebar
     Rectangle {
         width: 1
         height: parent.height
         color: theme.baseAlt1Color
         anchors.right: parent.right
-    }
+    } // Rectangle: Right border line
 
     Component.onCompleted: {
         sideMenu.append({
