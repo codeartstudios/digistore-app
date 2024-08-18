@@ -8,11 +8,15 @@ Button {
     implicitWidth: theme.btnHeight
     height: implicitHeight
     width: implicitWidth
+    hoverEnabled: true
 
     property bool busy: false
     property string iconType
     property alias iconSize: ico.iconSize
     property alias radius: bg.radius
+    property alias toolTip: tooltip.text
+    property alias toolTipSide: tooltip.side
+    property bool toolTipShown: true
     property string textColor: theme.baseColor
     property string bgColor: theme.primaryColor
     property string bgHover: withOpacity(bgColor, 0.8)
@@ -37,6 +41,12 @@ Button {
             color: control.textColor
             anchors.centerIn: parent
         }
+    }
+
+    DsToolTip {
+        id: tooltip
+        parent: control
+        visible: toolTipShown && parent.hovered && text!==""
     }
 
     RotationAnimation {

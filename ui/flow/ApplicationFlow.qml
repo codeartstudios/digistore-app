@@ -1,4 +1,5 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Layouts
 
 // User imports
 import "../controls"
@@ -8,11 +9,37 @@ import "../views/auth"
 Item {
     anchors.fill: parent
 
-    Loader {
-        id: applicationLoader
-        active: true
-        sourceComponent: store.userLoggedIn ? dashboardComponent : authComponent
+    property bool sidebarShown: true
+    property alias topBar: topbar
+
+    ColumnLayout {
+        id: collayout
+        spacing: 0
         anchors.fill: parent
+
+        DsTopNavigationBar {
+            id: topbar
+            Layout.fillWidth: true
+        }
+
+        RowLayout {
+            spacing: 0
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            DsSideBar {
+                Layout.preferredWidth: sidebarShown ? theme.appSidebarWidth : 0
+                Layout.fillHeight: true
+            }
+
+            Loader {
+                id: applicationLoader
+                active: true
+                sourceComponent: store.userLoggedIn ? dashboardComponent : authComponent
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+        }
     }
 
     Component {

@@ -1,9 +1,9 @@
 {
-    "title": "Digistore",
+    "title": "Digisto POS",
     "versioncode": 1,
     "versionname": "1.0.0",
-    "organization_name": "CodeArt Studios",
-    "organization_domain": "net.codeartstudios",
+    "organization_name": "digisto.app",
+    "organization_domain": "app.digisto",
     "encryption_key":"",
     "encryption_salt":""
 }

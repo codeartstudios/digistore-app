@@ -6,6 +6,10 @@ Item {
     implicitHeight: theme.lgBtnHeight + theme.smSpacing
     implicitWidth: 300
 
+    property bool searchBarShown: true
+
+    signal searchAccepted(var item)
+
     RowLayout {
 
         anchors.fill: parent

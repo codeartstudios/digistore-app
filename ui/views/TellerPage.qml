@@ -20,9 +20,7 @@ DsPage {
         anchors.fill: parent
         spacing: theme.xsSpacing
 
-        DsTopNavigationBar {
-            Layout.fillWidth: true
-        }
+
 
         Item {
             Layout.fillWidth: true

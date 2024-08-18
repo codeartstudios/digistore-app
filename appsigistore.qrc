@@ -31,5 +31,7 @@
         <file>ui/controls/DsSearchInput.qml</file>
         <file>ui/controls/DsTopNavigationBar.qml</file>
         <file>ui/controls/DsCheckBox.qml</file>
+        <file>ui/controls/DsSideBar.qml</file>
+        <file>ui/controls/DsToolTip.qml</file>
     </qresource>
 </RCC>
