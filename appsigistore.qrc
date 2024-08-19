@@ -35,5 +35,6 @@
         <file>ui/controls/DsToolTip.qml</file>
         <file>ui/views/OrganizationPage.qml</file>
         <file>ui/controls/DsFormTextElement.qml</file>
+        <file>ui/controls/DsDashboardPillValue.qml</file>
     </qresource>
 </RCC>
