@@ -1,4 +1,5 @@
 import QtQuick
+import app.digisto.modules
 
 import "../../controls"
 
@@ -34,21 +35,34 @@ DsPage {
             }
 
             DsInputWithLabel {
+                id: emailinput
                 width: parent.width
                 label: qsTr("Email")
+                // validator: RegularExpressionValidator { regularExpression: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ }
                 input.placeholderText: qsTr("user@example.com")
             }
 
             DsInputWithLabel {
+                id: fullnameinput
                 width: parent.width
                 label: qsTr("Fullname")
                 input.placeholderText: qsTr("John Doe")
+                // validator: RegularExpressionValidator { regularExpression: /[A-F]+/ }
             }
 
             DsInputWithLabel {
+                id: passwordinput
                 width: parent.width
                 isPasswordInput: true
                 label: qsTr("Password")
+                input.placeholderText: qsTr("********")
+            }
+
+            DsInputWithLabel {
+                id: passwordconfirminput
+                width: parent.width
+                isPasswordInput: true
+                label: qsTr("Confirm Password")
                 input.placeholderText: qsTr("********")
             }
 
@@ -59,11 +73,9 @@ DsPage {
                 fontSize: theme.xlFontSize
                 width: parent.width
                 text: qsTr("Register")
+                busy: request.running
 
-                onClicked: {
-                    navigationStack.pop(null)
-                    navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
-                }
+                onClicked: createUserAccount();
             }
 
             // Pop this page to go back to login page
@@ -81,6 +93,40 @@ DsPage {
                     onClicked: navigationStack.pop()
                 }
             }
+        }
+    }
+
+    // navigationStack.pop(null)
+    // navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
+    Requests {
+        id: request
+        baseUrl: "https://pb.digisto.app"
+        path: "/api/collections/tellers/records"
+        method: "POST"
+    }
+
+    function createUserAccount() {
+        var email = emailinput.input.text
+        var name = fullnameinput.input.text
+        var password = passwordinput.input.text
+        var passwordConfirm = passwordconfirminput.input.text
+
+        var body = {
+            email,
+            password,
+            passwordConfirm,
+            name
+        }
+
+        request.clear()
+        request.body = body;
+        var res = request.send();
+        console.log(JSON.stringify(res))
+
+        if(res.status===200) {
+            console.log("User created")
+        } else {
+            // User creation failed
         }
     }
 }

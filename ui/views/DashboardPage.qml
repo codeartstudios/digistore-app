@@ -105,7 +105,5 @@ DsPage {
                 border.color: theme.baseAlt1Color
             }
         }
-
-
     }
 }

@@ -1,34 +1,57 @@
 #include "requests.h"
 
-Requests::Requests(QObject *parent)
-    : QObject{parent}
-{}
+Requests::Requests(const QString& baseurl, QObject *parent)
+    : QObject{parent},
+    netman(std::make_unique<QNetworkAccessManager>(this)),
+    m_baseUrl(baseurl),
+    m_path(""),
+    m_method("GET"),
+    m_headers(QVariantMap()),
+    m_body(QVariantMap()),
+    m_query(QVariantMap()),
+    m_running(false)  {}
 
-QUrl Requests::buildUrl(const QString &path) {
+QUrl Requests::buildUrl(const QString &_path) {
     QUrl url(m_baseUrl);
 
     if (!url.path().endsWith("/")) {
         url.setPath(url.path() + "/");
     }
 
-    if(path.startsWith("/"))
-        url.setPath(url.path() + path.mid(1));
+    if(_path.startsWith("/"))
+        url.setPath(url.path() + _path.mid(1));
     else
-        url.setPath(url.path() + path);
+        url.setPath(url.path() + _path);
 
     return url;
 }
 
-QJsonObject Requests::send(const QString &path, const QJsonObject params) {
+QVariantMap Requests::send()
+{
+    if(m_method.isEmpty())
+    {
+        QVariantMap e;
+        e["status"] = 0;
+        e["message"] = QString("Request method is not defined");
+        emit error(e);
+
+        return e;
+    }
+
+    m_running=true;
+    emit runningChanged();
+
+    qDebug() << m_path << m_body;
+
     // Build path URL from the base URL and the route
-    QUrl url = buildUrl(path);
+    QUrl url = buildUrl(m_path);
 
     // If there are query parameters, pass them into the URL
-    if( params.contains("query") && !params.value("query").isNull() ) {
+    if( !m_query.isEmpty() ) {
         QUrlQuery q1;
 
-        for( const auto& key : params.value("query").toObject().keys() ) {
-            QString value = params.value("query").toObject().value(key).toString();
+        for( const auto& key : m_query.keys() ) {
+            QString value = m_query.value(key).toString();
             q1.addQueryItem(key, value);
         }
 
@@ -39,91 +62,83 @@ QJsonObject Requests::send(const QString &path, const QJsonObject params) {
     QNetworkRequest request;
     request.setUrl(url);
     qDebug() << "\n[Requests] Making a ("
-             << params.value("method").toString()
+             << m_method
              << ") request to '" << request.url().toString() << "'";
 
-    // If no auth disabled by user
-    if( params.contains("headers") &&
-        params.value("headers").toObject().contains("auth") &&
-        !params.value("headers").toObject().value("auth").toBool()) {}
-
-    // Explicitly pass the auth header unless specified to be ignored
-    else {
-        // request.setRawHeader("Authorization", "Bearer " + m_authStore->token().toUtf8());
-    }
-
-    auto bodyJson = params.value("body").toObject(QJsonObject());
-    QStringList textKeys, fileKeys;
-
-    // Extract the keys, into the text and file arrays
-    for(const auto& key : bodyJson.keys()) {
-        auto obj = bodyJson.value(key).toObject();
-        if( obj.value("type").toString("") == "files" ) {
-            fileKeys.append(key);
-        } else {
-            textKeys.append(key);
+    // Add user headers to the request
+    if(!m_headers.isEmpty()) {
+        for(const auto &key : m_headers.keys()) {
+            request.setRawHeader(key.toUtf8(), m_headers.value(key).toByteArray());
         }
     }
 
-    // Create Network Access Manager
-    std::unique_ptr<QNetworkAccessManager> netman = std::make_unique<QNetworkAccessManager>(this);
     QNetworkReply* reply;
-    QJsonDocument doc(bodyJson);
+    QJsonDocument doc = QJsonDocument::fromVariant(m_body);
 
     // If we have files to upload, lets handle it in the multipart
-    if ( fileKeys.size() > 0 &&
-        (params.value("method").toString() == "POST" ||
-         params.value("method").toString() == "PUT" ||
-         params.value("method").toString() == "PATCH" )) {
+    if ( !m_files.isEmpty() &&
+        (m_method == "POST" ||
+         m_method == "PUT" ||
+         m_method == "PATCH" )) {
         QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
-        for(const auto& key : textKeys ) {
+        for(const auto& key : m_body.keys()) {
             QHttpPart jsonPart;
             jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader,
                                QVariant(QString("form-data; name=\"%1\"").arg(key)));
 
-            auto ba = convertJsonValueToByteArray(bodyJson.value(key));
-            jsonPart.setBody(ba);
+            // auto ba = convertJsonValueToByteArray(bodyJson.value(key));
+            jsonPart.setBody(m_body.value(key).toByteArray());
             multiPart->append(jsonPart);
         }
 
         // Add files to multipart
-        for ( const auto& key : fileKeys ) {
-            auto obj = bodyJson.value(key).toObject();
-            auto filesArray = obj.value("files").toArray();
+        for ( const auto& key : m_files.keys() ) {
+            // TODO check on multiple file issue
 
-            for( const auto& filePath : filesArray ) {
-                QFile* file = new QFile(filePath.toString());
-                QString fileName = QFileInfo(file->fileName()).fileName();
+            QFile* file = new QFile(m_files.value(key).toString());
+            QString fileName = QFileInfo(file->fileName()).fileName();
 
-                if(!file->exists()) {
-                    // throw ClientResponseError("File not found", 0, file->fileName());
-                }
+            if(!file->exists()) {
+                QVariantMap e;
+                e["status"] = 0;
+                e["message"] = QString("File '%1' does not exist").arg(fileName);
 
-                if (!file->open(QIODevice::ReadOnly)) {
-                    // QString err = file->errorString();
-                    // throw ClientResponseError("Error opening attached file", 0, file->fileName());
-                }
-
-                QMimeDatabase mimeDatabase;
-                QMimeType mimeType = mimeDatabase.mimeTypeForFile(file->fileName());
-                QString mimeTypeName = mimeType.name(); // This holds the MIME type (e.g., "image/jpeg")
-
-                QHttpPart filePart;
-                filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(mimeTypeName));
-                filePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                                   QVariant(QString("form-data; name=\"%1\"; filename=\"%2\"").arg(key, fileName)));
-                filePart.setBodyDevice(file);
-                file->setParent(multiPart); // We set the parent to ensure file is deleted with multiPart
-                multiPart->append(filePart);
+                m_running=false;
+                emit runningChanged();
+                emit error(e);
+                return e;
             }
+
+            if (!file->open(QIODevice::ReadOnly)) {
+                QVariantMap e;
+                e["status"] = 0;
+                e["message"] = QString("Could not open '%1' for reading").arg(fileName);
+
+                m_running=false;
+                emit runningChanged();
+                emit error(e);
+                return e;
+            }
+
+            QMimeDatabase mimeDatabase;
+            QMimeType mimeType = mimeDatabase.mimeTypeForFile(file->fileName());
+            QString mimeTypeName = mimeType.name(); // This holds the MIME type (e.g., "image/jpeg")
+
+            QHttpPart filePart;
+            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(mimeTypeName));
+            filePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                               QVariant(QString("form-data; name=\"%1\"; filename=\"%2\"").arg(key, fileName)));
+            filePart.setBodyDevice(file);
+            file->setParent(multiPart); // We set the parent to ensure file is deleted with multiPart
+            multiPart->append(filePart);
         }
 
-        if (params.value("method").toString() == "POST") {
+        if (m_method == "POST") {
             reply = netman->post(request, multiPart);
         }
 
-        else if (params.value("method").toString() == "PUT") {
+        else if (m_method == "PUT") {
             reply = netman->put(request, multiPart);
         }
 
@@ -137,29 +152,35 @@ QJsonObject Requests::send(const QString &path, const QJsonObject params) {
     else {
         request.setRawHeader("Content-Type", "application/json");
 
-        if(params.value("method").toString() == "GET") {
+        if(m_method == "GET") {
             reply = netman->get(request);
         }
 
-        else if(params.value("method").toString() == "POST") {
+        else if(m_method == "POST") {
             reply = netman->post(request, doc.toJson());
         }
 
-        else if(params.value("method").toString() == "PATCH" ) {
+        else if(m_method == "PATCH" ) {
             reply = netman->sendCustomRequest(request, "PATCH", doc.toJson());
         }
 
-        else if(params.value("method").toString() == "PUT") {
+        else if(m_method == "PUT") {
             reply = netman->put(request, doc.toJson());
         }
 
-        else if(params.value("method").toString() == "DELETE") {
+        else if(m_method == "DELETE") {
             reply = netman->deleteResource(request);
         }
 
         else {
-            // throw ClientResponseError("Unhandled Method", 404);
-            qDebug() << "Unhandled: " << params.value("method").toString();
+            QVariantMap e;
+            e["status"] = 0;
+            e["message"] = QString("Unhandled method '%1'").arg(m_method);
+
+            m_running=false;
+            emit runningChanged();
+            emit error(e);
+            return e;
         }
     }
 
@@ -171,20 +192,48 @@ QJsonObject Requests::send(const QString &path, const QJsonObject params) {
     QJsonDocument resJsonDoc = QJsonDocument::fromJson(reply->readAll());
 
     QJsonObject responseObject;
-    responseObject.insert("statusCode", statusCode);
-    responseObject.insert("data", resJsonDoc.object());
+    responseObject.insert("status", statusCode);
 
     if( reply->error() != QNetworkReply::NoError ) {
         responseObject.insert("error", reply->errorString());
     }
 
+    // Add any data to response
+    responseObject.insert("data", resJsonDoc.object());
+
     if( statusCode >= 400 || statusCode < 200 ) {
-        qDebug() << resJsonDoc;
-        QString msg = resJsonDoc.object()["message"].toString();
-        // throw ClientResponseError(msg, statusCode, request.url().toString());
+        emit error(responseObject.toVariantMap());
+    } else {
+        emit success(responseObject.toVariantMap());
     }
 
-    return responseObject;
+    m_running=false;
+    emit runningChanged();
+    return responseObject.toVariantMap();
+}
+
+bool Requests::abort()
+{
+    // TODO implement request abort
+    return true;
+}
+
+void Requests::clear()
+{
+    // m_path.clear();
+    // m_method="GET";
+    m_headers.clear();
+    m_body.clear();
+    m_files.clear();
+    m_query.clear();
+    abort();
+
+    // emit pathChanged();
+    // emit methodChanged();
+    emit headersChanged();
+    emit bodyChanged();
+    emit filesChanged();
+    emit queryChanged();
 }
 
 QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {

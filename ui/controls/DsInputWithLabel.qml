@@ -11,6 +11,7 @@ Rectangle {
     property string label: qsTr("Input")
     property alias input: input
     property bool isPasswordInput: false
+    property alias validator: input.validator
 
     Column {
         id: col

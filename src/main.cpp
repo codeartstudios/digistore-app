@@ -4,6 +4,7 @@
 
 // User defined headers
 #include "dscontroller.h"
+#include "requests.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,8 @@ int main(int argc, char *argv[])
 
     // Register dscontroller to QML
     engine.rootContext()->setContextProperty("dsController", &dsController);
+
+    qmlRegisterType<Requests>("app.digisto.modules", 1, 0, "Requests");
 
     const QUrl url(QStringLiteral("qrc:/ui/Main.qml"));
 

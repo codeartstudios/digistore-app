@@ -20,6 +20,8 @@ Item {
 
         DsTopNavigationBar {
             id: topbar
+            visible: store.userLoggedIn
+            Layout.preferredHeight: store.userLoggedIn ? implicitHeight : 0
             Layout.fillWidth: true
         }
 
@@ -30,7 +32,8 @@ Item {
 
             DsSideBar {
                 id: sideBar
-                Layout.preferredWidth: sidebarShown ? theme.appSidebarWidth : 0
+                visible: store.userLoggedIn
+                Layout.preferredWidth: store.userLoggedIn && sidebarShown ? theme.appSidebarWidth : 0
                 Layout.fillHeight: true
             }
 
@@ -45,7 +48,7 @@ Item {
     }
 
     Component {
-        id: authComponent
+        id: preAuthComponent
 
         DsNavigationStack {
             id: preAuthStack
