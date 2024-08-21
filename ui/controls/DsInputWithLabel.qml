@@ -12,6 +12,13 @@ Rectangle {
     property alias input: input
     property bool isPasswordInput: false
     property alias validator: input.validator
+    property bool hasError: false
+    property string errorString: ""
+
+    function showError() { tt.show(errorString) }
+    function closeError() { tt.close() }
+
+    onHasErrorChanged: hasError ? showError() : closeError()
 
     Column {
         id: col
@@ -35,6 +42,16 @@ Rectangle {
             font.pixelSize: theme.lgFontSize
             echoMode: isPasswordInput ? TextField.Password : TextField.Normal
             background: Item{}
+
+            DsToolTip {
+                id: tt
+                text: errorString
+                delay: 0
+                width: parent.width
+                side: DsToolTip.Bottom
+                bgRect.color: theme.warningColor
+                onClosed: hasError=false
+            }
         }
     }
 

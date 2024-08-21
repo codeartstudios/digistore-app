@@ -11,17 +11,19 @@ ToolTip {
 
     x: (side===DsToolTip.Top || side===DsToolTip.Bottom) ?
            0 : side===DsToolTip.Right ?
-               theme.smSpacing + parentWidth :
-               -(theme.smSpacing + width)
+               edgeSpacing + parentWidth :
+               -(edgeSpacing + width)
 
     y: side===DsToolTip.Top ?
-           -theme.smSpacing : side===DsToolTip.Bottom ?
-               (theme.smSpacing+parentHeight) :
+           -edgeSpacing : side===DsToolTip.Bottom ?
+               (edgeSpacing+parentHeight) :
                (parentHeight-height)/2
 
     property real parentWidth: parent.width
     property real parentHeight: parent.height
+    property real edgeSpacing: theme.xsSpacing
     property int side: DsToolTip.Right
+    property alias bgRect: bg
 
     enum Side {
         Left,
@@ -47,6 +49,7 @@ ToolTip {
     }
 
     background: Rectangle {
+        id: bg
         radius: theme.btnRadius
         color: theme.tooltipColor
 
@@ -60,6 +63,7 @@ ToolTip {
             anchors.bottom: parent.top
             anchors.left: parent.left
             anchors.leftMargin: theme.btnRadius
+            anchors.bottomMargin: -theme.btnRadius
         }
 
         // Downward pointing indicator

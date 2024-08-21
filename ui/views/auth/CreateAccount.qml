@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Dialogs
 import app.digisto.modules
 
 import "../../controls"
@@ -38,7 +39,7 @@ DsPage {
                 id: emailinput
                 width: parent.width
                 label: qsTr("Email")
-                // validator: RegularExpressionValidator { regularExpression: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ }
+                errorString: qsTr("Invalid Email Address")
                 input.placeholderText: qsTr("user@example.com")
             }
 
@@ -47,7 +48,7 @@ DsPage {
                 width: parent.width
                 label: qsTr("Fullname")
                 input.placeholderText: qsTr("John Doe")
-                // validator: RegularExpressionValidator { regularExpression: /[A-F]+/ }
+                errorString: qsTr("Invalid user full name")
             }
 
             DsInputWithLabel {
@@ -56,6 +57,7 @@ DsPage {
                 isPasswordInput: true
                 label: qsTr("Password")
                 input.placeholderText: qsTr("********")
+                errorString: qsTr("Empty or short password")
             }
 
             DsInputWithLabel {
@@ -64,6 +66,7 @@ DsPage {
                 isPasswordInput: true
                 label: qsTr("Confirm Password")
                 input.placeholderText: qsTr("********")
+                errorString: qsTr("Empty or short password")
             }
 
             Item { height: 1; width: 1}
@@ -105,11 +108,39 @@ DsPage {
         method: "POST"
     }
 
+    MessageDialog {
+        id: warningdialog
+        buttons: MessageDialog.Ok
+    }
+
     function createUserAccount() {
-        var email = emailinput.input.text
-        var name = fullnameinput.input.text
-        var password = passwordinput.input.text
-        var passwordConfirm = passwordconfirminput.input.text
+        var email = emailinput.input.text.trim()
+        var name = fullnameinput.input.text.trim()
+        var password = passwordinput.input.text.trim()
+        var passwordConfirm = passwordconfirminput.input.text.trim()
+
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            emailinput.hasError = true;
+            return;
+        }
+
+        if(name.split(" ").length === 0) {
+            fullnameinput.hasError=true;
+            fullnameinput.errorString = qsTr("At least two names expected")
+            return;
+        }
+
+        if(password.length < 4) {
+            passwordinput.hasError=true;
+            passwordinput.errorString = qsTr("Password is too short!")
+            return;
+        }
+
+        if(password.length !== passwordConfirm) {
+            passwordconfirminput.hasError=true;
+            passwordconfirminput.errorString = qsTr("Passwords do not match!")
+            return;
+        }
 
         var body = {
             email,
@@ -125,8 +156,13 @@ DsPage {
 
         if(res.status===200) {
             console.log("User created")
+            // Confirm email
+
         } else {
             // User creation failed
+            warningdialog.text = "Account Creation Failed"
+            warningdialog.informativeText = res.data.message
+            warningdialog.open()
         }
     }
 }
