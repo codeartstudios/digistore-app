@@ -1,4 +1,7 @@
 import QtQuick
+import QtQuick.Dialogs
+import Qt.labs.platform
+import app.digisto.modules
 
 import "../../controls"
 
@@ -34,16 +37,20 @@ DsPage {
             }
 
             DsInputWithLabel {
+                id: emailinput
                 width: parent.width
-                label: qsTr("Username")
+                label: qsTr("Email/Username")
+                errorString: qsTr("Invalid Email or User ID")
                 input.placeholderText: qsTr("user@example.com")
             }
 
             DsInputWithLabel {
+                id: passwordinput
                 width: parent.width
                 isPasswordInput: true
                 label: qsTr("Password")
                 input.placeholderText: qsTr("********")
+                errorString: qsTr("Empty or short password")
             }
 
             DsLabel {
@@ -59,10 +66,12 @@ DsPage {
             Item { height: 1; width: 1}
 
             DsButton {
+                busy: signinRequest.running
                 height: theme.lgBtnHeight
                 fontSize: theme.xlFontSize
                 width: parent.width
                 text: qsTr("Login")
+                onClicked: signIn()
             }
 
             // Pop this page to go back to login page
@@ -80,6 +89,55 @@ DsPage {
                     onClicked: navigationStack.push("qrc:/ui/views/auth/CreateAccount.qml")
                 }
             }
+        }
+    }
+
+    Requests {
+        id: request
+        baseUrl: "https://pb.digisto.app"
+        path: "/api/collections/tellers/auth-with-password"
+        method: "POST"
+    }
+
+    MessageDialog {
+        id: warningdialog
+        buttons: MessageDialog.Ok
+    }
+
+    function signIn() {
+        var identity = emailinput.input.text.trim()
+        var password = passwordinput.input.text.trim()
+
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length > 4 ) {
+            emailinput.hasError = true;
+            return;
+        }
+
+        if(password.length < 4) {
+            passwordinput.hasError = true;
+            passwordinput.errorString = qsTr("Password is too short!")
+            return;
+        }
+
+        var body = {
+            identity,
+            password
+        }
+
+        request.clear()
+        request.body = body;
+        var res = request.send();
+        console.log(JSON.stringify(res))
+
+        if(res.status===200) {
+            console.log("User logged in")
+            // Confirm email
+
+        } else {
+            // User creation failed
+            warningdialog.text = "Login Failed"
+            warningdialog.informativeText = res.error
+            warningdialog.open()
         }
     }
 }

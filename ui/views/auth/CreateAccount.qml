@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Dialogs
+import Qt.labs.platform
 import app.digisto.modules
 
 import "../../controls"
@@ -76,7 +77,7 @@ DsPage {
                 fontSize: theme.xlFontSize
                 width: parent.width
                 text: qsTr("Register")
-                busy: request.running
+                busy: createAccountRequest.running || emailVerificationRequest.running
 
                 onClicked: createUserAccount();
             }
@@ -99,12 +100,17 @@ DsPage {
         }
     }
 
-    // navigationStack.pop(null)
-    // navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
     Requests {
-        id: request
+        id: createAccountRequest
         baseUrl: "https://pb.digisto.app"
         path: "/api/collections/tellers/records"
+        method: "POST"
+    }
+
+    Requests {
+        id: emailVerificationRequest
+        baseUrl: "https://pb.digisto.app"
+        path: "/api/collections/tellers/request-verification"
         method: "POST"
     }
 
@@ -136,7 +142,7 @@ DsPage {
             return;
         }
 
-        if(password.length !== passwordConfirm) {
+        if(password !== passwordConfirm) {
             passwordconfirminput.hasError=true;
             passwordconfirminput.errorString = qsTr("Passwords do not match!")
             return;
@@ -149,20 +155,33 @@ DsPage {
             name
         }
 
-        request.clear()
-        request.body = body;
-        var res = request.send();
+        createAccountRequest.clear()
+        createAccountRequest.body = body;
+        var res = createAccountRequest.send();
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
             console.log("User created")
-            // Confirm email
-
+            switchToEmailConfirmation(res.data.email)
         } else {
             // User creation failed
             warningdialog.text = "Account Creation Failed"
-            warningdialog.informativeText = res.data.message
+            warningdialog.informativeText = res.error
             warningdialog.open()
         }
+    }
+
+    function switchToEmailConfirmation(email) {
+        var body = {
+            email
+        }
+
+        emailVerificationRequest.clear()
+        emailVerificationRequest.body = body;
+        var res = emailVerificationRequest.send();
+        console.log(JSON.stringify(res))
+
+        navigationStack.pop(null)
+        navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
     }
 }
