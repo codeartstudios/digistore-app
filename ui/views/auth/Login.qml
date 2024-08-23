@@ -93,7 +93,7 @@ DsPage {
     }
 
     Requests {
-        id: request
+        id: signinRequest
         baseUrl: "https://pb.digisto.app"
         path: "/api/collections/tellers/auth-with-password"
         method: "POST"

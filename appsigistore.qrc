@@ -36,5 +36,7 @@
         <file>ui/views/OrganizationPage.qml</file>
         <file>ui/controls/DsFormTextElement.qml</file>
         <file>ui/controls/DsDashboardPillValue.qml</file>
+        <file>ui/controls/DsTable.qml</file>
+        <file>ui/controls/DsTableHeaderButton.qml</file>
     </qresource>
 </RCC>

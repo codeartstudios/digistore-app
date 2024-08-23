@@ -89,7 +89,7 @@ DsPage {
                             implicitHeight: theme.lgBtnHeight
 
                             DsCheckBox {
-                                size: theme.btnHeight
+                                cbSize: theme.btnHeight
                                 checked: false
                                 onToggled: {
                                     model.display = checked
@@ -207,7 +207,7 @@ DsPage {
                             implicitHeight: theme.lgBtnHeight
 
                             DsCheckBox {
-                                size: theme.btnHeight
+                                cbSize: theme.btnHeight
                                 checked: model.display
                                 onToggled: model.display = checked
 

@@ -161,8 +161,7 @@ DsPage {
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            console.log("User created")
-            switchToEmailConfirmation(res.data.email)
+            switchToEmailConfirmation(email)
         } else {
             // User creation failed
             warningdialog.text = "Account Creation Failed"
