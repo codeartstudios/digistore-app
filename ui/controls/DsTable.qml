@@ -48,6 +48,10 @@ Rectangle {
             height: 50
             clip: true
 
+            onWidthChanged: logWidth()
+            Component.onCompleted: logWidth()
+            function logWidth() { console.log(`Widths: header[${width}], listview[${listview.width}], root[${root.implicitWidth}]`) }
+
             Rectangle {
                 height: 1
                 width: parent.width
@@ -61,6 +65,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 model: headerModel
+                boundsBehavior: Flickable.StopAtBounds
                 orientation: ListView.Horizontal
                 headerPositioning: ListView.OverlayHeader
                 footerPositioning: ListView.OverlayFooter
@@ -124,6 +129,7 @@ Rectangle {
                     }
                 }
 
+                // Bind width changes to column width recalculation
                 onWidthChanged: calculateWidthChanges();
                 Component.onCompleted: calculateWidthChanges();
 
@@ -135,19 +141,22 @@ Rectangle {
                         var item = headerModel.get(i)
                         flexsum += item["flex"];
                         colswidthsum += item["width"];
-                        if(item["width"]===0)
+                        if(item["flex"]===0)
                             nonflexwidthsum+=item["width"]
                     }
 
                     if(colswidthsum < headerlv.width) {
                         var newcolwidths = []
+                        workingWidth -= colswidthsum
+
                         for(let i=0; i<headerModel.count; i++) {
                             let item = headerModel.get(i)
-                            var f = item["flex"];
-                            var w = item["width"];
-                            var nw = f===0 ? w : ((workingWidth-nonflexwidthsum) * f/flexsum)
-                            newcolwidths.push(nw)
+                            var flex = item["flex"];
+                            var baseWidth = item["width"];
+                            var newWidth = flex===0 ? baseWidth : baseWidth + (workingWidth * flex/flexsum)
+                            newcolwidths.push(newWidth)
                         }
+
                         listview.columnWidths = newcolwidths
                     }
 
@@ -158,8 +167,6 @@ Rectangle {
                         }
                         listview.columnWidths = newcolwidths
                     }
-
-                    console.log(listview.columnWidths)
                 }
             }
         }
