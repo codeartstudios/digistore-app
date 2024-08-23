@@ -170,5 +170,100 @@ Rectangle {
                 }
             }
         }
+
+        delegate: Rectangle {
+            id: tabledelegate
+            width: parent.width
+            height: 50
+            color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+
+            property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
+            property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+
+            MouseArea {
+                id: ma
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: ma.hovered=true
+                onExited: ma.hovered=false
+                property bool hovered: false
+            }
+
+            ListView {
+                clip: true
+                height: parent.height
+                anchors.left: parent.left
+                anchors.right: parent.right
+                model: headerModel
+                boundsBehavior: Flickable.StopAtBounds
+                orientation: ListView.Horizontal
+                headerPositioning: ListView.OverlayHeader
+                footerPositioning: ListView.OverlayFooter
+
+                header: Rectangle {
+                    height: 50
+                    width: 70
+                    z: 10
+                    color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+
+                    property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
+                    property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+
+                    Rectangle {
+                        height: 1
+                        color: theme.baseAlt2Color
+                        width: parent.width
+                        anchors.bottom: parent.bottom
+                    }
+
+                    DsCheckBox {
+                        width: 50
+                        height: 50
+                        boxSize: 24
+                        checked: false
+                        anchors.right: parent.right
+                    }
+                }
+
+                footer: Rectangle {
+                    height: 50
+                    width: 70
+                    z: 10
+                    color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+
+                    property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
+                    property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+
+                    Rectangle {
+                        height: 1
+                        color: theme.baseAlt2Color
+                        width: parent.width
+                        anchors.bottom: parent.bottom
+                    }
+
+                    DsIconButton {
+                        bgColor: "transparent"
+                        width: 50
+                        height: 50
+                        iconType: dsIconType.dots
+                        textColor: theme.txtHintColor
+                        bgHover: withOpacity(theme.baseAlt1Color, 0.8)
+                        bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: root.actionSelected()
+                    }
+                }
+
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: theme.baseAlt2Color
+                anchors.bottom: parent.bottom
+            }
+        }
     }
 }

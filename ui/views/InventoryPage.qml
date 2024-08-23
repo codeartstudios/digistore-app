@@ -9,45 +9,6 @@ DsPage {
     title: qsTr("Inventory Page")
     headerShown: true
 
-    ListModel {
-        id: headermodel
-
-        ListElement {
-            title: qsTr("#")
-            sortable: false
-            width: 70
-            flex: 0
-        }
-
-        ListElement {
-            title: qsTr("Product Name")
-            sortable: true
-            width: 300
-            flex: 2
-        }
-
-        ListElement {
-            title: qsTr("Buying Price")
-            sortable: true
-            width: 200
-            flex: 1
-        }
-
-        ListElement {
-            title: qsTr("Selling Price")
-            sortable: true
-            width: 200
-            flex: 1
-        }
-
-        ListElement {
-            title: qsTr("Stock")
-            sortable: true
-            width: 200
-            flex: 1
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
 
@@ -55,7 +16,153 @@ DsPage {
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: headermodel
-            dataModel: headermodel
+            dataModel: datamodel
         }
     }
+
+    ListModel {
+        id: datamodel
+
+        Component.onCompleted: {
+            datamodel.append([
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 },
+                                 {
+                                     id: "RECORD_ID",
+                                     collectionId: "893lh3lly17guqa",
+                                     collectionName: "product",
+                                     created: "2022-01-01 01:00:00.123Z",
+                                     updated: "2022-01-01 23:59:59.456Z",
+                                     name: "test",
+                                     unit: "test",
+                                     barcode: "test",
+                                     buying_price: 123,
+                                     selling_price: 123,
+                                     stock: 123,
+                                     thumbnail: "filename.jpg",
+                                     organization: "RELATION_RECORD_ID"
+                                 }]
+                             )
+        }
+    }
+
+    ListModel {
+            id: headermodel
+
+            ListElement {
+                title: qsTr("Product Name")
+                sortable: true
+                width: 300
+                flex: 2
+            }
+
+            ListElement {
+                title: qsTr("Buying Price")
+                sortable: true
+                width: 200
+                flex: 1
+            }
+
+            ListElement {
+                title: qsTr("Selling Price")
+                sortable: true
+                width: 200
+                flex: 1
+            }
+
+            ListElement {
+                title: qsTr("Stock")
+                sortable: true
+                width: 200
+                flex: 1
+            }
+        }
 }
