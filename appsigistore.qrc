@@ -29,7 +29,6 @@
         <file>ui/views/TellerPage.qml</file>
         <file>ui/views/SalesPage.qml</file>
         <file>ui/controls/DsSearchInput.qml</file>
-        <file>ui/controls/DsTopNavigationBar.qml</file>
         <file>ui/controls/DsCheckBox.qml</file>
         <file>ui/controls/DsSideBar.qml</file>
         <file>ui/controls/DsToolTip.qml</file>
@@ -38,5 +37,6 @@
         <file>ui/controls/DsDashboardPillValue.qml</file>
         <file>ui/controls/DsTable.qml</file>
         <file>ui/controls/DsTableHeaderButton.qml</file>
+        <file>ui/controls/DsSideBarListView.qml</file>
     </qresource>
 </RCC>

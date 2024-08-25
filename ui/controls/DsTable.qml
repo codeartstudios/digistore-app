@@ -3,7 +3,7 @@ import app.digisto.modules
 
 Rectangle {
     id: root
-    color: Theme.baseColor
+    color: Theme.bodyColor
 
     required property ListModel headerModel
     required property ListModel dataModel
@@ -31,6 +31,15 @@ Rectangle {
         listview.columnWidths = newcolwidths
     }
 
+    // TODO handle table toggles
+    function headerCheckToggled(checked) {
+        if(checked) {
+            for(var i=0; i<dataModel.count; i++) {
+
+            }
+        }
+    }
+
 
     ListView {
         id: listview
@@ -41,7 +50,7 @@ Rectangle {
         model: dataModel
         headerPositioning: ListView.OverlayHeader
         anchors.fill: parent
-        anchors.topMargin: Theme.baseSpacing
+        // anchors.topMargin: Theme.baseSpacing
 
         header: Item {
             z: 3

@@ -2,73 +2,58 @@ import QtQuick
 import QtQuick.Controls
 import app.digisto.modules
 
+// TODO add notification dots
+
 Item {
     id: sidebar
     width: Theme.appSidebarWidth
 
     property string currentSideBarMenu: "dashboard"
     property ListModel sideMenu: ListModel{}
+    property ListModel sideMenuExtras: ListModel{}
 
     signal menuSelected(var label)
 
-    Column {
-        spacing: Theme.btnRadius
+    Item {
         anchors.fill: parent
         anchors.margins: Theme.smSpacing
 
-        Repeater {
-            model: sideMenu
-            delegate: DsIconButton {
-                property bool isActive: currentSideBarMenu===model.label
+        Item {
+            id: logoitem
+            width: parent.width
+            height: Theme.lgBtnHeight + Theme.smSpacing
+            anchors.top: parent.top
 
-                iconType: model.iconType
-                toolTip: model.tooltip
-                width: Theme.lgBtnHeight
-                height: width
-                iconSize: 28
-                bgColor: isActive ? Theme.baseAlt1Color : "transparent"
-                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-                textColor: isActive ? Theme.txtPrimaryColor : withOpacity(Theme.txtPrimaryColor, 0.6)
-                anchors.horizontalCenter: parent.horizontalCenter
+            Item {
+                width: parent.width
+                height: Theme.lgBtnHeight
 
-                onClicked: {
-                    if(model.checkable) currentSideBarMenu = model.label
-                    menuSelected(model.label)
-                }
-
-                onIsActiveChanged: isActive ? indicator.fadeIn() :
-                                              indicator.fadeOut()
-
-                Rectangle {
-                    id: indicator
-                    visible: parent.isActive
-                    radius: width/2
-                    color: Theme.primaryColor
-                    height: visible ? 0.5 * parent.height : 0
-                    width: Theme.btnRadius
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    Behavior on height { NumberAnimation {} }
-
-                    function fadeIn() { fadein.restart() }
-                    function fadeOut() { fadeout.restart() }
-
-                    OpacityAnimator {
-                        id: fadein
-                        target: indicator
-                        from: 0; to: 1
-                    }
-
-                    OpacityAnimator {
-                        id: fadeout
-                        target: indicator
-                        from: 1; to: 0
-                    }
+                Image {
+                    width: Theme.btnHeight
+                    height: Theme.btnHeight
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/assets/imgs/logo-nobg.png"
+                    verticalAlignment: Image.AlignVCenter
+                    anchors.centerIn: parent
                 }
             }
         }
+
+        DsSideBarListView {
+            width: parent.width
+            anchors.bottom: extraslv.top
+            model: sideMenu
+            anchors.top: logoitem.bottom
+        }
+
+        DsSideBarListView {
+            id: extraslv
+            width: parent.width
+            height: (sideMenuExtras.count * Theme.lgBtnHeight) + ((sideMenuExtras.count-1) * spacing)
+            anchors.bottom: parent.bottom
+            model: sideMenuExtras
+        }
+
     }
 
     // Right Border line for the sidebar
@@ -119,5 +104,29 @@ Item {
                             isBusy: false,
                             iconType: IconType.tableShare
                         })
+
+        sideMenuExtras.append({
+                                  checkable: true,
+                                  label: "notifications",
+                                  tooltip: "Notifications",
+                                  isBusy: false,
+                                  iconType: IconType.bell
+                              })
+
+        sideMenuExtras.append({
+                                  checkable: true,
+                                  label: "settings",
+                                  tooltip: "App Settings",
+                                  isBusy: false,
+                                  iconType: IconType.settings
+                              })
+
+        sideMenuExtras.append({
+                                  checkable: true,
+                                  label: "profile",
+                                  tooltip: "User Profile",
+                                  isBusy: false,
+                                  iconType: IconType.userScreen
+                              })
     }
 }

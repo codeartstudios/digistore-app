@@ -1,16 +1,77 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import app.digisto.modules
 
 import "../controls"
 
 DsPage {
     id: dashboardPage
     title: qsTr("Inventory Page")
-    headerShown: true
+    headerShown: false
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: Theme.smSpacing
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.lgBtnHeight
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+            Layout.topMargin: Theme.smSpacing
+            spacing: Theme.smSpacing
+
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("Inventory")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("/")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsLabel {
+                fontSize: Theme.h2
+                color: Theme.txtPrimaryColor
+                text: qsTr("Products")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsIconButton {
+                iconType: IconType.reload
+                textColor: Theme.txtPrimaryColor
+                bgColor: "transparent"
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                radius: height/2
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Item {
+                Layout.fillWidth: true
+                height: 1
+            }
+
+            DsButton {
+                iconType: IconType.tablePlus
+                text: qsTr("New Product")
+            }
+        }
+
+        DsSearchInput {
+            id: dsSearchInput
+            placeHolderText: qsTr("What are you looking for?")
+            Layout.preferredHeight: Theme.lgBtnHeight
+            Layout.fillWidth: true
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+        }
 
         DsTable {
             Layout.fillWidth: true

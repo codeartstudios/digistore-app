@@ -12,19 +12,11 @@ Item {
     anchors.fill: parent
 
     property bool sidebarShown: true
-    property alias topBar: topbar
 
     ColumnLayout {
         id: collayout
         spacing: 0
         anchors.fill: parent
-
-        DsTopNavigationBar {
-            id: topbar
-            visible: store.userLoggedIn
-            Layout.preferredHeight: store.userLoggedIn ? implicitHeight : 0
-            Layout.fillWidth: true
-        }
 
         RowLayout {
             spacing: 0
@@ -95,6 +87,21 @@ Item {
 
                         case "sales": {
                             postAuthLoader.sourceComponent = salesStackComponent;
+                            break;
+                        }
+
+                        case "notifications": {
+                            // postAuthLoader.sourceComponent = salesStackComponent;
+                            break;
+                        }
+
+                        case "settings": {
+                            // postAuthLoader.sourceComponent = salesStackComponent;
+                            break;
+                        }
+
+                        case "profile": {
+                            // postAuthLoader.sourceComponent = salesStackComponent;
                             break;
                         }
                         }
@@ -171,6 +178,7 @@ Item {
             }
         }
     } // Sales Component
+
 
     function withOpacity(color, opacity) {
         var r, g, b;
