@@ -1,5 +1,6 @@
 import QtQuick.Controls.Basic
 import QtQuick
+import app.digisto.modules
 
 Rectangle {
     id: control

@@ -38,5 +38,6 @@
         <file>ui/controls/DsTable.qml</file>
         <file>ui/controls/DsTableHeaderButton.qml</file>
         <file>ui/controls/DsSideBarListView.qml</file>
+        <file>ui/popups/DsNewProductPopup.qml</file>
     </qresource>
 </RCC>

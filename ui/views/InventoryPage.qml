@@ -4,10 +4,11 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
+import "../popups"
 
 DsPage {
     id: dashboardPage
-    title: qsTr("Inventory Page")
+    title: ""
     headerShown: false
 
     ColumnLayout {
@@ -61,6 +62,7 @@ DsPage {
             DsButton {
                 iconType: IconType.tablePlus
                 text: qsTr("New Product")
+                onClicked: newproductpopup.open()
             }
         }
 
@@ -229,5 +231,12 @@ DsPage {
             flex: 1
             value: "stock"
         }
+    }
+
+
+
+    // Components
+    DsNewProductPopup {
+        id: newproductpopup
     }
 }

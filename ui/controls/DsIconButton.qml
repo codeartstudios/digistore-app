@@ -15,6 +15,8 @@ Button {
     property string iconType
     property alias iconSize: ico.iconSize
     property alias radius: bg.radius
+    property real borderWidth: 0
+    property string borderColor: Theme.txtPrimaryColor
     property alias toolTip: tooltip.text
     property alias toolTipSide: tooltip.side
     property bool toolTipShown: true
@@ -28,6 +30,8 @@ Button {
         color: down ? bgDown : hovered ? bgHover : bgColor
         radius: Theme.btnRadius
         opacity: enabled ? 1 : 0.4
+        border.color: borderColor
+        border.width: borderWidth
     }
 
     contentItem: Item {
