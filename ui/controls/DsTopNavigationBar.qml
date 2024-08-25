@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
+import app.digisto.modules
 
 Item {
     id: root
-    implicitHeight: theme.lgBtnHeight + theme.smSpacing
+    implicitHeight: Theme.lgBtnHeight + Theme.smSpacing
     implicitWidth: 300
 
     property bool searchBarShown: true
@@ -13,12 +14,12 @@ Item {
     RowLayout {
 
         anchors.fill: parent
-        anchors.leftMargin: theme.xsSpacing
-        anchors.rightMargin: theme.xsSpacing
+        anchors.leftMargin: Theme.xsSpacing
+        anchors.rightMargin: Theme.xsSpacing
 
         Image {
-            Layout.preferredWidth: theme.btnHeight
-            Layout.preferredHeight: theme.btnHeight
+            Layout.preferredWidth: Theme.btnHeight
+            Layout.preferredHeight: Theme.btnHeight
             fillMode: Image.PreserveAspectFit
             source: "qrc:/assets/imgs/logo-nobg.png"
             verticalAlignment: Image.AlignVCenter
@@ -30,12 +31,12 @@ Item {
 
             DsLabel {
                 isBold: true
-                fontSize: theme.xlFontSize
+                fontSize: Theme.xlFontSize
                 text: qsTr("DigiStore")
             }
 
             DsLabel {
-                fontSize: theme.xsFontSize
+                fontSize: Theme.xsFontSize
                 text: qsTr("Manage with ease")
             }
         }
@@ -49,7 +50,7 @@ Item {
             id: dsSearchInput
             placeHolderText: qsTr("What are you looking for?")
             Layout.maximumWidth: 700
-            Layout.preferredHeight: theme.lgBtnHeight
+            Layout.preferredHeight: Theme.lgBtnHeight
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
         }
@@ -60,27 +61,27 @@ Item {
         }
 
         DsIconButton {
-            iconType: dsIconType.settings
+            iconType: IconType.settings
         }
 
         DsIconButton {
-            iconType: dsIconType.bell
+            iconType: IconType.bell
         }
 
         Item {
             height: 1
-            width: theme.xsSpacing
+            width: Theme.xsSpacing
         }
 
         Rectangle {
-            color: theme.baseAlt2Color
-            width: 1; Layout.preferredHeight: theme.btnHeight
+            color: Theme.baseAlt2Color
+            width: 1; Layout.preferredHeight: Theme.btnHeight
             Layout.alignment: Qt.AlignVCenter
         }
 
         Item {
             height: 1
-            width: theme.xsSpacing
+            width: Theme.xsSpacing
         }
 
         Column {
@@ -88,23 +89,23 @@ Item {
 
             DsLabel {
                 isBold: true
-                fontSize: theme.xlFontSize
+                fontSize: Theme.xlFontSize
                 text: qsTr("John Doe")
                 anchors.right: parent.right
             }
 
             DsLabel {
-                fontSize: theme.xsFontSize
+                fontSize: Theme.xsFontSize
                 text: qsTr("Teller")
                 anchors.right: parent.right
             }
         }
 
         Rectangle {
-            height: theme.btnHeight
+            height: Theme.btnHeight
             width: height
             radius: height/2
-            color: theme.baseAlt3Color
+            color: Theme.baseAlt3Color
             Layout.alignment: Qt.AlignVCenter
         }
     }
@@ -112,7 +113,7 @@ Item {
     Rectangle {
         width: parent.width
         height: 1
-        color: theme.baseAlt1Color
+        color: Theme.baseAlt1Color
         anchors.top: parent.bottom
     }
 }

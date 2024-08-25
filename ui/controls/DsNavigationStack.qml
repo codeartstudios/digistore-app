@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import app.digisto.modules
 
 Item {
     id: root
@@ -32,12 +33,12 @@ Item {
                 radius: height/2
                 visible: stack.depth > 1
                 bgColor: "transparent"
-                bgHover: theme.baseAlt3Color
-                bgDown: theme.baseAlt3Color
-                textColor: theme.txtPrimaryColor
+                bgHover: Theme.baseAlt3Color
+                bgDown: Theme.baseAlt3Color
+                textColor: Theme.txtPrimaryColor
                 anchors.left: parent.left
-                anchors.leftMargin: theme.xsSpacing
-                iconType: dsIconType.arrowNarrowLeft
+                anchors.leftMargin: Theme.xsSpacing
+                iconType: IconType.arrowNarrowLeft
                 anchors.verticalCenter: parent.verticalCenter
 
                 onClicked: stack.pop()

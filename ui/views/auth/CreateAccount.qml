@@ -12,13 +12,13 @@ DsPage {
 
     Item {
         width: 400
-        height: col.height + 2*theme.baseSpacing
+        height: col.height + 2*Theme.baseSpacing
         anchors.centerIn: parent
 
         Column {
             id: col
-            width: parent.width - 2*theme.baseSpacing
-            spacing: theme.xsSpacing
+            width: parent.width - 2*Theme.baseSpacing
+            spacing: Theme.xsSpacing
             anchors.centerIn: parent
 
             Image {
@@ -29,10 +29,10 @@ DsPage {
             }
 
             DsLabel {
-                topPadding: theme.baseSpacing
-                bottomPadding: theme.smSpacing
+                topPadding: Theme.baseSpacing
+                bottomPadding: Theme.smSpacing
                 text: qsTr("Create Account")
-                fontSize: theme.h2
+                fontSize: Theme.h2
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -73,8 +73,8 @@ DsPage {
             Item { height: 1; width: 1}
 
             DsButton {
-                height: theme.lgBtnHeight
-                fontSize: theme.xlFontSize
+                height: Theme.lgBtnHeight
+                fontSize: Theme.xlFontSize
                 width: parent.width
                 text: qsTr("Register")
                 busy: createAccountRequest.running || emailVerificationRequest.running
@@ -85,9 +85,9 @@ DsPage {
             // Pop this page to go back to login page
             // which is presumed to be the previous page
             DsLabel {
-                fontSize: theme.smFontSize
+                fontSize: Theme.smFontSize
                 text: qsTr("Back to login")
-                height: theme.btnHeight
+                height: Theme.btnHeight
                 width: parent.width
                 horizontalAlignment: DsLabel.AlignHCenter
                 verticalAlignment: DsLabel.AlignVCenter

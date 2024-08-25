@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import app.digisto.modules
 
 Drawer {
     id: drawer
@@ -37,7 +38,7 @@ Drawer {
 
                 DsIcon {
                     iconSize: 24
-                    iconType: dsIconType.x
+                    iconType: IconType.x
                     anchors.centerIn: parent
                 }
 

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Universal as QQCC2
 import QtQuick.Layouts
 import Qt.labs.qmlmodels
+import app.digisto.modules
 
 import "../controls"
 
@@ -18,23 +19,23 @@ DsPage {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: theme.xsSpacing
+        spacing: Theme.xsSpacing
 
 
 
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: theme.lgBtnHeight
-            Layout.leftMargin: theme.xsSpacing
-            Layout.rightMargin: theme.xsSpacing
+            Layout.preferredHeight: Theme.lgBtnHeight
+            Layout.leftMargin: Theme.xsSpacing
+            Layout.rightMargin: Theme.xsSpacing
 
             RowLayout {
                 anchors.fill: parent
-                spacing: theme.xsSpacing
+                spacing: Theme.xsSpacing
 
                 DsLabel {
                     text: qsTr("Teller")
-                    fontSize: theme.h3
+                    fontSize: Theme.h3
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -45,14 +46,14 @@ DsPage {
 
                 DsLabel {
                     text: qsTr("Totals: KES. 45,878.98")
-                    fontSize: theme.h2
+                    fontSize: Theme.h2
                     Layout.alignment: Qt.AlignVCenter
                     Layout.rightMargin: 20
                 }
 
                 DsButton {
-                    iconType: dsIconType.shoppingCart
-                    height: theme.btnHeight
+                    iconType: IconType.shoppingCart
+                    height: Theme.btnHeight
                     text: qsTr("Checkout (F5)")
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -60,21 +61,21 @@ DsPage {
         }
 
         Rectangle {
-            border.color: theme.baseAlt1Color
+            border.color: Theme.baseAlt1Color
             border.width: 1
-            radius: theme.btnRadius
+            radius: Theme.btnRadius
             color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.leftMargin: theme.xsSpacing
-            Layout.rightMargin: theme.xsSpacing
-            Layout.bottomMargin: theme.xsSpacing
+            Layout.leftMargin: Theme.xsSpacing
+            Layout.rightMargin: Theme.xsSpacing
+            Layout.bottomMargin: Theme.xsSpacing
 
             HorizontalHeaderView {
                 id: horizontalHeader
                 syncView: tableView
                 clip: true
-                implicitHeight: theme.lgBtnHeight
+                implicitHeight: Theme.lgBtnHeight
                 model: ["", "#", "Product", "Quantity", "Unit Price", "Totals"]
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -84,12 +85,12 @@ DsPage {
                     DelegateChoice {
                         index: 0
                         delegate: Rectangle {
-                            color: theme.baseAlt1Color
-                            height: theme.lgBtnHeight
-                            implicitHeight: theme.lgBtnHeight
+                            color: Theme.baseAlt1Color
+                            height: Theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsCheckBox {
-                                cbSize: theme.btnHeight
+                                cbSize: Theme.btnHeight
                                 checked: false
                                 onToggled: {
                                     model.display = checked
@@ -104,12 +105,12 @@ DsPage {
                     DelegateChoice {
                         index: 1
                         delegate: Rectangle {
-                            color: theme.baseAlt1Color
-                            height: theme.lgBtnHeight
-                            implicitHeight: theme.lgBtnHeight
+                            color: Theme.baseAlt1Color
+                            height: Theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
-                                fontSize: theme.h2
+                                fontSize: Theme.h2
                                 text: model.modelData
                                 anchors.centerIn: parent
                             }
@@ -118,15 +119,15 @@ DsPage {
 
                     DelegateChoice {
                         delegate: Rectangle {
-                            color: theme.baseAlt1Color
-                            height: theme.lgBtnHeight
-                            implicitHeight: theme.lgBtnHeight
+                            color: Theme.baseAlt1Color
+                            height: Theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
-                                fontSize: theme.h2
+                                fontSize: Theme.h2
                                 text: model.modelData
-                                leftPadding: theme.smSpacing/2
-                                rightPadding: theme.smSpacing/2
+                                leftPadding: Theme.smSpacing/2
+                                rightPadding: Theme.smSpacing/2
 
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -138,7 +139,7 @@ DsPage {
             TableView {
                 id: tableView
 
-                property var columnFlex: [{ width: theme.lgBtnHeight }, { width: theme.lgBtnHeight }, { flex: 3 }, { flex: 1 }, { flex: 1 },{ flex: 1 }]
+                property var columnFlex: [{ width: Theme.lgBtnHeight }, { width: Theme.lgBtnHeight }, { flex: 3 }, { flex: 1 }, { flex: 1 },{ flex: 1 }]
 
                 alternatingRows: true
                 clip: true
@@ -204,10 +205,10 @@ DsPage {
                     DelegateChoice {
                         column: 0
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsCheckBox {
-                                cbSize: theme.btnHeight
+                                cbSize: Theme.btnHeight
                                 checked: model.display
                                 onToggled: model.display = checked
 
@@ -217,7 +218,7 @@ DsPage {
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }
@@ -225,12 +226,12 @@ DsPage {
                     DelegateChoice {
                         column: 1
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
-                                fontSize: theme.baseFontSize
+                                fontSize: Theme.baseFontSize
                                 text: (row+1).toString()+"."
-                                width: parent.width - theme.baseSpacing
+                                width: parent.width - Theme.baseSpacing
                                 anchors.centerIn: parent
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -238,7 +239,7 @@ DsPage {
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }
@@ -246,19 +247,19 @@ DsPage {
                     DelegateChoice {
                         column: 2
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
-                                fontSize: theme.baseFontSize
+                                fontSize: Theme.baseFontSize
                                 text: model.display
-                                width: parent.width - theme.baseSpacing
+                                width: parent.width - Theme.baseSpacing
                                 anchors.centerIn: parent
                             }
 
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }
@@ -266,14 +267,14 @@ DsPage {
                     DelegateChoice {
                         column: 3
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             QQCC2.SpinBox {
                                 from: 1
                                 editable: true
                                 value: model.display
-                                height: theme.btnHeight
-                                width: parent.width - theme.baseSpacing
+                                height: Theme.btnHeight
+                                width: parent.width - Theme.baseSpacing
                                 onValueModified: model.display = value
 
                                 anchors.centerIn: parent
@@ -282,7 +283,7 @@ DsPage {
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }
@@ -291,19 +292,19 @@ DsPage {
                     DelegateChoice {
                         column: 4
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
                                 text: model.display
-                                fontSize: theme.baseFontSize
-                                width: parent.width - theme.baseSpacing
+                                fontSize: Theme.baseFontSize
+                                width: parent.width - Theme.baseSpacing
                                 anchors.centerIn: parent
                             }
 
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }
@@ -311,19 +312,19 @@ DsPage {
                     DelegateChoice {
                         column: 5
                         delegate: Item {
-                            implicitHeight: theme.lgBtnHeight
+                            implicitHeight: Theme.lgBtnHeight
 
                             DsLabel {
-                                fontSize: theme.baseFontSize
+                                fontSize: Theme.baseFontSize
                                 text: model.display
-                                width: parent.width - theme.baseSpacing
+                                width: parent.width - Theme.baseSpacing
                                 anchors.centerIn: parent
                             }
 
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 width: parent.width; height: 1
-                                color: theme.baseAlt1Color
+                                color: Theme.baseAlt1Color
                             }
                         }
                     }

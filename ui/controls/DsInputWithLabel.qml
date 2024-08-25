@@ -3,10 +3,10 @@ import QtQuick
 
 Rectangle {
     id: control
-    radius: theme.btnRadius
+    radius: Theme.btnRadius
     implicitWidth: 200
-    height: col.height + theme.xsSpacing
-    color: theme.baseAlt1Color
+    height: col.height + Theme.xsSpacing
+    color: Theme.baseAlt1Color
 
     property string label: qsTr("Input")
     property alias input: input
@@ -23,23 +23,23 @@ Rectangle {
     Column {
         id: col
         spacing: 0
-        width: parent.width - 2*theme.xsSpacing
+        width: parent.width - 2*Theme.xsSpacing
         anchors.centerIn: parent
 
         DsLabel {
             text: label
-            color: theme.txtPrimaryColor
-            fontSize: theme.xsFontSize
+            color: Theme.txtPrimaryColor
+            fontSize: Theme.xsFontSize
         }
 
         TextField {
             id: input
             padding: 0
-            height: theme.inputHeight
+            height: Theme.inputHeight
             width: parent.width
-            color: theme.txtPrimaryColor
-            placeholderTextColor: theme.txtDisabledColor
-            font.pixelSize: theme.lgFontSize
+            color: Theme.txtPrimaryColor
+            placeholderTextColor: Theme.txtDisabledColor
+            font.pixelSize: Theme.lgFontSize
             echoMode: isPasswordInput ? TextField.Password : TextField.Normal
             background: Item{}
 
@@ -49,7 +49,7 @@ Rectangle {
                 delay: 0
                 width: parent.width
                 side: DsToolTip.Bottom
-                bgRect.color: theme.warningColor
+                bgRect.color: Theme.warningColor
                 onClosed: hasError=false
             }
         }

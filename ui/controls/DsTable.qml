@@ -1,8 +1,9 @@
 import QtQuick
+import app.digisto.modules
 
 Rectangle {
     id: root
-    color: theme.baseColor
+    color: Theme.baseColor
 
     required property ListModel headerModel
     required property ListModel dataModel
@@ -40,7 +41,7 @@ Rectangle {
         model: dataModel
         headerPositioning: ListView.OverlayHeader
         anchors.fill: parent
-        anchors.topMargin: theme.baseSpacing
+        anchors.topMargin: Theme.baseSpacing
 
         header: Item {
             z: 3
@@ -55,7 +56,7 @@ Rectangle {
             Rectangle {
                 height: 1
                 width: parent.width
-                color: theme.baseAlt2Color
+                color: Theme.baseAlt2Color
                 anchors.bottom: parent.bottom
             }
 
@@ -76,7 +77,7 @@ Rectangle {
                     sortable: model.sortable
                     width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
                     font.weight: 600
-                    font.pixelSize: theme.xlFontSize
+                    font.pixelSize: Theme.xlFontSize
                 }
 
                 header: Rectangle {
@@ -87,7 +88,7 @@ Rectangle {
 
                     Rectangle {
                         height: 1
-                        color: theme.baseAlt2Color
+                        color: Theme.baseAlt2Color
                         width: parent.width
                         anchors.bottom: parent.bottom
                     }
@@ -109,7 +110,7 @@ Rectangle {
 
                     Rectangle {
                         height: 1
-                        color: theme.baseAlt2Color
+                        color: Theme.baseAlt2Color
                         width: parent.width
                         anchors.bottom: parent.bottom
                     }
@@ -118,10 +119,10 @@ Rectangle {
                         bgColor: "transparent"
                         width: 50
                         height: 50
-                        iconType: dsIconType.dots
-                        textColor: theme.txtHintColor
-                        bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-                        bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+                        iconType: IconType.dots
+                        textColor: Theme.txtHintColor
+                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
@@ -177,8 +178,11 @@ Rectangle {
             height: 50
             color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
 
-            property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-            property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+            property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+            property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+            property var rowModel: model    // Model data for the current delegate
+            property var rowIndex: index    // Row index assigned
 
             MouseArea {
                 id: ma
@@ -190,6 +194,7 @@ Rectangle {
             }
 
             ListView {
+                id: delegatelv
                 clip: true
                 height: parent.height
                 anchors.left: parent.left
@@ -206,12 +211,12 @@ Rectangle {
                     z: 10
                     color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
 
-                    property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-                    property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+                    property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                     Rectangle {
                         height: 1
-                        color: theme.baseAlt2Color
+                        color: Theme.baseAlt2Color
                         width: parent.width
                         anchors.bottom: parent.bottom
                     }
@@ -231,12 +236,12 @@ Rectangle {
                     z: 10
                     color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
 
-                    property string bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-                    property string bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+                    property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                     Rectangle {
                         height: 1
-                        color: theme.baseAlt2Color
+                        color: Theme.baseAlt2Color
                         width: parent.width
                         anchors.bottom: parent.bottom
                     }
@@ -245,10 +250,10 @@ Rectangle {
                         bgColor: "transparent"
                         width: 50
                         height: 50
-                        iconType: dsIconType.dots
-                        textColor: theme.txtHintColor
-                        bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-                        bgDown: withOpacity(theme.baseAlt1Color, 0.6)
+                        iconType: IconType.dots
+                        textColor: Theme.txtHintColor
+                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
@@ -256,12 +261,26 @@ Rectangle {
                     }
                 }
 
+                delegate: Item {
+                    height: delegatelv.height
+                    width: listview.columnWidths[index]
+
+                    DsLabel {
+                        anchors.fill: parent
+                        verticalAlignment: DsLabel.AlignVCenter
+                        leftPadding: Theme.smSpacing
+                        rightPadding: Theme.smSpacing
+                        elide: DsLabel.ElideRight
+                        fontSize: Theme.smFontSize
+                        text: tabledelegate.rowModel[model.value]
+                    }
+                }
             }
 
             Rectangle {
                 width: parent.width
                 height: 1
-                color: theme.baseAlt2Color
+                color: Theme.baseAlt2Color
                 anchors.bottom: parent.bottom
             }
         }

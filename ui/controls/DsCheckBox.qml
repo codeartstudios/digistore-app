@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import app.digisto.modules
 
 CheckBox {
     id: control
@@ -7,15 +8,15 @@ CheckBox {
     width: cbSize
     height: cbSize
 
-    property real cbSize: theme.btnHeight
+    property real cbSize: Theme.btnHeight
     property real boxSize: 26
 
     indicator: Rectangle {
         implicitWidth: boxSize
         implicitHeight: boxSize
         color: "transparent"
-        radius: theme.btnRadius
-        border.color: checked ? control.down ? "#17a81a" : "#21be2b" : theme.txtDisabledColor
+        radius: Theme.btnRadius
+        border.color: checked ? control.down ? "#17a81a" : "#21be2b" : Theme.txtDisabledColor
 
         anchors.centerIn: parent
 

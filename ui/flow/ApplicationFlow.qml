@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import app.digisto.modules
 
 // User imports
 import "../controls"
@@ -33,7 +34,7 @@ Item {
             DsSideBar {
                 id: sideBar
                 visible: store.userLoggedIn
-                Layout.preferredWidth: store.userLoggedIn && sidebarShown ? theme.appSidebarWidth : 0
+                Layout.preferredWidth: store.userLoggedIn && sidebarShown ? Theme.appSidebarWidth : 0
                 Layout.fillHeight: true
             }
 

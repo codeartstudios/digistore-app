@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Controls
+import app.digisto.modules
 
 Item {
     id: sidebar
-    width: theme.appSidebarWidth
+    width: Theme.appSidebarWidth
 
     property string currentSideBarMenu: "dashboard"
     property ListModel sideMenu: ListModel{}
@@ -11,9 +12,9 @@ Item {
     signal menuSelected(var label)
 
     Column {
-        spacing: theme.btnRadius
+        spacing: Theme.btnRadius
         anchors.fill: parent
-        anchors.margins: theme.smSpacing
+        anchors.margins: Theme.smSpacing
 
         Repeater {
             model: sideMenu
@@ -22,13 +23,13 @@ Item {
 
                 iconType: model.iconType
                 toolTip: model.tooltip
-                width: theme.lgBtnHeight
+                width: Theme.lgBtnHeight
                 height: width
                 iconSize: 28
-                bgColor: isActive ? theme.baseAlt1Color : "transparent"
-                bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-                bgDown: withOpacity(theme.baseAlt1Color, 0.6)
-                textColor: isActive ? theme.txtPrimaryColor : withOpacity(theme.txtPrimaryColor, 0.6)
+                bgColor: isActive ? Theme.baseAlt1Color : "transparent"
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                textColor: isActive ? Theme.txtPrimaryColor : withOpacity(Theme.txtPrimaryColor, 0.6)
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 onClicked: {
@@ -43,9 +44,9 @@ Item {
                     id: indicator
                     visible: parent.isActive
                     radius: width/2
-                    color: theme.primaryColor
+                    color: Theme.primaryColor
                     height: visible ? 0.5 * parent.height : 0
-                    width: theme.btnRadius
+                    width: Theme.btnRadius
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -74,7 +75,7 @@ Item {
     Rectangle {
         width: 1
         height: parent.height
-        color: theme.baseAlt1Color
+        color: Theme.baseAlt1Color
         anchors.right: parent.right
     } // Rectangle: Right border line
 
@@ -84,7 +85,7 @@ Item {
                             label: "dashboard",
                             tooltip: "Org. Dashboard",
                             isBusy: false,
-                            iconType: dsIconType.chalkboard
+                            iconType: IconType.chalkboard
                         })
 
         sideMenu.append({
@@ -92,7 +93,7 @@ Item {
                             label: "teller",
                             tooltip: "Cart Checkout",
                             isBusy: false,
-                            iconType: dsIconType.shoppingCartCheck
+                            iconType: IconType.shoppingCartCheck
                         })
 
         sideMenu.append({
@@ -100,7 +101,7 @@ Item {
                             label: "inventory",
                             tooltip: "Org. Inventory",
                             isBusy: false,
-                            iconType: dsIconType.buildingWarehouse
+                            iconType: IconType.buildingWarehouse
                         })
 
         sideMenu.append({
@@ -108,7 +109,7 @@ Item {
                             label: "organization",
                             tooltip: "My Organization",
                             isBusy: false,
-                            iconType: dsIconType.briefcase2
+                            iconType: IconType.briefcase2
                         })
 
         sideMenu.append({
@@ -116,7 +117,7 @@ Item {
                             label: "sales",
                             tooltip: "Org. Sales",
                             isBusy: false,
-                            iconType: dsIconType.tableShare
+                            iconType: IconType.tableShare
                         })
     }
 }

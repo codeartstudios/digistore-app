@@ -1,11 +1,12 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import app.digisto.modules
 
 Button {
     id: control
     enabled: !busy
-    implicitHeight: theme.btnHeight
-    implicitWidth: theme.btnHeight
+    implicitHeight: Theme.btnHeight
+    implicitWidth: Theme.btnHeight
     height: implicitHeight
     width: implicitWidth
     hoverEnabled: true
@@ -17,15 +18,15 @@ Button {
     property alias toolTip: tooltip.text
     property alias toolTipSide: tooltip.side
     property bool toolTipShown: true
-    property string textColor: theme.baseColor
-    property string bgColor: theme.primaryColor
+    property string textColor: Theme.baseColor
+    property string bgColor: Theme.primaryColor
     property string bgHover: withOpacity(bgColor, 0.8)
     property string bgDown: withOpacity(bgColor, 0.6)
 
     background: Rectangle {
         id: bg
         color: down ? bgDown : hovered ? bgHover : bgColor
-        radius: theme.btnRadius
+        radius: Theme.btnRadius
         opacity: enabled ? 1 : 0.4
     }
 
@@ -36,7 +37,7 @@ Button {
             id: ico
             width: visible ? 0 : iconSize
             visible: iconType!==undefined || iconType!==""
-            iconType: busy ? dsIconType.rotate2 : control.iconType===null ? "" : control.iconType
+            iconType: busy ? IconType.rotate2 : control.iconType===null ? "" : control.iconType
             iconSize: 19
             color: control.textColor
             anchors.centerIn: parent

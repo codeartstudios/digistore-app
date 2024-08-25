@@ -1,23 +1,24 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import app.digisto.modules
 
 Button {
     id: control
     enabled: !busy
-    implicitHeight: theme.btnHeight
-    implicitWidth: row.width + 2*theme.xsSpacing
+    implicitHeight: Theme.btnHeight
+    implicitWidth: row.width + 2*Theme.xsSpacing
 
     property bool busy: false
     property string iconType
-    property real fontSize: theme.baseFontSize
+    property real fontSize: Theme.baseFontSize
     property real radius: bg.radius
-    property string textColor: theme.baseColor
-    property string bgColor: theme.primaryColor
+    property string textColor: Theme.baseColor
+    property string bgColor: Theme.primaryColor
 
     background: Rectangle {
         id: bg
         color: bgColor
-        radius: theme.btnRadius
+        radius: Theme.btnRadius
         opacity: enabled ? (hovered ? 0.8 : down ? 0.6 : 1) : 0.4
     }
 
@@ -26,13 +27,13 @@ Button {
 
         Row {
             id: row
-            spacing: theme.xsSpacing
+            spacing: Theme.xsSpacing
             anchors.centerIn: parent
 
             DsIcon {
                 id: ico
                 visible: iconType!==""
-                iconType: busy ? dsIconType.rotate2 : control.iconType ? control.iconType : ""
+                iconType: busy ? IconType.rotate2 : control.iconType ? control.iconType : ""
                 iconSize: fontSize
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter

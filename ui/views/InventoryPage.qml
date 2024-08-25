@@ -31,12 +31,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
-                                     barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     name: "Dairy Meal",
+                                     unit: "50kg",
+                                     barcode: "5678975679",
+                                     buying_price: 1250,
+                                     selling_price: 1500,
+                                     stock: 10,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -46,12 +46,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Chick Mash",
+                                     unit: "1kg",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 44,
+                                     selling_price: 50,
+                                     stock: 200,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -61,12 +61,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Macklick Super",
+                                     unit: "1kg",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 130,
+                                     selling_price: 150,
+                                     stock: 30,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -76,12 +76,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Macklick Super",
+                                     unit: "2kg",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 210,
+                                     selling_price: 230,
+                                     stock: 35,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -91,12 +91,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Albendazole Tablets",
+                                     unit: "1pc",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 5,
+                                     selling_price: 10,
+                                     stock: 230,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -106,12 +106,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Nilzan Bolus",
+                                     unit: "1pc",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 27,
+                                     selling_price: 25,
+                                     stock: 86,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  },
@@ -121,12 +121,12 @@ DsPage {
                                      collectionName: "product",
                                      created: "2022-01-01 01:00:00.123Z",
                                      updated: "2022-01-01 23:59:59.456Z",
-                                     name: "test",
-                                     unit: "test",
+                                     name: "Milking Salve",
+                                     unit: "100g",
                                      barcode: "test",
-                                     buying_price: 123,
-                                     selling_price: 123,
-                                     stock: 123,
+                                     buying_price: 84,
+                                     selling_price: 100,
+                                     stock: 24,
                                      thumbnail: "filename.jpg",
                                      organization: "RELATION_RECORD_ID"
                                  }]
@@ -135,34 +135,38 @@ DsPage {
     }
 
     ListModel {
-            id: headermodel
+        id: headermodel
 
-            ListElement {
-                title: qsTr("Product Name")
-                sortable: true
-                width: 300
-                flex: 2
-            }
-
-            ListElement {
-                title: qsTr("Buying Price")
-                sortable: true
-                width: 200
-                flex: 1
-            }
-
-            ListElement {
-                title: qsTr("Selling Price")
-                sortable: true
-                width: 200
-                flex: 1
-            }
-
-            ListElement {
-                title: qsTr("Stock")
-                sortable: true
-                width: 200
-                flex: 1
-            }
+        ListElement {
+            title: qsTr("Product Name")
+            sortable: true
+            width: 300
+            flex: 2
+            value: "name"
         }
+
+        ListElement {
+            title: qsTr("Buying Price")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "buying_price"
+        }
+
+        ListElement {
+            title: qsTr("Selling Price")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "selling_price"
+        }
+
+        ListElement {
+            title: qsTr("Stock")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "stock"
+        }
+    }
 }

@@ -1,4 +1,5 @@
 import QtQuick
+import app.digisto.modules
 
 import "../controls"
 
@@ -12,35 +13,35 @@ DsPage {
 
     // Item {
     //     width: parent.width
-    //     height: theme.lgBtnHeight
+    //     height: Theme.lgBtnHeight
 
     //     Rectangle {
     //         width: parent.width
     //         height: 1
-    //         color: theme.baseAlt2Color
+    //         color: Theme.baseAlt2Color
     //         anchors.bottom: parent.bottom
     //     }
 
     //     Row {
-    //         spacing: theme.xsSpacing
+    //         spacing: Theme.xsSpacing
     //         anchors.verticalCenter: parent.verticalCenter
 
     //         DsLabel {
     //             text: qsTr("Dashboard")
-    //             fontSize: theme.h1
-    //             leftPadding: theme.baseSpacing
+    //             fontSize: Theme.h1
+    //             leftPadding: Theme.baseSpacing
     //         }
     //     }
     // }
 
 
     Column {
-        spacing: theme.baseSpacing
+        spacing: Theme.baseSpacing
         anchors.fill: parent
-        anchors.margins: theme.xlSpacing
+        anchors.margins: Theme.xlSpacing
 
         Row {
-            spacing: theme.baseSpacing
+            spacing: Theme.baseSpacing
             width: parent.width
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -76,33 +77,33 @@ DsPage {
 
         Row {
             width: parent.width
-            spacing: theme.baseSpacing
+            spacing: Theme.baseSpacing
 
             Rectangle {
                 height: 300
-                radius: theme.btnRadius
+                radius: Theme.btnRadius
                 width: parent.spacing + 2*(parent.width-(parent.spacing*3))/4
-                color: theme.baseColor
+                color: Theme.baseColor
                 border.width: 1
-                border.color: theme.baseAlt1Color
+                border.color: Theme.baseAlt1Color
             }
 
             Rectangle {
                 height: 300
-                radius: theme.btnRadius
+                radius: Theme.btnRadius
                 width: (parent.width-(parent.spacing*3))/4
-                color: theme.baseColor
+                color: Theme.baseColor
                 border.width: 1
-                border.color: theme.baseAlt1Color
+                border.color: Theme.baseAlt1Color
             }
 
             Rectangle {
                 height: 300
-                radius: theme.btnRadius
+                radius: Theme.btnRadius
                 width: (parent.width-(parent.spacing*3))/4
-                color: theme.baseColor
+                color: Theme.baseColor
                 border.width: 1
-                border.color: theme.baseAlt1Color
+                border.color: Theme.baseAlt1Color
             }
         }
     }

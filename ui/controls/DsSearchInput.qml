@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Basic as QQCB
+import app.digisto.modules
 
 Item {
     id: root
@@ -12,34 +13,34 @@ Item {
 
     Rectangle {
         id: rec
-        color: theme.baseAlt1Color
-        radius: theme.btnRadius
+        color: Theme.baseAlt1Color
+        radius: Theme.btnRadius
         anchors.fill: parent
 
         RowLayout {
-            spacing: theme.xsSpacing/2
+            spacing: Theme.xsSpacing/2
             anchors.fill: parent
 
             DsIcon {
                 iconSize: input.font.pixelSize
-                iconType: dsIconType.search
-                Layout.leftMargin: theme.xsSpacing
+                iconType: IconType.search
+                Layout.leftMargin: Theme.xsSpacing
                 Layout.alignment: Qt.AlignVCenter
             }
 
             QQCB.TextField {
                 id: input
                 padding: 0
-                width: parent.width - theme.xsSpacing
-                height: theme.inputHeight
-                color: theme.txtPrimaryColor
-                placeholderTextColor: theme.txtDisabledColor
-                font.pixelSize: theme.xlFontSize
+                width: parent.width - Theme.xsSpacing
+                height: Theme.inputHeight
+                color: Theme.txtPrimaryColor
+                placeholderTextColor: Theme.txtDisabledColor
+                font.pixelSize: Theme.xlFontSize
                 echoMode: TextField.Normal
                 background: Item {}
 
                 Layout.fillWidth: true
-                Layout.rightMargin: theme.xsSpacing
+                Layout.rightMargin: Theme.xsSpacing
 
                 // Connect signal
                 onTextChanged: {
@@ -56,8 +57,8 @@ Item {
                 radius: height/2
                 visible: input.text !== ""
                 iconSize: input.font.pixelSize
-                iconType: dsIconType.x
-                Layout.rightMargin: theme.xsSpacing
+                iconType: IconType.x
+                Layout.rightMargin: Theme.xsSpacing
                 Layout.alignment: Qt.AlignVCenter
 
                 onClicked: input.clear()
@@ -73,15 +74,15 @@ Item {
         closePolicy: Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color: theme.baseAlt1Color
-            radius: theme.btnRadius
+            color: Theme.baseAlt1Color
+            radius: Theme.btnRadius
 
             Rectangle {
-                height: theme.btnRadius*1.5
+                height: Theme.btnRadius*1.5
                 width: parent.width
                 color: parent.color
                 anchors.top: parent.top
-                anchors.topMargin: -theme.btnRadius*0.2
+                anchors.topMargin: -Theme.btnRadius*0.2
             }
         }
 

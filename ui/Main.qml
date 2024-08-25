@@ -1,4 +1,5 @@
 import QtQuick
+import app.digisto.modules
 
 import "controls"
 import "store"
@@ -10,16 +11,10 @@ Window {
     height: 480
     visibility: "Maximized"
     visible: true
-    color: theme.bodyColor
-
-    // Theme object
-    property Theme theme: Theme{}
+    color: Theme.bodyColor
 
     // Store Object
     property Store store: Store{}
-
-    // Icon Types
-    property IconType dsIconType: IconType{}
 
     // Expose the tabler icons font loader
     property alias tablerIconsFontLoader: tablerIconsFontLoader

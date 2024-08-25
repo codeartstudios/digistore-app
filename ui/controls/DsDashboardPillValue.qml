@@ -1,13 +1,14 @@
 import QtQuick
+import app.digisto.modules
 
 Rectangle {
     id: root
     implicitWidth: 200
     implicitHeight: 150
-    color: theme.baseColor
+    color: Theme.baseColor
     border.width: 1
-    border.color: theme.baseAlt1Color
-    radius: theme.btnRadius
+    border.color: Theme.baseAlt1Color
+    radius: Theme.btnRadius
 
     property alias label: _label.text
     property alias value: _value.text
@@ -17,31 +18,31 @@ Rectangle {
 
     Item {
         id: _topheading
-        height: theme.btnHeight
+        height: Theme.btnHeight
         width: parent.width
         anchors.top: parent.top
 
         Rectangle {
             height: 1
             width: parent.width
-            color: theme.baseAlt1Color
+            color: Theme.baseAlt1Color
             anchors.bottom: parent.bottom
         }
 
         DsLabel {
             id: _label
-            fontSize: theme.h2
-            height: theme.btnHeight
-            leftPadding: theme.xsSpacing
+            fontSize: Theme.h2
+            height: Theme.btnHeight
+            leftPadding: Theme.xsSpacing
             verticalAlignment: DsLabel.AlignVCenter
         }
 
         DsIconButton {
-            textColor: theme.txtPrimaryColor
+            textColor: Theme.txtPrimaryColor
             bgColor: "transparent"
-            bgHover: withOpacity(theme.baseAlt1Color, 0.8)
-            bgDown: withOpacity(theme.baseAlt1Color, 0.6)
-            iconType: dsIconType.arrowRight
+            bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+            bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+            iconType: IconType.arrowRight
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
 
@@ -54,17 +55,17 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: theme.xsSpacing
-        anchors.rightMargin: theme.xsSpacing
+        anchors.leftMargin: Theme.xsSpacing
+        anchors.rightMargin: Theme.xsSpacing
 
         DsLabel {
             id: _value
-            fontSize: theme.lgBtnHeight
+            fontSize: Theme.lgBtnHeight
             anchors.verticalCenter: parent.verticalCenter
 
             DsLabel {
                 id: _unit
-                fontSize: theme.baseFontSize
+                fontSize: Theme.baseFontSize
                 anchors.left: parent.right
                 anchors.baseline: parent.baseline
             }

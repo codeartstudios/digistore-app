@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import app.digisto.modules
 
 import "../controls"
 
@@ -10,30 +11,30 @@ DsPage {
 
     Item {
         anchors.fill: parent
-        anchors.margins: theme.lgSpacing
+        anchors.margins: Theme.lgSpacing
 
         RowLayout {
-            spacing: theme.baseSpacing
+            spacing: Theme.baseSpacing
             anchors.fill: parent
 
             Rectangle {
-                color: theme.baseAlt1Color
-                Layout.preferredWidth: theme.pageSidebarWidth
+                color: Theme.baseAlt1Color
+                Layout.preferredWidth: Theme.pageSidebarWidth
                 Layout.fillHeight: true
 
                 Column {
-                    spacing: theme.xsSpacing
+                    spacing: Theme.xsSpacing
                     anchors.fill: parent
-                    anchors.margins: theme.xsSpacing
+                    anchors.margins: Theme.xsSpacing
 
                     Rectangle {
                         width: parent.width
                         height: width
                         radius: width/2
-                        color: ma.hovered ? withOpacity(theme.baseColor, 0.8) : theme.baseColor
+                        color: ma.hovered ? withOpacity(Theme.baseColor, 0.8) : Theme.baseColor
 
                         DsIconButton {
-                            iconType: dsIconType.camera
+                            iconType: IconType.camera
                             visible: ma.hovered
                             anchors.centerIn: parent
                         }
@@ -87,7 +88,7 @@ DsPage {
                     }
 
                     DsButton {
-                        iconType: dsIconType.edit
+                        iconType: IconType.edit
                         width: parent.width
                         text: qsTr("Edit Information")
                     }
@@ -95,7 +96,7 @@ DsPage {
             }
 
             Rectangle {
-                color: theme.baseAlt1Color
+                color: Theme.baseAlt1Color
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 

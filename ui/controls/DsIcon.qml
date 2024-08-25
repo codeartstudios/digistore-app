@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import app.digisto.modules
 
 Item {
     implicitHeight: iconSize
@@ -7,7 +8,7 @@ Item {
 
     property real iconSize: 18
     required property string iconType
-    property string color: theme.txtPrimaryColor
+    property string color: Theme.txtPrimaryColor
 
     Label {
         color: parent.color

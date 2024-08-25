@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import app.digisto.modules
 
 Item {
     id: root
@@ -11,7 +12,7 @@ Item {
 
     Column {
         id: col
-        spacing: theme.btnRadius
+        spacing: Theme.btnRadius
         width: parent.width
 
         DsLabel {
@@ -20,7 +21,7 @@ Item {
             elide: DsLabel.ElideRight
             width: parent.width
             text: root.label
-            fontSize: theme.xlFontSize
+            fontSize: Theme.xlFontSize
         }
 
         DsLabel {
@@ -29,7 +30,7 @@ Item {
             elide: DsLabel.ElideRight
             width: parent.width
             text: root.value
-            fontSize: theme.smFontSize
+            fontSize: Theme.smFontSize
         }
     }
 }

@@ -19,6 +19,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dsController", &dsController);
 
     qmlRegisterType<Requests>("app.digisto.modules", 1, 0, "Requests");
+    qmlRegisterSingletonType(QUrl("qrc:/ui/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
+    qmlRegisterSingletonType(QUrl("qrc:/ui/IconType.qml"), "app.digisto.modules", 1, 0, "IconType");
 
     const QUrl url(QStringLiteral("qrc:/ui/Main.qml"));
 
