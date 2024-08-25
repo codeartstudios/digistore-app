@@ -14,6 +14,7 @@ Rectangle {
     property bool isPasswordInput: false
     property alias validator: input.validator
     property bool hasError: false
+    property bool mandatory: false
     property string errorString: ""
 
     function showError() { tt.show(errorString) }
@@ -31,6 +32,18 @@ Rectangle {
             text: label
             color: Theme.txtPrimaryColor
             fontSize: Theme.xsFontSize
+
+            DsLabel {
+                text: "*"
+                isBold: true
+                visible: mandatory
+                color: Theme.dangerColor
+                fontSize: Theme.lgFontSize
+                baselineOffset: parent.height
+                anchors.baseline: parent.baseline
+                anchors.left: parent.right
+                anchors.leftMargin: 1
+            }
         }
 
         TextField {

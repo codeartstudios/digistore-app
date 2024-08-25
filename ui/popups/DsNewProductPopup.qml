@@ -81,7 +81,8 @@ Popup {
 
                         DsInputWithLabel {
                             id: unitinput
-                            label: qsTr("Unit*")
+                            label: qsTr("Unit")
+                            mandatory: true
                             input.placeholderText: qsTr("i.e. 1pc")
                             width: (parent.width-parent.spacing)/2
                         }
@@ -89,7 +90,8 @@ Popup {
 
                     DsInputWithLabel {
                         id: nameinput
-                        label: qsTr("Item Name*")
+                        label: qsTr("Item Name")
+                        mandatory: true
                         input.placeholderText: qsTr("i.e. Blue Pen")
                         width: parent.width - 2*Theme.baseSpacing
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -110,7 +112,8 @@ Popup {
 
                         DsInputWithLabel {
                             id: spinput
-                            label: qsTr("Selling Price*")
+                            label: qsTr("Selling Price")
+                            mandatory: true
                             input.placeholderText: qsTr("i.e. 800.0")
                             width: (parent.width-parent.spacing)/2
                             validator: IntValidator { bottom: 0 }
@@ -124,7 +127,7 @@ Popup {
 
                         DsInputWithLabel {
                             id: stockinput
-                            label: qsTr("Stock*")
+                            label: qsTr("Stock")
                             input.placeholderText: qsTr("i.e. 20")
                             width: (parent.width-parent.spacing)/2
                             validator: IntValidator{ bottom: 0 }
