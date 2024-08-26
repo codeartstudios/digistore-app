@@ -16,6 +16,9 @@ DsPage {
     property real totalItems: 0
     property real itemsPerPage: 100
 
+    property string sortByKey: "name"
+    property bool sortAsc: true
+
     property ListModel datamodel: ListModel{}
 
     ColumnLayout {
@@ -91,6 +94,18 @@ DsPage {
             headerModel: headermodel
             dataModel: datamodel
             busy: getproductrequest.running
+
+            onSortBy: function(key) {
+                if(key===sortByKey) {
+                    sortAsc = !sortAsc;
+                } else {
+                    sortAsc = true;
+                }
+
+                sortByKey = key;
+
+                getProducts()
+            }
         }
 
         Item {
@@ -126,6 +141,11 @@ DsPage {
                     bgColor: "transparent"
                     bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                     bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+                    onClicked: {
+                        pageNo -= 1
+                        getProducts()
+                    }
                 }
 
                 DsLabel {
@@ -142,6 +162,11 @@ DsPage {
                     bgColor: "transparent"
                     bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                     bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+                    onClicked: {
+                        pageNo += 1
+                        getProducts()
+                    }
                 }
             }
         }
@@ -149,6 +174,14 @@ DsPage {
 
     ListModel {
         id: headermodel
+
+        ListElement {
+            title: qsTr("Unit")
+            sortable: false
+            width: 100
+            flex: 0
+            value: "unit"
+        }
 
         ListElement {
             title: qsTr("Product Name")
@@ -160,15 +193,23 @@ DsPage {
 
         ListElement {
             title: qsTr("Buying Price")
-            sortable: true
+            sortable: false
             width: 200
             flex: 1
             value: "buying_price"
         }
 
         ListElement {
+            title: qsTr("Barcode")
+            sortable: false
+            width: 150
+            flex: 0
+            value: "barcode"
+        }
+
+        ListElement {
             title: qsTr("Selling Price")
-            sortable: true
+            sortable: false
             width: 200
             flex: 1
             value: "selling_price"
@@ -198,15 +239,20 @@ DsPage {
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
-            sort: "+name"
-            // organization: "clhyn7tolbhy98k"
+            sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`
+        }
+
+
+        // TODO filtering
+        var filter = {
+            organization: "clhyn7tolbhy98k"
         }
 
         getproductrequest.clear()
         getproductrequest.query = query;
         var res = getproductrequest.send();
 
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;

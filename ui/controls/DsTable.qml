@@ -23,6 +23,9 @@ Rectangle {
     // When the action button on the header is selected
     signal actionSelected()
 
+    //
+    signal sortBy(var col)
+
     onHeaderModelChanged: {
         var newcolwidths=[]     // Hold new width values
 
@@ -52,17 +55,12 @@ Rectangle {
         model: dataModel
         headerPositioning: ListView.OverlayHeader
         anchors.fill: parent
-        // anchors.topMargin: Theme.baseSpacing
 
         header: Item {
             z: 3
             width: listView.width
             height: 50
             clip: true
-
-            onWidthChanged: logWidth()
-            Component.onCompleted: logWidth()
-            function logWidth() { console.log(`Widths: header[${width}], listview[${listview.width}], root[${root.implicitWidth}]`) }
 
             Rectangle {
                 height: 1
@@ -88,6 +86,8 @@ Rectangle {
                     sortable: model.sortable
                     width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
                     font.pixelSize: Theme.xlFontSize
+
+                    onClicked: root.sortBy(model.value)
                 }
 
                 header: Rectangle {
@@ -291,7 +291,7 @@ Rectangle {
                         rightPadding: Theme.smSpacing
                         elide: DsLabel.ElideRight
                         fontSize: Theme.smFontSize
-                        text: tabledelegate.rowModel[model.value]
+                        text: tabledelegate.rowModel[model.value]==="" ? "--" : tabledelegate.rowModel[model.value]
                     }
                 }
             }
