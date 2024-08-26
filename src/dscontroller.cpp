@@ -3,7 +3,7 @@
 #include <QIcon>
 
 DsController::DsController(QObject *parent)
-    : QObject{parent}
+    : QObject{parent}, m_platform(QSysInfo::productType())
 {
     QFile file(QStringLiteral(":/ui/config.json"));
     Q_ASSERT(file.open(QIODevice::ReadOnly));

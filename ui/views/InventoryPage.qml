@@ -181,7 +181,7 @@ DsPage {
             width: 100
             flex: 0
             value: "unit"
-
+        }
 
         ListElement {
             title: qsTr("Product Name")

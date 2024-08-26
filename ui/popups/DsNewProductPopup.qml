@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Dialogs
+import Qt.labs.platform
 import app.digisto.modules
 
 import "../controls"
@@ -13,6 +15,10 @@ Popup {
     x: (mainApp.width-width)/2
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
+
+    property string currentPlatform: dsController.platform
+
+    onCurrentPlatformChanged: console.log(currentPlatform)
 
     onOpened: clearInputs()
 
@@ -138,10 +144,10 @@ Popup {
                             label: qsTr("Thumbnail")
                             input.placeholderText: qsTr("i.e. picture")
                             width: (parent.width-parent.spacing)/2
+                            onClicked: selectthumbnaildialog.open()
+                            readOnly: true
                         }
                     }
-
-
                 }
             }
 
@@ -168,6 +174,29 @@ Popup {
         }
     }
 
+    FileDialog {
+        id: selectthumbnaildialog
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+        fileMode: FileDialog.OpenFile
+        nameFilters: ["Image Files (*.png *jpg *jpeg *bmp)"]
+
+        onAccepted: {
+            var filePath = file.toString(); // Get the file URL
+
+            if (filePath.startsWith("file:///")) {
+                if (currentPlatform==="windows") {
+                    // Windows path (e.g., file:///C:/path/to/file.txt)
+                    filePath = filePath.substring(8); // Remove "file:///"
+                } else {
+                    // Linux path (e.g., file:///home/user/file.txt)
+                    filePath = filePath.substring(7); // Remove "file://"
+                }
+            }
+
+            thumbnailinput.input.text=filePath
+        }
+    }
+
     Requests {
         id: addproductrequest
         baseUrl: "https://pb.digisto.app"
@@ -183,6 +212,8 @@ Popup {
         var sp = spinput.input.text.trim()
         var stock = stockinput.input.text.trim()
         var thumbnail = thumbnailinput.input.text.trim()
+
+        console.log("Thumbanail: ", thumbnail)
 
         if(units.length===0) {
             return;
@@ -231,5 +262,6 @@ Popup {
         spinput.input.text=""
         stockinput.input.text=""
         thumbnailinput.input.text=""
+        selectthumbnaildialog.file=""
     }
 }

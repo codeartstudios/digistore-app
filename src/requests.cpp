@@ -41,7 +41,7 @@ QVariantMap Requests::send()
     m_running=true;
     emit runningChanged();
 
-    qDebug() << m_path << m_body;
+    // qDebug() << m_path << m_body;
 
     // Build path URL from the base URL and the route
     QUrl url = buildUrl(m_path);

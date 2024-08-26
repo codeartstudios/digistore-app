@@ -16,6 +16,9 @@ Rectangle {
     property bool hasError: false
     property bool mandatory: false
     property string errorString: ""
+    property bool readOnly: false
+
+    signal clicked()
 
     function showError() { tt.show(errorString) }
     function closeError() { tt.close() }
@@ -56,6 +59,7 @@ Rectangle {
             font.pixelSize: Theme.lgFontSize
             echoMode: isPasswordInput ? TextField.Password : TextField.Normal
             background: Item{}
+            readOnly: control.readOnly
 
             DsToolTip {
                 id: tt
@@ -71,6 +75,6 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: input.forceActiveFocus()
+        onClicked: { input.forceActiveFocus(); control.clicked() }
     }
 }

@@ -33,7 +33,7 @@ Button {
             DsIcon {
                 id: ico
                 visible: iconType!==""
-                iconType: busy ? IconType.rotate2 : control.iconType ? control.iconType : ""
+                iconType: busy ? IconType.loader2 : control.iconType ? control.iconType : ""
                 iconSize: fontSize
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
