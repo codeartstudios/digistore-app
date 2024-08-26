@@ -177,11 +177,11 @@ DsPage {
 
         ListElement {
             title: qsTr("Unit")
-            sortable: false
+            sortable: true
             width: 100
             flex: 0
             value: "unit"
-        }
+
 
         ListElement {
             title: qsTr("Product Name")
@@ -192,24 +192,24 @@ DsPage {
         }
 
         ListElement {
-            title: qsTr("Buying Price")
-            sortable: false
-            width: 200
-            flex: 1
-            value: "buying_price"
-        }
-
-        ListElement {
             title: qsTr("Barcode")
-            sortable: false
+            sortable: true
             width: 150
             flex: 0
             value: "barcode"
         }
 
         ListElement {
+            title: qsTr("Buying Price")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "buying_price"
+        }
+
+        ListElement {
             title: qsTr("Selling Price")
-            sortable: false
+            sortable: true
             width: 200
             flex: 1
             value: "selling_price"
