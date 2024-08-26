@@ -11,6 +11,13 @@ DsPage {
     title: ""
     headerShown: false
 
+    property real pageNo: 1
+    property real totalPages: 0
+    property real totalItems: 0
+    property real itemsPerPage: 100
+
+    property ListModel datamodel: ListModel{}
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Theme.smSpacing
@@ -45,6 +52,7 @@ DsPage {
             }
 
             DsIconButton {
+                enabled: !getproductrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -52,6 +60,8 @@ DsPage {
                 bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
+
+                onClicked: getProducts()
             }
 
             Item {
@@ -80,120 +90,60 @@ DsPage {
             Layout.fillHeight: true
             headerModel: headermodel
             dataModel: datamodel
+            busy: getproductrequest.running
         }
-    }
 
-    ListModel {
-        id: datamodel
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.btnHeight
+            Layout.bottomMargin: Theme.baseSpacing
 
-        Component.onCompleted: {
-            datamodel.append([
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Dairy Meal",
-                                     unit: "50kg",
-                                     barcode: "5678975679",
-                                     buying_price: 1250,
-                                     selling_price: 1500,
-                                     stock: 10,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Chick Mash",
-                                     unit: "1kg",
-                                     barcode: "test",
-                                     buying_price: 44,
-                                     selling_price: 50,
-                                     stock: 200,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Macklick Super",
-                                     unit: "1kg",
-                                     barcode: "test",
-                                     buying_price: 130,
-                                     selling_price: 150,
-                                     stock: 30,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Macklick Super",
-                                     unit: "2kg",
-                                     barcode: "test",
-                                     buying_price: 210,
-                                     selling_price: 230,
-                                     stock: 35,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Albendazole Tablets",
-                                     unit: "1pc",
-                                     barcode: "test",
-                                     buying_price: 5,
-                                     selling_price: 10,
-                                     stock: 230,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Nilzan Bolus",
-                                     unit: "1pc",
-                                     barcode: "test",
-                                     buying_price: 27,
-                                     selling_price: 25,
-                                     stock: 86,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 },
-                                 {
-                                     id: "RECORD_ID",
-                                     collectionId: "893lh3lly17guqa",
-                                     collectionName: "product",
-                                     created: "2022-01-01 01:00:00.123Z",
-                                     updated: "2022-01-01 23:59:59.456Z",
-                                     name: "Milking Salve",
-                                     unit: "100g",
-                                     barcode: "test",
-                                     buying_price: 84,
-                                     selling_price: 100,
-                                     stock: 24,
-                                     thumbnail: "filename.jpg",
-                                     organization: "RELATION_RECORD_ID"
-                                 }]
-                             )
+            DsBusyIndicator {
+                width: Theme.btnHeight
+                height: Theme.btnHeight
+                running: getproductrequest.running
+                visible: running
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+            }
+
+            Row {
+                spacing: Theme.btnRadius
+                anchors.right: parent.right
+                anchors.rightMargin: Theme.baseSpacing
+
+                DsLabel {
+                    text: qsTr("Total Items  ") + `${totalItems}  `
+                    color: Theme.txtHintColor
+                    fontSize: Theme.smFontSize
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                DsIconButton {
+                    enabled: pageNo>1 && !getproductrequest.running
+                    iconType: IconType.arrowLeft
+                    textColor: Theme.txtPrimaryColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                }
+
+                DsLabel {
+                    text: `${pageNo} / ${totalPages}`
+                    color: Theme.txtHintColor
+                    fontSize: Theme.smFontSize
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                DsIconButton {
+                    enabled: pageNo<totalPages && !getproductrequest.running
+                    iconType: IconType.arrowRight
+                    textColor: Theme.txtPrimaryColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                }
+            }
         }
     }
 
@@ -233,10 +183,49 @@ DsPage {
         }
     }
 
-
-
     // Components
     DsNewProductPopup {
         id: newproductpopup
     }
+
+    Requests {
+        id: getproductrequest
+        baseUrl: "https://pb.digisto.app"
+        path: "/api/collections/product/records"
+    }
+
+    function getProducts() {
+        var query = {
+            page: pageNo,
+            perPage: itemsPerPage,
+            sort: "+name"
+            // organization: "clhyn7tolbhy98k"
+        }
+
+        getproductrequest.clear()
+        getproductrequest.query = query;
+        var res = getproductrequest.send();
+
+        console.log(JSON.stringify(res))
+
+        if(res.status===200) {
+            var data = res.data;
+            pageNo=data.page
+            totalPages=data.totalPages
+            totalItems=data.totalItems
+            var items = data.items;
+
+            datamodel.clear()
+
+            for(var i=0; i<items.length; i++) {
+                datamodel.append(items[i])
+            }
+        }
+
+        else {
+
+        }
+    }
+
+    Component.onCompleted: getProducts()
 }

@@ -47,7 +47,7 @@ Button {
             DsLabel {
                 id: lbl
                 fontSize: control.font.pixelSize
-                font.weight: 600
+                fontWeight: Font.DemiBold
                 color: Theme.txtHintColor
                 text: control.text
                 elide: DsLabel.ElideRight

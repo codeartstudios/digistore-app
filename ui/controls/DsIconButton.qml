@@ -27,9 +27,9 @@ Button {
 
     background: Rectangle {
         id: bg
-        color: down ? bgDown : hovered ? bgHover : bgColor
+        color: control.enabled ? (down ? bgDown : hovered ? bgHover : bgColor) : bgColor
         radius: Theme.btnRadius
-        opacity: enabled ? 1 : 0.4
+        opacity: control.enabled ? 1 : 0.4
         border.color: borderColor
         border.width: borderWidth
     }
@@ -39,9 +39,10 @@ Button {
 
         DsIcon {
             id: ico
+            opacity: control.enabled ? 1 : 0.4
             width: visible ? 0 : iconSize
             visible: iconType!==undefined || iconType!==""
-            iconType: busy ? IconType.rotate2 : control.iconType===null ? "" : control.iconType
+            iconType: busy ? IconType.loader2 : control.iconType===null ? "" : control.iconType
             iconSize: 19
             color: control.textColor
             anchors.centerIn: parent

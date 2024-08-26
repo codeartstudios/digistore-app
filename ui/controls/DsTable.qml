@@ -12,6 +12,8 @@ Rectangle {
     // Delegate properties
     property bool alternatingRowColors: true
 
+    property bool busy: false
+
     // When any column header is clicked
     signal sortSelected(var index)
 
@@ -85,7 +87,6 @@ Rectangle {
                     height: 50
                     sortable: model.sortable
                     width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
-                    font.weight: 600
                     font.pixelSize: Theme.xlFontSize
                 }
 
@@ -102,11 +103,20 @@ Rectangle {
                         anchors.bottom: parent.bottom
                     }
 
+                    DsBusyIndicator {
+                        width: 50
+                        height: 50
+                        running: busy
+                        visible: running
+                        anchors.right: parent.right
+                    }
+
                     DsCheckBox {
                         width: 50
                         height: 50
                         boxSize: 24
                         checked: false
+                        visible: !busy
                         anchors.right: parent.right
                     }
                 }
@@ -183,7 +193,7 @@ Rectangle {
 
         delegate: Rectangle {
             id: tabledelegate
-            width: parent.width
+            width: listview.width
             height: 50
             color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
 
