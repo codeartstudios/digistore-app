@@ -73,6 +73,7 @@ Button {
         id: tooltip
         x: 0
         y: control.height - Theme.btnRadius
+        side: DsToolTip.Bottom
         text: control.text
         parent: control
         visible: parent.hovered && text!==""
