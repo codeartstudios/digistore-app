@@ -16,10 +16,6 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    property string currentPlatform: dsController.platform
-
-    onCurrentPlatformChanged: console.log(currentPlatform)
-
     onOpened: clearInputs()
 
     background: Rectangle {
@@ -184,7 +180,7 @@ Popup {
             var filePath = file.toString(); // Get the file URL
 
             if (filePath.startsWith("file:///")) {
-                if (currentPlatform==="windows") {
+                if (dsController.platform==="windows") {
                     // Windows path (e.g., file:///C:/path/to/file.txt)
                     filePath = filePath.substring(8); // Remove "file:///"
                 } else {

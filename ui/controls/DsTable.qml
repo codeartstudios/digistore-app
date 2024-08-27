@@ -7,6 +7,7 @@ Rectangle {
 
     required property ListModel headerModel
     required property ListModel dataModel
+
     property alias listView: listview
 
     // Delegate properties
@@ -111,12 +112,15 @@ Rectangle {
                         anchors.right: parent.right
                     }
 
-                    DsCheckBox {
-                        width: 50
+                    DsLabel {
+                        width: 35
                         height: 50
-                        boxSize: 24
-                        checked: false
+                        text: "#"
                         visible: !busy
+                        color: Theme.txtHintColor
+                        fontWeight: Font.DemiBold
+                        font.pixelSize: Theme.xlFontSize
+                        verticalAlignment: DsLabel.AlignVCenter
                         anchors.right: parent.right
                     }
                 }
@@ -240,11 +244,14 @@ Rectangle {
                         anchors.bottom: parent.bottom
                     }
 
-                    DsCheckBox {
-                        width: 50
+                    DsLabel {
+                        width: 35
                         height: 50
-                        boxSize: 24
-                        checked: false
+                        elide: DsLabel.ElideRight
+                        fontSize: Theme.smFontSize
+                        text: `${tabledelegate.rowIndex + 1}.`
+                        verticalAlignment: DsLabel.AlignVCenter
+                        horizontalAlignment: DsLabel.AlignLeft
                         anchors.right: parent.right
                     }
                 }
