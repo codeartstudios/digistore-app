@@ -1,339 +1,287 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Universal as QQCC2
 import QtQuick.Layouts
-import Qt.labs.qmlmodels
 import app.digisto.modules
 
 import "../controls"
-
-/*
-  TellerPage
-*/
+import "../popups"
 
 DsPage {
-    id: loginPage
-    title: qsTr("Teller Page")
-
+    id: tellerpage
+    title: ""
     headerShown: false
+
+    property ListModel searchModel: ListModel{}
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Theme.xsSpacing
+        spacing: Theme.smSpacing
 
-
-
-        Item {
+        RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: Theme.lgBtnHeight
-            Layout.leftMargin: Theme.xsSpacing
-            Layout.rightMargin: Theme.xsSpacing
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+            Layout.topMargin: Theme.smSpacing
+            spacing: Theme.smSpacing
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: Theme.xsSpacing
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("Home")
+                Layout.alignment: Qt.AlignVCenter
+            }
 
-                DsLabel {
-                    text: qsTr("Teller")
-                    fontSize: Theme.h3
-                    Layout.alignment: Qt.AlignVCenter
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("/")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsLabel {
+                fontSize: Theme.h2
+                color: Theme.txtPrimaryColor
+                text: qsTr("Teller")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsIconButton {
+                enabled: !searchitemrequest.running
+                iconType: IconType.reload
+                textColor: Theme.txtPrimaryColor
+                bgColor: "transparent"
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                radius: height/2
+                Layout.alignment: Qt.AlignVCenter
+
+                onClicked: getProducts()
+            }
+
+            Item {
+                Layout.fillWidth: true
+                height: 1
+            }
+
+            Rectangle {
+                height: Theme.lgBtnHeight
+                border.width: 1
+                border.color: Theme.dangerAltColor
+                color: "transparent"
+                width: totalsrow.width
+
+                Row {
+                    id: totalsrow
+                    height: parent.height
+
+                    Rectangle {
+                        height: parent.height
+                        width: 80
+                        radius: Theme.btnRadius
+                        color: Theme.dangerAltColor
+
+                        DsLabel {
+                            text: qsTr("TOTALS")
+                            fontSize: Theme.h2
+                            color: Theme.txtPrimaryColor
+                            isBold: true
+                            anchors.centerIn: parent
+                        }
+                    }
+
+                    DsLabel {
+                        text: qsTr("KES ") + `55,000.0`
+                        fontSize: Theme.h1
+                        color: Theme.txtPrimaryColor
+                        isBold: true
+                        leftPadding: Theme.baseSpacing
+                        rightPadding: Theme.baseSpacing
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
+            }
 
-                Item {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
+            DsButton {
+                iconType: IconType.basketShare
+                text: qsTr("Checkout")
+                Layout.preferredHeight: Theme.lgBtnHeight
+                // onClicked: newproductpopup.open()
+            }
 
-                DsLabel {
-                    text: qsTr("Totals: KES. 45,878.98")
-                    fontSize: Theme.h2
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: 20
-                }
-
-                DsButton {
-                    iconType: IconType.shoppingCart
-                    height: Theme.btnHeight
-                    text: qsTr("Checkout (F5)")
-                    Layout.alignment: Qt.AlignVCenter
-                }
+            DsButton {
+                iconType: IconType.handStop
+                text: qsTr("Freeze")
+                Layout.preferredHeight: Theme.lgBtnHeight
+                // onClicked: newproductpopup.open()
             }
         }
 
-        Rectangle {
-            border.color: Theme.baseAlt1Color
-            border.width: 1
-            radius: Theme.btnRadius
-            color: "transparent"
+        DsSearchInput {
+            id: dsSearchInput
+            model: searchModel
+            busy: searchitemrequest.running
+            placeHolderText: qsTr("What are you looking for?")
+            Layout.preferredHeight: Theme.lgBtnHeight
+            Layout.fillWidth: true
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+
+            onTextChanged: function (text) {
+                searchItem(text)
+            }
+        }
+
+        DsTable {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.leftMargin: Theme.xsSpacing
-            Layout.rightMargin: Theme.xsSpacing
-            Layout.bottomMargin: Theme.xsSpacing
+            headerModel: headermodel
+            dataModel: ListModel{}
+            busy: searchitemrequest.running
+        }
 
-            HorizontalHeaderView {
-                id: horizontalHeader
-                syncView: tableView
-                clip: true
-                implicitHeight: Theme.lgBtnHeight
-                model: ["", "#", "Product", "Quantity", "Unit Price", "Totals"]
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.btnHeight
+            Layout.bottomMargin: Theme.baseSpacing
+
+            DsBusyIndicator {
+                width: Theme.btnHeight
+                height: Theme.btnHeight
+                running: searchitemrequest.running
+                visible: running
+                anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-
-                delegate: DelegateChooser {
-                    DelegateChoice {
-                        index: 0
-                        delegate: Rectangle {
-                            color: Theme.baseAlt1Color
-                            height: Theme.lgBtnHeight
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsCheckBox {
-                                cbSize: Theme.btnHeight
-                                checked: false
-                                onToggled: {
-                                    model.display = checked
-                                    setChecked(checked)
-                                }
-
-                                anchors.centerIn: parent
-                            }
-                        }
-                    }
-
-                    DelegateChoice {
-                        index: 1
-                        delegate: Rectangle {
-                            color: Theme.baseAlt1Color
-                            height: Theme.lgBtnHeight
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsLabel {
-                                fontSize: Theme.h2
-                                text: model.modelData
-                                anchors.centerIn: parent
-                            }
-                        }
-                    }
-
-                    DelegateChoice {
-                        delegate: Rectangle {
-                            color: Theme.baseAlt1Color
-                            height: Theme.lgBtnHeight
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsLabel {
-                                fontSize: Theme.h2
-                                text: model.modelData
-                                leftPadding: Theme.smSpacing/2
-                                rightPadding: Theme.smSpacing/2
-
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-                    }
-                }
             }
 
-            TableView {
-                id: tableView
-
-                property var columnFlex: [{ width: Theme.lgBtnHeight }, { width: Theme.lgBtnHeight }, { flex: 3 }, { flex: 1 }, { flex: 1 },{ flex: 1 }]
-
-                alternatingRows: true
-                clip: true
-                columnSpacing: 1
-                rowSpacing: 1
-                columnWidthProvider: (column) => {
-                                         var widthSum = 0
-                                         var flexSum = 0
-                                         columnFlex.forEach((item) => {
-                                                                if(item.width) widthSum += item.width
-                                                                else flexSum += item.flex
-                                                            })
-
-                                         var obj = columnFlex[column]
-                                         if(obj.width) return obj.width;
-
-                                         var workingWidth = tableView.width - widthSum - ((tableView.columns-1) * tableView.columnSpacing)
-                                         return workingWidth * (obj.flex/flexSum)
-                                     }
-                anchors.left: parent.left
-                anchors.top: horizontalHeader.bottom
+            Row {
+                spacing: Theme.btnRadius
                 anchors.right: parent.right
-                anchors.bottom: parent.bottom
+                anchors.rightMargin: Theme.baseSpacing
 
-                model: TableModel {
-                    TableModelColumn { display: "checked" }
-                    TableModelColumn { display: "index" }
-                    TableModelColumn { display: "name" }
-                    TableModelColumn { display: "quantity"; edit: () => {} }
-                    TableModelColumn { display: "price" }
-                    TableModelColumn { display: "totals" }
-
-                    rows: [
-                        {
-                            "checked": false,
-                            "index": 0,
-                            "name": "2kg Soko Cooking Flour",
-                            "quantity": 4,
-                            "price": 220,
-                            "totals": 880
-                        },
-                        {
-                            "checked": false,
-                            "index": 1,
-                            "name": "2kg Soko Cooking Flour",
-                            "quantity": 4,
-                            "price": 220,
-                            "totals": 880
-                        },
-                        {
-                            "checked": false,
-                            "index": 30,
-                            "name": "2kg Soko Cooking Flour",
-                            "quantity": 4,
-                            "price": 220,
-                            "totals": 880
-                        }
-                    ]
+                DsLabel {
+                    // text: qsTr("Total Items  ") + `${totalItems}  `
+                    color: Theme.txtHintColor
+                    fontSize: Theme.smFontSize
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
+                DsIconButton {
+                    // enabled: pageNo>1 && !searchitemrequest.running
+                    iconType: IconType.arrowLeft
+                    textColor: Theme.txtPrimaryColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
-                delegate: DelegateChooser {
-                    DelegateChoice {
-                        column: 0
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsCheckBox {
-                                cbSize: Theme.btnHeight
-                                checked: model.display
-                                onToggled: model.display = checked
-
-                                anchors.centerIn: parent
-                            }
-
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
+                    onClicked: {
+                        pageNo -= 1
+                        getProducts()
                     }
+                }
 
-                    DelegateChoice {
-                        column: 1
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
+                DsLabel {
+                    // text: `${pageNo} / ${totalPages}`
+                    color: Theme.txtHintColor
+                    fontSize: Theme.smFontSize
+                    anchors.verticalCenter: parent.verticalCenter
+                }
 
-                            DsLabel {
-                                fontSize: Theme.baseFontSize
-                                text: (row+1).toString()+"."
-                                width: parent.width - Theme.baseSpacing
-                                anchors.centerIn: parent
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                DsIconButton {
+                    // enabled: pageNo<totalPages && !searchitemrequest.running
+                    iconType: IconType.arrowRight
+                    textColor: Theme.txtPrimaryColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
-                    }
-
-                    DelegateChoice {
-                        column: 2
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsLabel {
-                                fontSize: Theme.baseFontSize
-                                text: model.display
-                                width: parent.width - Theme.baseSpacing
-                                anchors.centerIn: parent
-                            }
-
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
-                    }
-
-                    DelegateChoice {
-                        column: 3
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
-
-                            QQCC2.SpinBox {
-                                from: 1
-                                editable: true
-                                value: model.display
-                                height: Theme.btnHeight
-                                width: parent.width - Theme.baseSpacing
-                                onValueModified: model.display = value
-
-                                anchors.centerIn: parent
-                            }
-
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
-                    }
-
-
-                    DelegateChoice {
-                        column: 4
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsLabel {
-                                text: model.display
-                                fontSize: Theme.baseFontSize
-                                width: parent.width - Theme.baseSpacing
-                                anchors.centerIn: parent
-                            }
-
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
-                    }
-
-                    DelegateChoice {
-                        column: 5
-                        delegate: Item {
-                            implicitHeight: Theme.lgBtnHeight
-
-                            DsLabel {
-                                fontSize: Theme.baseFontSize
-                                text: model.display
-                                width: parent.width - Theme.baseSpacing
-                                anchors.centerIn: parent
-                            }
-
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                            }
-                        }
+                    onClicked: {
+                        pageNo += 1
+                        getProducts()
                     }
                 }
             }
         }
     }
 
-    function setChecked(checked) {
+    ListModel {
+        id: headermodel
 
+        ListElement {
+            title: qsTr("Barcode")
+            sortable: true
+            width: 150
+            flex: 0
+            value: "barcode"
+        }
+
+        ListElement {
+            title: qsTr("Product Name")
+            sortable: true
+            width: 300
+            flex: 2
+            value: "name"
+        }
+
+        ListElement {
+            title: qsTr("Selling Price")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "selling_price"
+        }
+
+        ListElement {
+            title: qsTr("Quantity")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "stock"
+        }
+    }
+
+    // Components
+    DsNewProductPopup {
+        id: newproductpopup
+    }
+
+    Requests {
+        id: searchitemrequest
+        baseUrl: "https://pb.digisto.app"
+        path: "/api/collections/product/records"
+    }
+
+    function getProducts() {}
+
+    function searchItem(input) {
+        var query = {
+            page: 1,
+            perPage: 50,
+            skipTotal: true,
+            sort: '+name',
+            filter: `name ~ '${input}' || unit ~ '${input}'`
+        }
+        // organization: "clhyn7tolbhy98k"
+
+        searchitemrequest.clear()
+        searchitemrequest.query = query;
+        var res = searchitemrequest.send();
+
+        console.log(JSON.stringify(res))
+
+        if(res.status===200) {
+            var data = res.data;
+            var items = data.items;
+
+            searchModel.clear()
+
+            for(var i=0; i<items.length; i++) {
+                searchModel.append(items[i])
+            }
+        }
+
+        else {
+            searchModel.clear()
+        }
     }
 }

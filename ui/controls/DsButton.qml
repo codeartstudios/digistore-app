@@ -6,12 +6,18 @@ Button {
     id: control
     enabled: !busy
     implicitHeight: Theme.btnHeight
-    implicitWidth: row.width + 2*Theme.xsSpacing
+    implicitWidth: row.width + 2*Theme.smSpacing
+    height: implicitHeight
+    width: implicitWidth
 
     property bool busy: false
     property string iconType
+    property alias endIcon: endicon.iconType
     property real fontSize: Theme.baseFontSize
     property real radius: bg.radius
+    property bool toolTipShown: true
+    property alias tooltipText: tooltip.text
+    property alias tooltip: tooltip
     property string textColor: Theme.baseColor
     property string bgColor: Theme.primaryColor
 
@@ -23,8 +29,6 @@ Button {
     }
 
     contentItem: Item {
-        anchors.fill: parent
-
         Row {
             id: row
             spacing: Theme.xsSpacing
@@ -34,7 +38,7 @@ Button {
                 id: ico
                 visible: iconType!==""
                 iconType: busy ? IconType.loader2 : control.iconType ? control.iconType : ""
-                iconSize: fontSize
+                iconSize: control.fontSize * 1.2
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -45,7 +49,23 @@ Button {
                 text: control.text
                 anchors.verticalCenter: parent.verticalCenter
             }
+
+            DsIcon {
+                id: endicon
+                iconType: ""
+                visible: iconType!==""
+                iconSize: control.fontSize * 1.2
+                color: control.textColor
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
+    }
+
+    DsToolTip {
+        id: tooltip
+        parent: control
+        visible: toolTipShown && parent.hovered && text!==""
+        side: DsToolTip.Bottom
     }
 
     RotationAnimation {
