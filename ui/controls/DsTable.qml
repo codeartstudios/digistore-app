@@ -255,6 +255,9 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
+                    ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
+                    ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
+
                     Connections {
                         target: hscrollbar
 
