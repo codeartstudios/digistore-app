@@ -112,15 +112,15 @@ DsPage {
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
-                // onClicked: newproductpopup.open()
+                onClicked: checkoutpopup.open()
             }
 
             DsButton {
+                visible: false
                 enabled: cartModel.count>0
                 iconType: IconType.handStop
                 text: qsTr("Freeze")
                 Layout.preferredHeight: Theme.lgBtnHeight
-                // onClicked: newproductpopup.open()
             }
         }
 
@@ -176,10 +176,11 @@ DsPage {
             }
 
             onDelegateActionButtonSelected: function(index, model) {
-                console.log(index, model)
+                currentIndex=index;
+                selectionChanged(model);
             }
 
-            onCurrentIndexChanged: if(table.currentIndex===-1) selectedObject=null
+            onCurrentIndexChanged: if(table.currentIndex===-1) selectedObjectItem.selectedObject=null
 
             onSelectionChanged: function(obj) {
                 selectedObjectItem.selectedObject={
@@ -229,10 +230,23 @@ DsPage {
             RowLayout {
                 spacing: Theme.btnRadius
                 anchors.fill: parent
-                anchors.rightMargin: Theme.baseSpacing
-                anchors.leftMargin: Theme.baseSpacing
+                anchors.rightMargin: Theme.xsSpacing/2
+                anchors.leftMargin: Theme.xsSpacing/2
 
                 property alias obj: selectedObjectItem.selectedObject
+
+                DsIconButton {
+                    enabled: !searchitemrequest.running
+                    iconType: IconType.x
+                    textColor: Theme.dangerColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.dangerAltColor, 0.8)
+                    bgDown: withOpacity(Theme.dangerAltColor, 0.6)
+                    radius: height/2
+                    Layout.alignment: Qt.AlignVCenter
+
+                    onClicked: table.currentIndex=-1
+                }
 
                 DsLabel {
                     text: qsTr("Name")
@@ -240,6 +254,7 @@ DsPage {
                     fontSize: Theme.lgFontSize
                     rightPadding: Theme.smSpacing
                     Layout.alignment: Qt.AlignVCenter
+                    Layout.leftMargin: Theme.smSpacing
                 }
 
                 DsLabel {
@@ -259,10 +274,12 @@ DsPage {
                 }
 
                 QQCB.SpinBox {
+                    id: qtysbox
                     Layout.preferredHeight: Theme.btnHeight
                     Layout.preferredWidth: 200
                     value: parent.obj ? parent.obj.quantity : 1
                     from: 1
+                    editable: true
                 }
 
                 Item { height: 1; Layout.preferredWidth: 50 }
@@ -270,6 +287,16 @@ DsPage {
                 DsButton {
                     text: qsTr("Update")
                     iconType: IconType.circleCheck
+
+                    onClicked: {
+                        var index = table.currentIndex
+                        var qty = qtysbox.value
+                        var sp = parent.obj.selling_price
+                        cartModel.setProperty(index, "quantity", qty)
+                        cartModel.setProperty(index, "subtotal", qty*sp)
+                        calculateTotals()
+                        table.currentIndex=-1
+                    }
                 }
 
                 DsButton {
@@ -281,14 +308,19 @@ DsPage {
                     bgDown: withOpacity(Theme.dangerAltColor, 0.6)
                     borderColor: Theme.dangerColor
                     borderWidth: 1
+
+                    onClicked: {
+                        cartModel.remove(table.currentIndex);
+                        calculateTotals();
+                    }
                 }
             }
         }
     }
 
     // Components
-    DsNewProductPopup {
-        id: newproductpopup
+    DsCheckoutPopup {
+        id: checkoutpopup
     }
 
     Requests {
