@@ -12,6 +12,8 @@ DsPage {
     headerShown: false
 
     property ListModel searchModel: ListModel{}
+    property ListModel cartModel: ListModel{}
+    property real checkoutTotals: 0
 
     ColumnLayout {
         anchors.fill: parent
@@ -69,7 +71,8 @@ DsPage {
                 border.width: 1
                 border.color: Theme.dangerAltColor
                 color: "transparent"
-                width: totalsrow.width
+                Layout.alignment: Qt.AlignVCenter
+                Layout.preferredWidth: totalsrow.width
 
                 Row {
                     id: totalsrow
@@ -91,7 +94,7 @@ DsPage {
                     }
 
                     DsLabel {
-                        text: qsTr("KES ") + `55,000.0`
+                        text: qsTr("KES ") + `${checkoutTotals}`
                         fontSize: Theme.h1
                         color: Theme.txtPrimaryColor
                         isBold: true
@@ -130,14 +133,48 @@ DsPage {
             onTextChanged: function (text) {
                 searchItem(text)
             }
+
+            onAccepted: function(obj) {
+                var quantity = 1;
+                var cartObj = {
+                    id: obj.id,
+                    collectionId: obj.collectionId,
+                    fullname: `${obj.unit} ${obj.name}`,
+                    name: obj.name,
+                    unit: obj.unit,
+                    barcode: obj.barcode,
+                    buying_price: obj.buying_price,
+                    selling_price: obj.selling_price,
+                    stock: obj.stock,
+                    thumbnail: obj.thumbnail,
+                    organization: obj.organization,
+                    quantity,
+                    subtotal: quantity * obj.selling_price
+                }
+                cartModel.append(cartObj)
+                calculateTotals()
+            }
         }
 
         DsTable {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            headerModel: headermodel
-            dataModel: ListModel{}
+            headerModel: ListModel{ id: headermodel }
+            dataModel: cartModel
             busy: searchitemrequest.running
+            headerAcionIconType: IconType.eraser
+            delegateActionIconType: IconType.shoppingBagEdit
+
+            onHeaderActionButtonSelected: {
+                cartModel.clear()
+                calculateTotals()
+            }
+
+            onDelegateActionButtonSelected: function(index, model) {
+                console.log(index, model)
+            }
+
+            Component.onCompleted: addheaders()
         }
 
         Item {
@@ -175,7 +212,7 @@ DsPage {
                     bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                     onClicked: {
-                        pageNo -= 1
+                        //pageNo -= 1
                         getProducts()
                     }
                 }
@@ -196,47 +233,11 @@ DsPage {
                     bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                     onClicked: {
-                        pageNo += 1
+                        // pageNo += 1
                         getProducts()
                     }
                 }
             }
-        }
-    }
-
-    ListModel {
-        id: headermodel
-
-        ListElement {
-            title: qsTr("Barcode")
-            sortable: true
-            width: 150
-            flex: 0
-            value: "barcode"
-        }
-
-        ListElement {
-            title: qsTr("Product Name")
-            sortable: true
-            width: 300
-            flex: 2
-            value: "name"
-        }
-
-        ListElement {
-            title: qsTr("Selling Price")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "selling_price"
-        }
-
-        ListElement {
-            title: qsTr("Quantity")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "stock"
         }
     }
 
@@ -267,7 +268,7 @@ DsPage {
         searchitemrequest.query = query;
         var res = searchitemrequest.send();
 
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -276,12 +277,67 @@ DsPage {
             searchModel.clear()
 
             for(var i=0; i<items.length; i++) {
-                searchModel.append(items[i])
+                var obj = items[i]
+                obj['fullname'] = `${obj.unit} ${obj.name}`
+                searchModel.append(obj)
             }
         }
 
         else {
             searchModel.clear()
         }
+    }
+
+    function calculateTotals() {
+        var totals = 0;
+
+        // Recalculate totals when the data changes
+        for(var i=0; i<cartModel.count; i++) {
+            var obj = cartModel.get(i);
+            totals += obj.selling_price * obj.quantity;
+        }
+
+        checkoutTotals = totals;
+    }
+
+    function addheaders() {
+        headermodel.append(
+                    [
+                        {
+                            title: qsTr("Barcode"),
+                            sortable: false,
+                            width: 150,
+                            flex: 0,
+                            value: "barcode"
+                        },
+                        {
+                            title: qsTr("Product Name"),
+                            sortable: false,
+                            width: 300,
+                            flex: 2,
+                            value: "fullname"
+                        },
+                        {
+                            title: qsTr("Quantity"),
+                            sortable: false,
+                            width: 200,
+                            flex: 1,
+                            value: "quantity"
+                        },
+                        {
+                            title: qsTr("Selling Price"),
+                            sortable: false,
+                            width: 200,
+                            flex: 1,
+                            value: "selling_price"
+                        },
+                        {
+                            title: qsTr("Sub Total"),
+                            sortable: false,
+                            width: 200,
+                            flex: 1,
+                            value: "subtotal"
+                        }
+                    ])
     }
 }

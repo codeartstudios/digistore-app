@@ -10,6 +10,7 @@ Item {
     implicitWidth: 500
 
     signal textChanged(var text)
+    signal accepted(var object)
 
 
     property alias busy: busyindicator.running
@@ -19,12 +20,31 @@ Item {
     property int delay: 500
     property alias placeHolderText: input.placeholderText
 
+    // Forward the UP/DOWN key press to navigate the listview
+    Keys.onDownPressed: {
+        if(searchlvresults.currentIndex >= searchlvresults.model.count-1 )
+            searchlvresults.currentIndex=0
+        else
+            searchlvresults.currentIndex+=1
+    }
+
+    Keys.onUpPressed: {
+        if(searchlvresults.currentIndex <= 0 )
+            searchlvresults.currentIndex=searchlvresults.model.count-1
+        else
+            searchlvresults.currentIndex-=1
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: input.forceActiveFocus()
+    }
 
     Timer {
         id: delaytimer
         repeat: false
         interval: delay
-        onTriggered: root.textChanged(input.text.trim())
+        onTriggered: if(input.text.trim()!=="") root.textChanged(input.text.trim())
     }
 
     Rectangle {
@@ -54,6 +74,7 @@ Item {
                 font.pixelSize: Theme.xlFontSize
                 echoMode: TextField.Normal
                 background: Item {}
+                onAccepted: searchlvresults.accepted()
 
                 Layout.fillWidth: true
                 Layout.rightMargin: Theme.xsSpacing
@@ -76,6 +97,7 @@ Item {
                 id: busyindicator
                 visible: running
                 duration: 600
+                Layout.alignment: Qt.AlignVCenter
             }
 
             DsIconButton {
@@ -99,7 +121,8 @@ Item {
         id: searchPopup
         width: root.width
         height: 300
-        x: 0; y: rec.height
+        x: 0
+        y: rec.height
         closePolicy: Popup.CloseOnPressOutside
 
         onOpened: {
@@ -126,8 +149,24 @@ Item {
             ListView {
                 id: searchlvresults
                 clip: true
+                keyNavigationEnabled: true
+                keyNavigationWraps: true
                 anchors.fill: parent
                 anchors.bottomMargin: Theme.xsSpacing
+                ScrollBar.vertical: ScrollBar{}
+
+                signal accepted()
+
+                onModelChanged: {
+                    if(model.count > 0) {
+                        if(currentIndex<=0)
+                            currentIndex=0
+                        else if(currentIndex>searchlvresults.model.count-1)
+                            currentIndex=searchlvresults.model.count-1
+                    } else {
+                        currentIndex=-1
+                    }
+                }
 
                 highlight: Rectangle {
                     color: Theme.dangerAltColor
@@ -150,12 +189,18 @@ Item {
 
                     MouseArea {
                         id: delegatema
-                        anchors.fill: parent
+                        property bool hovered: false
+
                         hoverEnabled: true
                         onEntered: hovered=true
                         onExited: hovered=false
-                        onClicked: searchlvresults.currentIndex=index
-                        property bool hovered: false
+                        anchors.fill: parent
+
+                        onClicked: {
+                            searchlvresults.currentIndex=index
+                            root.accepted(model)
+                            input.clear()
+                        }
                     }
 
                     Rectangle {
@@ -167,16 +212,36 @@ Item {
 
                     Item {
                         anchors.fill: parent
-                        anchors.leftMargin: Theme.smSpacing
-                        anchors.rightMargin: Theme.smSpacing
+                        anchors.leftMargin: Theme.xsSpacing*2 + input.font.pixelSize
+                        anchors.rightMargin: Theme.xsSpacing*2 + input.font.pixelSize
 
                         DsLabel {
-                            text: model.name
+                            text: model.fullname
                             fontSize: Theme.lgFontSize
                             elide: DsLabel.ElideRight
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
+                            anchors.right: pricelbl.left
+                        }
+
+                        DsLabel {
+                            id: pricelbl
+                            text: `KES. ${model.selling_price}`
+                            fontSize: Theme.lgFontSize
+                            elide: DsLabel.ElideRight
+                            anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
+                        }
+                    }
+
+                    Connections {
+                        target: input
+
+                        function onAccepted() {
+                            if(searchlvresults.currentIndex===index) {
+                                root.accepted(model)
+                                input.clear()
+                            }
                         }
                     }
                 }

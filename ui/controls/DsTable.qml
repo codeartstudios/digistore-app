@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 import app.digisto.modules
 
 Rectangle {
@@ -7,6 +9,9 @@ Rectangle {
 
     required property ListModel headerModel
     required property ListModel dataModel
+
+    property string headerAcionIconType: IconType.dots
+    property string delegateActionIconType: IconType.dots
 
     property alias listView: listview
 
@@ -18,84 +23,70 @@ Rectangle {
     // When any column header is clicked
     signal sortSelected(var index)
 
-    // When the checkbox on header item is checked/unchecked
-    signal checkAllChanged(bool checked)
-
     // When the action button on the header is selected
-    signal actionSelected()
+    signal headerActionButtonSelected
+    signal delegateActionButtonSelected(var index, var data)
 
-    //
+    // Sort by a specific column
     signal sortBy(var col)
 
-    onHeaderModelChanged: {
-        var newcolwidths=[]     // Hold new width values
+    property bool hscrollbarShown: false
+    property alias hscrollbar: hscrollbar
 
-        for(var i=0; i<headerModel.count; i++) {
-            newcolwidths.push(headerModel.get(i).width)
-        }
-
-        listview.columnWidths = newcolwidths
+    ScrollBar {
+        id: hscrollbar
+        z: 11
+        policy: hscrollbarShown ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+        active: hovered || pressed
+        hoverEnabled: true
+        orientation: Qt.Horizontal
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
-
-    // TODO handle table toggles
-    function headerCheckToggled(checked) {
-        if(checked) {
-            for(var i=0; i<dataModel.count; i++) {
-
-            }
-        }
-    }
-
 
     ListView {
         id: listview
 
         property var columnWidths: []
+        property real headerWidth: 70
+        property real footerWidth: 70
 
         clip: true
         model: dataModel
         headerPositioning: ListView.OverlayHeader
         anchors.fill: parent
 
+        ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AsNeeded }
+        ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
+
         header: Item {
+            id: tableheader
             z: 3
             width: listView.width
             height: 50
             clip: true
 
-            Rectangle {
-                height: 1
-                width: parent.width
-                color: Theme.baseAlt2Color
-                anchors.bottom: parent.bottom
+            // Bind width changes to column width recalculation
+            onWidthChanged: calculateWidthChanges();
+
+            Connections {
+                target: headerModel
+
+                function onCountChanged() {
+                    calculateWidthChanges();
+                }
             }
 
-            ListView {
-                id: headerlv
-                height: parent.height
-                anchors.left: parent.left
-                anchors.right: parent.right
-                model: headerModel
-                boundsBehavior: Flickable.StopAtBounds
-                orientation: ListView.Horizontal
-                headerPositioning: ListView.OverlayHeader
-                footerPositioning: ListView.OverlayFooter
+            RowLayout {
+                spacing: 0
+                anchors.fill: parent
 
-                delegate: DsTableHeaderButton {
-                    text: model.title
-                    height: 50
-                    sortable: model.sortable
-                    width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
-                    font.pixelSize: Theme.xlFontSize
-
-                    onClicked: root.sortBy(model.value)
-                }
-
-                header: Rectangle {
-                    height: 50
-                    width: 70
+                Rectangle {
                     color: root.color
                     z: 10
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: listview.headerWidth
 
                     Rectangle {
                         height: 1
@@ -125,11 +116,55 @@ Rectangle {
                     }
                 }
 
-                footer: Rectangle {
-                    height: 50
-                    width: 70
+                ScrollView {
+                    id: c_sv
+                    z: 1
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
+                    ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
+
+                    onContentWidthChanged: root.hscrollbarShown = c_sv.contentWidth > c_sv.width
+
+                    Binding {
+                        target: hscrollbar
+                        property: "size"
+                        value: c_sv.contentWidth>c_sv.width ? c_sv.width/c_sv.contentWidth : 1
+                    }
+
+                    Connections {
+                        target: hscrollbar
+
+                        function onPositionChanged() {
+                            var newContentX = hscrollbar.position * (c_sv.contentWidth - c_sv.width);
+                            c_sv.contentItem.contentX = newContentX
+                        }
+                    }
+
+                    Row {
+                        height: tableheader.height
+
+                        Repeater {
+                            model: headerModel
+                            delegate: DsTableHeaderButton {
+                                text: title
+                                height: tableheader.height
+                                sortable: sortable
+                                width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
+                                font.pixelSize: Theme.xlFontSize
+
+                                onClicked: root.sortBy(value)
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
                     color: root.color
                     z: 10
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: listview.footerWidth
 
                     Rectangle {
                         height: 1
@@ -142,56 +177,23 @@ Rectangle {
                         bgColor: "transparent"
                         width: 50
                         height: 50
-                        iconType: IconType.dots
+                        iconType: headerAcionIconType
                         textColor: Theme.txtHintColor
                         bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        onClicked: root.actionSelected()
+                        onClicked: root.headerActionButtonSelected()
                     }
                 }
+            }
 
-                // Bind width changes to column width recalculation
-                onWidthChanged: calculateWidthChanges();
-                Component.onCompleted: calculateWidthChanges();
-
-                function calculateWidthChanges() {
-                    var colswidthsum=0, nonflexwidthsum=0, flexsum=0;
-                    var workingWidth = listview.width - (headerlv.headerItem.width + headerlv.footerItem.width)
-
-                    for(var i=0; i<headerModel.count; i++) {
-                        var item = headerModel.get(i)
-                        flexsum += item["flex"];
-                        colswidthsum += item["width"];
-                        if(item["flex"]===0)
-                            nonflexwidthsum+=item["width"]
-                    }
-
-                    if(colswidthsum < headerlv.width) {
-                        var newcolwidths = []
-                        workingWidth -= colswidthsum
-
-                        for(let i=0; i<headerModel.count; i++) {
-                            let item = headerModel.get(i)
-                            var flex = item["flex"];
-                            var baseWidth = item["width"];
-                            var newWidth = flex===0 ? baseWidth : baseWidth + (workingWidth * flex/flexsum)
-                            newcolwidths.push(newWidth)
-                        }
-
-                        listview.columnWidths = newcolwidths
-                    }
-
-                    else {
-                        let newcolwidths = []
-                        for(let i=0; i<headerModel.count; i++) {
-                            newcolwidths.push(headerModel.get(i).width)
-                        }
-                        listview.columnWidths = newcolwidths
-                    }
-                }
+            Rectangle {
+                height: 1
+                width: parent.width
+                color: Theme.baseAlt2Color
+                anchors.bottom: parent.bottom
             }
         }
 
@@ -216,23 +218,15 @@ Rectangle {
                 property bool hovered: false
             }
 
-            ListView {
-                id: delegatelv
-                clip: true
-                height: parent.height
-                anchors.left: parent.left
-                anchors.right: parent.right
-                model: headerModel
-                boundsBehavior: Flickable.StopAtBounds
-                orientation: ListView.Horizontal
-                headerPositioning: ListView.OverlayHeader
-                footerPositioning: ListView.OverlayFooter
+            RowLayout {
+                spacing: 0
+                anchors.fill: parent
 
-                header: Rectangle {
-                    height: 50
-                    width: 70
+                Rectangle {
                     z: 10
                     color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: listview.headerWidth
 
                     property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                     property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
@@ -256,49 +250,80 @@ Rectangle {
                     }
                 }
 
-                footer: Rectangle {
-                    height: 50
-                    width: 70
+                ScrollView {
+                    id: tablerowscrollview
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Connections {
+                        target: hscrollbar
+
+                        function onPositionChanged() {
+                            var newContentX = hscrollbar.position * (tablerowscrollview.contentWidth - tablerowscrollview.width);
+                            tablerowscrollview.contentItem.contentX = newContentX
+                        }
+                    }
+
+                    Row {
+                        height: tabledelegate.height
+
+                        Repeater {
+                            model: headerModel
+
+                            delegate: Item {
+                                height: tabledelegate.height
+                                width: listview.columnWidths[index]
+
+                                Connections {
+                                    target: listview
+
+                                    function onColumnWidthsChanged() {
+                                        width = listview.columnWidths[index]
+                                    }
+                                }
+
+                                DsLabel {
+                                    elide: DsLabel.ElideRight
+                                    fontSize: Theme.smFontSize
+                                    text: tabledelegate.rowModel[value]==="" ? "--" : tabledelegate.rowModel[value]
+                                    verticalAlignment: DsLabel.AlignVCenter
+                                    leftPadding: Theme.smSpacing
+                                    rightPadding: Theme.smSpacing
+                                    anchors.fill: parent
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
                     z: 10
                     color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: listview.footerWidth
 
                     property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                     property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-
-                    Rectangle {
-                        height: 1
-                        color: Theme.baseAlt2Color
-                        width: parent.width
-                        anchors.bottom: parent.bottom
-                    }
 
                     DsIconButton {
                         bgColor: "transparent"
                         width: 50
                         height: 50
-                        iconType: IconType.dots
+                        iconType: delegateActionIconType
                         textColor: Theme.txtHintColor
                         bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        onClicked: root.actionSelected()
+                        onClicked: root.delegateActionButtonSelected(tabledelegate.rowIndex, tabledelegate.rowModel)
                     }
-                }
 
-                delegate: Item {
-                    height: delegatelv.height
-                    width: listview.columnWidths[index]
-
-                    DsLabel {
-                        anchors.fill: parent
-                        verticalAlignment: DsLabel.AlignVCenter
-                        leftPadding: Theme.smSpacing
-                        rightPadding: Theme.smSpacing
-                        elide: DsLabel.ElideRight
-                        fontSize: Theme.smFontSize
-                        text: tabledelegate.rowModel[model.value]==="" ? "--" : tabledelegate.rowModel[model.value]
+                    Rectangle {
+                        height: 1
+                        color: Theme.baseAlt2Color
+                        width: parent.width
+                        anchors.bottom: parent.bottom
                     }
                 }
             }
@@ -309,6 +334,53 @@ Rectangle {
                 color: Theme.baseAlt2Color
                 anchors.bottom: parent.bottom
             }
+        }
+    }
+
+
+    function populateColumnWidths() {
+        var newcolwidths=[]     // Hold new width values
+
+        for(var i=0; i<headerModel.count; i++) {
+            newcolwidths.push(headerModel.get(i).width)
+        }
+
+        listview.columnWidths = newcolwidths
+    }
+
+    function calculateWidthChanges() {
+        var colswidthsum=0, nonflexwidthsum=0, flexsum=0;
+        var workingWidth = listview.width - (listview.headerWidth + listview.footerWidth)
+
+        for(var i=0; i<headerModel.count; i++) {
+            var item = headerModel.get(i)
+            flexsum += item["flex"];
+            colswidthsum += item["width"];
+            if(item["flex"]===0)
+                nonflexwidthsum+=item["width"]
+        }
+
+        if(colswidthsum < listview.width) {
+            var newcolwidths = []
+            workingWidth -= colswidthsum
+
+            for(let i=0; i<headerModel.count; i++) {
+                let item = headerModel.get(i)
+                var flex = item["flex"];
+                var baseWidth = item["width"];
+                var newWidth = flex===0 ? baseWidth : baseWidth + (workingWidth * flex/flexsum)
+                newcolwidths.push(newWidth)
+            }
+
+            listview.columnWidths = newcolwidths
+        }
+
+        else {
+            let newcolwidths = []
+            for(let i=0; i<headerModel.count; i++) {
+                newcolwidths.push(headerModel.get(i).width)
+            }
+            listview.columnWidths = newcolwidths
         }
     }
 }
