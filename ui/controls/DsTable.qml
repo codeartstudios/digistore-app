@@ -14,14 +14,15 @@ Rectangle {
     property string delegateActionIconType: IconType.dots
 
     property alias listView: listview
+    property alias currentIndex: listview.currentIndex
 
     // Delegate properties
     property bool alternatingRowColors: true
-
     property bool busy: false
 
     // When any column header is clicked
     signal sortSelected(var index)
+    signal selectionChanged(var model)
 
     // When the action button on the header is selected
     signal headerActionButtonSelected
@@ -54,6 +55,7 @@ Rectangle {
 
         clip: true
         model: dataModel
+        currentIndex: -1
         headerPositioning: ListView.OverlayHeader
         anchors.fill: parent
 
@@ -201,13 +203,15 @@ Rectangle {
             id: tabledelegate
             width: listview.width
             height: 50
-            color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+            color: selected ? selectedColor : ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
 
             property string bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
             property string bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+            property string selectedColor: withOpacity(Theme.baseAlt1Color)
 
             property var rowModel: model    // Model data for the current delegate
             property var rowIndex: index    // Row index assigned
+            property bool selected: listview.currentIndex===index
 
             MouseArea {
                 id: ma
@@ -216,6 +220,11 @@ Rectangle {
                 onEntered: ma.hovered=true
                 onExited: ma.hovered=false
                 property bool hovered: false
+
+                onClicked: {
+                    listview.currentIndex=index
+                    root.selectionChanged(model)
+                }
             }
 
             RowLayout {
@@ -224,7 +233,7 @@ Rectangle {
 
                 Rectangle {
                     z: 10
-                    color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+                    color: selected ? tabledelegate.selectedColor : ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
                     Layout.fillHeight: true
                     Layout.preferredWidth: listview.headerWidth
 
@@ -277,6 +286,14 @@ Rectangle {
                                 height: tabledelegate.height
                                 width: listview.columnWidths[index]
 
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onEntered: ma.hovered=true
+                                    onExited: ma.hovered=false
+                                    onClicked: (e) => ma.clicked(e)
+                                }
+
                                 Connections {
                                     target: listview
 
@@ -301,7 +318,7 @@ Rectangle {
 
                 Rectangle {
                     z: 10
-                    color: ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
+                    color: selected ? tabledelegate.selectedColor : ma.pressed ? bgDown : ma.hovered ? bgHover : root.color
                     Layout.fillHeight: true
                     Layout.preferredWidth: listview.footerWidth
 

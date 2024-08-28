@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Basic as QQCB
 import QtQuick.Layouts
 import app.digisto.modules
 
@@ -160,6 +161,7 @@ DsPage {
         }
 
         DsTable {
+            id: table
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: ListModel{ id: headermodel }
@@ -177,13 +179,43 @@ DsPage {
                 console.log(index, model)
             }
 
+            onCurrentIndexChanged: if(table.currentIndex===-1) selectedObject=null
+
+            onSelectionChanged: function(obj) {
+                selectedObjectItem.selectedObject={
+                    id: obj.id,
+                    collectionId: obj.collectionId,
+                    fullname: `${obj.unit} ${obj.name}`,
+                    name: obj.name,
+                    unit: obj.unit,
+                    barcode: obj.barcode,
+                    buying_price: obj.buying_price,
+                    selling_price: obj.selling_price,
+                    stock: obj.stock,
+                    thumbnail: obj.thumbnail,
+                    organization: obj.organization,
+                    quantity: obj.quantity,
+                    subtotal: obj.quantity * obj.selling_price
+                }
+            }
+
             Component.onCompleted: addheaders()
         }
 
-        Item {
+        Rectangle {
+            id: selectedObjectItem
+            color: Theme.shadowColor
+            radius: Theme.btnRadius
+            visible: selectedObject
+            implicitHeight: selectedObject ? Theme.lgBtnHeight : 0
             Layout.fillWidth: true
-            Layout.preferredHeight: Theme.btnHeight
+            Layout.leftMargin: Theme.smSpacing
+            Layout.rightMargin: Theme.smSpacing
             Layout.bottomMargin: Theme.baseSpacing
+
+            Behavior on implicitHeight { NumberAnimation {} }
+
+            property var selectedObject: null
 
             DsBusyIndicator {
                 width: Theme.btnHeight
@@ -194,51 +226,61 @@ DsPage {
                 anchors.left: parent.left
             }
 
-            Row {
+            RowLayout {
                 spacing: Theme.btnRadius
-                anchors.right: parent.right
+                anchors.fill: parent
                 anchors.rightMargin: Theme.baseSpacing
+                anchors.leftMargin: Theme.baseSpacing
+
+                property alias obj: selectedObjectItem.selectedObject
 
                 DsLabel {
-                    // text: qsTr("Total Items  ") + `${totalItems}  `
+                    text: qsTr("Name")
                     color: Theme.txtHintColor
-                    fontSize: Theme.smFontSize
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                DsIconButton {
-                    // enabled: pageNo>1 && !searchitemrequest.running
-                    iconType: IconType.arrowLeft
-                    textColor: Theme.txtPrimaryColor
-                    bgColor: "transparent"
-                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-
-                    onClicked: {
-                        //pageNo -= 1
-                        getProducts()
-                    }
+                    fontSize: Theme.lgFontSize
+                    rightPadding: Theme.smSpacing
+                    Layout.alignment: Qt.AlignVCenter
                 }
 
                 DsLabel {
-                    // text: `${pageNo} / ${totalPages}`
-                    color: Theme.txtHintColor
-                    fontSize: Theme.smFontSize
-                    anchors.verticalCenter: parent.verticalCenter
+                    text: parent.obj ? `${parent.obj.unit} ${parent.obj.name}` : ""
+                    color: Theme.txtPrimaryColor
+                    fontSize: Theme.lgFontSize
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
                 }
 
-                DsIconButton {
-                    // enabled: pageNo<totalPages && !searchitemrequest.running
-                    iconType: IconType.arrowRight
-                    textColor: Theme.txtPrimaryColor
-                    bgColor: "transparent"
-                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                DsLabel {
+                    text: qsTr("Quantity")
+                    color: Theme.txtHintColor
+                    fontSize: Theme.lgFontSize
+                    rightPadding: Theme.smSpacing
+                    Layout.alignment: Qt.AlignVCenter
+                }
 
-                    onClicked: {
-                        // pageNo += 1
-                        getProducts()
-                    }
+                QQCB.SpinBox {
+                    Layout.preferredHeight: Theme.btnHeight
+                    Layout.preferredWidth: 200
+                    value: parent.obj ? parent.obj.quantity : 1
+                    from: 1
+                }
+
+                Item { height: 1; Layout.preferredWidth: 50 }
+
+                DsButton {
+                    text: qsTr("Update")
+                    iconType: IconType.circleCheck
+                }
+
+                DsButton {
+                    text: qsTr("Remove")
+                    iconType: IconType.trashX
+                    textColor: Theme.dangerColor
+                    bgColor: "transparent"
+                    bgHover: withOpacity(Theme.dangerAltColor, 0.8)
+                    bgDown: withOpacity(Theme.dangerAltColor, 0.6)
+                    borderColor: Theme.dangerColor
+                    borderWidth: 1
                 }
             }
         }

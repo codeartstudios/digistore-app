@@ -20,12 +20,18 @@ Button {
     property alias tooltip: tooltip
     property string textColor: Theme.baseColor
     property string bgColor: Theme.primaryColor
+    property string bgHover: withOpacity(bgColor, 0.8)
+    property string bgDown: withOpacity(bgColor, 0.6)
+    property real borderWidth: 0
+    property string borderColor: Theme.primaryColor
 
     background: Rectangle {
         id: bg
-        color: bgColor
+        color: control.enabled ? (down ? bgDown : hovered ? bgHover : bgColor) : bgColor
         radius: Theme.btnRadius
-        opacity: enabled ? (hovered ? 0.8 : down ? 0.6 : 1) : 0.4
+        border.width: borderWidth
+        border.color: borderColor
+        opacity: control.enabled ? 1 : 0.4
     }
 
     contentItem: Item {
