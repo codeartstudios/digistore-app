@@ -50,7 +50,7 @@ DsPage {
 
             DsIconButton {
                 enabled: !searchitemrequest.running
-                iconType: IconType.reload
+                iconType: IconType.plus
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
                 bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
@@ -58,7 +58,8 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: getProducts()
+                // Add new tab
+                // onClicked: getProducts()
             }
 
             Item {
@@ -80,7 +81,7 @@ DsPage {
 
                     Rectangle {
                         height: parent.height
-                        width: 80
+                        width: 100
                         radius: Theme.btnRadius
                         color: Theme.dangerAltColor
 
@@ -106,6 +107,7 @@ DsPage {
             }
 
             DsButton {
+                enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
@@ -113,6 +115,7 @@ DsPage {
             }
 
             DsButton {
+                enabled: cartModel.count>0
                 iconType: IconType.handStop
                 text: qsTr("Freeze")
                 Layout.preferredHeight: Theme.lgBtnHeight

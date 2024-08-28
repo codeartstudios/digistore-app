@@ -40,5 +40,7 @@
         <file>ui/controls/DsSideBarListView.qml</file>
         <file>ui/popups/DsNewProductPopup.qml</file>
         <file>ui/controls/DsBusyIndicator.qml</file>
+        <file>ui/flow/AppStackLayout.qml</file>
+        <file>ui/flow/DsFlowLoader.qml</file>
     </qresource>
 </RCC>

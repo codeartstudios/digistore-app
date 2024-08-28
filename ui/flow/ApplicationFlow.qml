@@ -55,130 +55,65 @@ Item {
     Component {
         id: postAuthComponent
 
-        StackView {
-            id: mainStack
-            initialItem: StackLayout {
-                anchors.fill: parent
+        AppStackLayout {
+            id: appStackLayout
 
-                Connections {
-                    target: sideBar
+            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
 
-                    function onMenuSelected(label) {
-                        switch(label) {
-                        case "dashboard": {
-                            postAuthLoader.sourceComponent = dashboardStackComponent;
-                            break;
-                        }
+            Connections {
+                target: sideBar
 
-                        case "teller": {
-                            postAuthLoader.sourceComponent = tellerStackComponent;
-                            break;
-                        }
+                function onMenuSelected(label) {
+                    switch(label) {
+                    case "dashboard": {
+                        appStackLayout.currentIndex=0;
+                        appStackLayout.dashboardLoader.active=true;
+                        break;
+                    }
 
-                        case "inventory": {
-                            postAuthLoader.sourceComponent = inventoryStackComponent;
-                            break;
-                        }
+                    case "teller": {
+                        appStackLayout.currentIndex=1;
+                        appStackLayout.tellerLoader.active=true;
+                        break;
+                    }
 
-                        case "organization": {
-                            postAuthLoader.sourceComponent = organizationStackComponent;
-                            break;
-                        }
+                    case "inventory": {
+                        appStackLayout.currentIndex=2;
+                        appStackLayout.inventoryLoader.active=true;
+                        break;
+                    }
 
-                        case "sales": {
-                            postAuthLoader.sourceComponent = salesStackComponent;
-                            break;
-                        }
+                    case "organization": {
+                        appStackLayout.currentIndex=3;
+                        appStackLayout.organizationLoader.active=true;
+                        break;
+                    }
 
-                        case "notifications": {
-                            // postAuthLoader.sourceComponent = salesStackComponent;
-                            break;
-                        }
+                    case "sales": {
+                        appStackLayout.currentIndex=4;
+                        appStackLayout.salesLoader.active=true;
+                        break;
+                    }
 
-                        case "settings": {
-                            // postAuthLoader.sourceComponent = salesStackComponent;
-                            break;
-                        }
+                    case "notifications": {
+                        // postAuthLoader.sourceComponent = salesStackComponent;
+                        break;
+                    }
 
-                        case "profile": {
-                            // postAuthLoader.sourceComponent = salesStackComponent;
-                            break;
-                        }
-                        }
+                    case "settings": {
+                        // postAuthLoader.sourceComponent = salesStackComponent;
+                        break;
+                    }
+
+                    case "profile": {
+                        // postAuthLoader.sourceComponent = salesStackComponent;
+                        break;
+                    }
                     }
                 }
-
-                Loader {
-                    id: postAuthLoader
-                    active: true
-                    sourceComponent: dashboardStackComponent
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
             }
         }
     }
-
-    Component {
-        id: dashboardStackComponent
-
-        DsNavigationStack {
-            id: dashboardStack
-
-            DashboardPage {
-                id: dashboardPage
-            }
-        }
-    }
-
-    Component {
-        id: tellerStackComponent
-
-        DsNavigationStack {
-            id: tellerStack
-
-            TellerPage {
-                id: tellerPage
-            }
-        }
-    } // Teller Component [Checkout]
-
-    Component {
-        id: inventoryStackComponent
-
-        DsNavigationStack {
-            id: inventoryStack
-
-            InventoryPage {
-                id: inventoryPage
-            }
-        }
-    } // Inventory Component
-
-    Component {
-        id: organizationStackComponent
-
-        DsNavigationStack {
-            id: organizationStack
-
-            OrganizationPage {
-                id: organizationPage
-            }
-        }
-    } // Organization Component
-
-    Component {
-        id: salesStackComponent
-
-        DsNavigationStack {
-            id: salesStack
-
-            SalesPage {
-                id: salesPage
-            }
-        }
-    } // Sales Component
-
 
     function withOpacity(color, opacity) {
         var r, g, b;
