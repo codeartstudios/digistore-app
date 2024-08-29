@@ -9,14 +9,17 @@ import "../controls"
 
 Popup {
     id: root
-    width: 800
-    height: 500
+    width: 500
+    height: 600
     modal: true
     x: (mainApp.width-width)/2
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
     onOpened: clearInputs()
+
+    property real totals: 0
+    property var model: null
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -36,6 +39,12 @@ Popup {
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
                 Layout.topMargin: Theme.xsSpacing
+
+                Rectangle {
+                    width: parent.width; height: 1
+                    color: Theme.baseAlt1Color
+                    anchors.bottom: parent.bottom
+                }
 
                 DsLabel {
                     fontSize: Theme.h1
@@ -70,79 +79,55 @@ Popup {
                     spacing: Theme.smSpacing
 
                     Row {
-                        spacing: Theme.smSpacing
-                        width: parent.width - 2*Theme.baseSpacing
+                        spacing: Theme.xsSpacing
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        DsInputWithLabel {
-                            id: barcodeinput
-                            label: qsTr("Barcode")
-                            input.placeholderText: qsTr("i.e. 123431423")
-                            width: (parent.width-parent.spacing)/2
+                        DsLabel {
+                            fontSize: Theme.h1
+                            color: Theme.txtHintColor
+                            text: qsTr("TOTALS")
+                            anchors.baseline: totalslabel.baseline
                         }
 
-                        DsInputWithLabel {
-                            id: unitinput
-                            label: qsTr("Unit")
-                            mandatory: true
-                            input.placeholderText: qsTr("i.e. 1pc")
-                            width: (parent.width-parent.spacing)/2
+                        DsLabel {
+                            id: totalslabel
+                            isBold: true
+                            fontSize: Theme.btnHeight
+                            color: Theme.txtHintColor
+                            text: `KES ${totals}`
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 
-                    DsInputWithLabel {
-                        id: nameinput
-                        label: qsTr("Item Name")
+                    Rectangle {
+                        width: parent.width; height: 1
+                        color: Theme.baseAlt1Color
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    DsCheckoutPaymentMethod {
+                        id: cashinput
+                        label: qsTr("Cash")
+                        input.placeholderText: qsTr("0.0")
+                        width: parent.width - 2*Theme.baseSpacing
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    DsCheckoutPaymentMethod {
+                        id: mpesainput
+                        label: qsTr("M-Pesa")
+                        input.placeholderText: qsTr("0.0")
+                        width: parent.width - 2*Theme.baseSpacing
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+                    DsCheckoutPaymentMethod {
+                        id: chequeinput
+                        label: qsTr("Cheque")
                         mandatory: true
-                        input.placeholderText: qsTr("i.e. Blue Pen")
+                        input.placeholderText: qsTr("0.0")
                         width: parent.width - 2*Theme.baseSpacing
                         anchors.horizontalCenter: parent.horizontalCenter
-                    }
-
-                    Row {
-                        spacing: Theme.smSpacing
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-                        DsInputWithLabel {
-                            id: bpinput
-                            label: qsTr("Buying Price")
-                            input.placeholderText: qsTr("i.e. 500.0")
-                            width: (parent.width-parent.spacing)/2
-                            validator: IntValidator { bottom: 0 }
-                        }
-
-                        DsInputWithLabel {
-                            id: spinput
-                            label: qsTr("Selling Price")
-                            mandatory: true
-                            input.placeholderText: qsTr("i.e. 800.0")
-                            width: (parent.width-parent.spacing)/2
-                            validator: IntValidator { bottom: 0 }
-                        }
-                    }
-
-                    Row {
-                        spacing: Theme.smSpacing
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-                        DsInputWithLabel {
-                            id: stockinput
-                            label: qsTr("Stock")
-                            input.placeholderText: qsTr("i.e. 20")
-                            width: (parent.width-parent.spacing)/2
-                            validator: IntValidator{ bottom: 0 }
-                        }
-
-                        DsInputWithLabel {
-                            id: thumbnailinput
-                            label: qsTr("Thumbnail")
-                            input.placeholderText: qsTr("i.e. picture")
-                            width: (parent.width-parent.spacing)/2
-                            onClicked: selectthumbnaildialog.open()
-                            readOnly: true
-                        }
                     }
                 }
             }
@@ -161,35 +146,13 @@ Popup {
 
                     DsButton {
                         busy: addproductrequest.running
-                        text: qsTr("Add")
-                        iconType: IconType.plus
-                        onClicked: addItem()
+                        text: qsTr("Submit")
+                        endIcon: IconType.arrowRight
+                        // iconType: IconType.plus
+                        onClicked: goToCheckout()
                     }
                 }
             }
-        }
-    }
-
-    FileDialog {
-        id: selectthumbnaildialog
-        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-        fileMode: FileDialog.OpenFile
-        nameFilters: ["Image Files (*.png *jpg *jpeg *bmp)"]
-
-        onAccepted: {
-            var filePath = file.toString(); // Get the file URL
-
-            if (filePath.startsWith("file:///")) {
-                if (dsController.platform==="windows") {
-                    // Windows path (e.g., file:///C:/path/to/file.txt)
-                    filePath = filePath.substring(8); // Remove "file:///"
-                } else {
-                    // Linux path (e.g., file:///home/user/file.txt)
-                    filePath = filePath.substring(7); // Remove "file://"
-                }
-            }
-
-            thumbnailinput.input.text=filePath
         }
     }
 
@@ -200,16 +163,14 @@ Popup {
         method: "POST"
     }
 
-    function addItem() {
-        var barcode = barcodeinput.input.text.trim()
-        var units = unitinput.input.text.trim()
-        var name = nameinput.input.text.trim()
-        var bp = bpinput.input.text.trim()
-        var sp = spinput.input.text.trim()
-        var stock = stockinput.input.text.trim()
-        var thumbnail = thumbnailinput.input.text.trim()
-
-        console.log("Thumbanail: ", thumbnail)
+    function goToCheckout() {
+        var barcode = "" //  barcodeinput.input.text.trim()
+        var units = "" //  unitinput.input.text.trim()
+        var name = "" //  nameinput.input.text.trim()
+        var bp = "" //  bpinput.input.text.trim()
+        var sp = "" //  spinput.input.text.trim()
+        var stock = "" //  stockinput.input.text.trim()
+        var thumbnail = "" //  thumbnailinput.input.text.trim()
 
         if(units.length===0) {
             return;
@@ -251,13 +212,5 @@ Popup {
     }
 
     function clearInputs() {
-        barcodeinput.input.text=""
-        unitinput.input.text=""
-        nameinput.input.text=""
-        bpinput.input.text=""
-        spinput.input.text=""
-        stockinput.input.text=""
-        thumbnailinput.input.text=""
-        selectthumbnaildialog.file=""
     }
 }

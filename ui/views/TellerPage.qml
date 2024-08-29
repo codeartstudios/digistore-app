@@ -321,6 +321,8 @@ DsPage {
     // Components
     DsCheckoutPopup {
         id: checkoutpopup
+        totals: root.checkoutTotals ? root.checkoutTotals : 0
+        model: root.cartModel
     }
 
     Requests {

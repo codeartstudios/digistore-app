@@ -43,5 +43,6 @@
         <file>ui/flow/AppStackLayout.qml</file>
         <file>ui/flow/DsFlowLoader.qml</file>
         <file>ui/popups/DsCheckoutPopup.qml</file>
+        <file>ui/controls/DsCheckoutPaymentMethod.qml</file>
     </qresource>
 </RCC>

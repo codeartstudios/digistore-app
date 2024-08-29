@@ -8,9 +8,11 @@ Label {
     font.bold: isBold
     font.italic: isItalic
     font.weight: fontWeight
+    font.underline: isUnderlined
 
     property int fontWeight: Font.Normal
     property real fontSize: Theme.h1
     property bool isBold: false
     property bool isItalic: false
+    property bool isUnderlined: false
 }
