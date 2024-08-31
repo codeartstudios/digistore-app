@@ -6,6 +6,7 @@ Item {
     implicitHeight: Theme.btnHeight
     implicitWidth: Theme.btnHeight
 
+    property alias iconSize: ico.iconSize
     property bool running: false
     property int duration: rotanim.duration
 

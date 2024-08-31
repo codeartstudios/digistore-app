@@ -48,5 +48,6 @@
         <file>app/digisto/modules/Theme.qml</file>
         <file>ui/views/SupplyPage.qml</file>
         <file>ui/controls/DsSearchInputNoPopup.qml</file>
+        <file>ui/popups/DsNewSupplierPopup.qml</file>
     </qresource>
 </RCC>

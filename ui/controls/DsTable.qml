@@ -100,6 +100,7 @@ Rectangle {
                     DsBusyIndicator {
                         width: 50
                         height: 50
+                        iconSize: 20
                         running: busy
                         visible: running
                         anchors.right: parent.right

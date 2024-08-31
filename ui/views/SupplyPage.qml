@@ -36,7 +36,7 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
-                text: qsTr("Home")
+                text: qsTr("Inventory")
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -64,7 +64,7 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                // onClicked: getSuppliers()
+                onClicked: getSuppliers()
             }
 
             Item {
@@ -75,7 +75,7 @@ DsPage {
             DsButton {
                 iconType: IconType.tablePlus
                 text: qsTr("New Supplier")
-                onClicked: newproductpopup.open()
+                onClicked: newsupplierpopup.open()
             }
         }
 
@@ -204,8 +204,8 @@ DsPage {
     }
 
     // Components
-    DsNewProductPopup {
-        id: newproductpopup
+    DsNewSupplierPopup {
+        id: newsupplierpopup
     }
 
     Requests {
@@ -219,15 +219,10 @@ DsPage {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: txt==='' ? '' : `name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}'`
+            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-
-        // TODO filtering
-        var filter = {
-            organization: "clhyn7tolbhy98k"
-        }
-
+        console.log(JSON.stringify(query))
         getsuppliersrequest.clear()
         getsuppliersrequest.query = query;
         var res = getsuppliersrequest.send();
