@@ -129,6 +129,17 @@ Popup {
                         width: parent.width - 2*Theme.baseSpacing
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
+
+                    DsCheckoutPaymentMethod {
+                        id: creditinput
+                        label: qsTr("Credit")
+                        mandatory: true
+                        input.placeholderText: qsTr("0.0")
+                        width: parent.width - 2*Theme.baseSpacing
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+
+
                 }
             }
 

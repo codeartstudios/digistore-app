@@ -41,9 +41,10 @@ Item {
 
         DsSideBarListView {
             width: parent.width
-            anchors.bottom: extraslv.top
             model: sideMenu
+            anchors.bottom: extraslv.top
             anchors.top: logoitem.bottom
+            anchors.bottomMargin: Theme.xsSpacing
         }
 
         DsSideBarListView {

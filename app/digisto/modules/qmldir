@@ -1,0 +1,3 @@
+module app.digisto.modules
+singleton IconType 1.0 IconType.qml
+singleton Theme 1.0 Theme.qml

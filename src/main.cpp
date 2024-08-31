@@ -11,18 +11,20 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Create the dscontroller instance
-    DsController dsController;
+    // DsController dsController;
 
     QQmlApplicationEngine engine;
 
     // Register dscontroller to QML
-    engine.rootContext()->setContextProperty("dsController", &dsController);
+    // engine.rootContext()->setContextProperty("dsController", &dsController);
 
     qmlRegisterType<Requests>("app.digisto.modules", 1, 0, "Requests");
-    qmlRegisterSingletonType(QUrl("qrc:/ui/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
-    qmlRegisterSingletonType(QUrl("qrc:/ui/IconType.qml"), "app.digisto.modules", 1, 0, "IconType");
+    // qmlRegisterSingletonType(QUrl("qrc:/ui/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
+    // qmlRegisterSingletonType(QUrl("qrc:/ui/IconType.qml"), "app.digisto.modules", 1, 0, "IconType");
 
     const QUrl url(QStringLiteral("qrc:/ui/Main.qml"));
+
+    engine.addImportPath(":/");
 
     QObject::connect(
         &engine,

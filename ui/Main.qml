@@ -27,13 +27,7 @@ Window {
         source: "qrc:/assets/fonts/tabler-icons.ttf"
     }
 
-    DsRightDrawer {
-        id: rightDrawer
-    }
-
     ApplicationFlow {
         id: appFlow
     }
-
-    // Component.onCompleted: rightDrawer.open()
 }

@@ -1,15 +1,7 @@
 pragma Singleton
 import QtQuick
 
-Item {
-    property bool isDarkTheme: false
-
-    // property string primary: "#d1dbe4"
-    // property string secondary: "#a3b7ca"
-    // property string tertiary: "#7593af"
-    // property string accent: "#476f95"
-    // property string foreground: "#194a7a"
-
+QtObject {
     property string txtPrimaryColor:    "#16161a"
     property string txtHintColor:       "#666f75"
     property string txtDisabledColor:   "#a0a6ac"
@@ -80,60 +72,17 @@ Item {
     property real lgRadius:         12  // px
     property real btnRadius:        4   // px
 
-    property color overlayColor: Qt.rgba(53, 71, 104, 0.28)
-    property color tooltipColor: Qt.rgba(0, 0, 0, 0.85)
-    property color shadowColor: Qt.rgba(0, 0, 0, 0.06)
-    
-    property real appSidebarWidth: 75
+    property color overlayColor:    Qt.rgba(53, 71, 104, 0.28)
+    property color tooltipColor:    Qt.rgba(0, 0, 0, 0.85)
+    property color shadowColor:     Qt.rgba(0, 0, 0, 0.06)
+
+    property real appSidebarWidth:  75
     property real pageSidebarWidth: 235
-    
 
-    
-    //     // https://developer.mozilla.org/en-US/docs/Web/CSS/accent-color
-    //     accent-color: var(--primaryColor);
+    property real wrapperWidth:     850     // px
+    property real smWrapperWidth:   420     // px
+    property real lgWrapperWidth:   1200    // px
+
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/accent-color
+    // accent-color: var(--primaryColor);
 }
-
-// :root {
-
-// }
-
-// property string baseFontFamily: 'Source Sans Pro', sans-serif, emoji;
-// property string monospaceFontFamily: 'Ubuntu Mono', monospace, emoji;
-// property string iconFontFamily: 'remixicon';
-
-// property var baseAnimationSpeed: 150ms;
-// property var activeAnimationSpeed: 70ms;
-// property var entranceAnimationSpeed: 250ms;
-
-// property var wrapperWidth:   850px;
-// property var smWrapperWidth: 420px;
-// property var lgWrapperWidth: 1200px;
-
-// // Maps
-// // ----
-// $colorsMap: (
-//     "primary":     var(--primaryColor),
-//     "info":        var(--infoColor),
-//     "info-alt":    var(--infoAltColor),
-//     "success":     var(--successColor),
-//     "success-alt": var(--successAltColor),
-//     "danger":      var(--dangerColor),
-//     "danger-alt":  var(--dangerAltColor),
-//     "warning":     var(--warningColor),
-//     "warning-alt": var(--warningAltColor),
-// );
-
-// $sidesMap: (
-//     "t": "top",
-//     "r": "right",
-//     "b": "bottom",
-//     "l": "left",
-// );
-
-// $sizesMap: (
-//   "base": var(--baseSpacing),
-//   "xs":   var(--xsSpacing),
-//   "sm":   var(--smSpacing),
-//   "lg":   var(--lgSpacing),
-//   "xl":   var(--xlSpacing),
-// );
