@@ -49,5 +49,6 @@
         <file>ui/views/SupplyPage.qml</file>
         <file>ui/controls/DsSearchInputNoPopup.qml</file>
         <file>ui/popups/DsNewSupplierPopup.qml</file>
+        <file>ui/controls/DsTabButton.qml</file>
     </qresource>
 </RCC>

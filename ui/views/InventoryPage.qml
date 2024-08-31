@@ -79,13 +79,16 @@ DsPage {
             }
         }
 
-        DsSearchInput {
+        DsSearchInputNoPopup {
             id: dsSearchInput
+            busy: getproductrequest.running
             placeHolderText: qsTr("What are you looking for?")
             Layout.preferredHeight: Theme.lgBtnHeight
             Layout.fillWidth: true
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
+
+            onAccepted: (txt) => getProducts(txt)
         }
 
         DsTable {
@@ -235,24 +238,17 @@ DsPage {
         path: "/api/collections/product/records"
     }
 
-    function getProducts() {
+    function getProducts(txt='') {
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
-            sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`
-        }
-
-
-        // TODO filtering
-        var filter = {
-            organization: "clhyn7tolbhy98k"
+            sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
+            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
         }
 
         getproductrequest.clear()
         getproductrequest.query = query;
         var res = getproductrequest.send();
-
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;

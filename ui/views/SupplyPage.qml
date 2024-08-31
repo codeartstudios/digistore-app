@@ -222,7 +222,7 @@ DsPage {
             filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-        console.log(JSON.stringify(query))
+        // console.log(JSON.stringify(query))
         getsuppliersrequest.clear()
         getsuppliersrequest.query = query;
         var res = getsuppliersrequest.send();

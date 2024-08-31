@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import app.digisto.modules
 
@@ -18,7 +19,8 @@ DsPage {
             anchors.fill: parent
 
             Rectangle {
-                color: Theme.baseAlt1Color
+                radius: Theme.btnRadius
+                color: Theme.baseColor
                 Layout.preferredWidth: Theme.pageSidebarWidth
                 Layout.fillHeight: true
 
@@ -95,14 +97,44 @@ DsPage {
                 }
             }
 
-            Rectangle {
-                color: Theme.baseAlt1Color
+            Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                // Tabbar for:  1. Sub Organizational Units
-                //              2. User Accounts in the organization
-                //              2. //
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 0
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Theme.btnHeight
+
+                        ListView {
+                            id: tabslv
+                            model: ["Info", "Branches", "Details", "Settings"]
+                            orientation: ListView.Horizontal
+                            anchors.fill: parent
+                            currentIndex: 0
+                            delegate: DsTabButton {
+                                active: index===tabslv.currentIndex
+                                text: modelData
+                                iconType: IconType.settings
+
+                                onClicked: tabslv.currentIndex=index
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        color: Theme.baseAlt1Color
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        // Tabbar for:  1. Sub Organizational Units
+                        //              2. User Accounts in the organization
+                        //              2. //
+                    }
+                }
             }
         }
     }
