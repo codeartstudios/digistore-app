@@ -46,5 +46,7 @@
         <file>app/digisto/modules/qmldir</file>
         <file>app/digisto/modules/IconType.qml</file>
         <file>app/digisto/modules/Theme.qml</file>
+        <file>ui/views/SupplyPage.qml</file>
+        <file>ui/controls/DsSearchInputNoPopup.qml</file>
     </qresource>
 </RCC>

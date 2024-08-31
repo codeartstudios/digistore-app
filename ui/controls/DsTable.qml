@@ -305,7 +305,7 @@ Rectangle {
                                 DsLabel {
                                     elide: DsLabel.ElideRight
                                     fontSize: Theme.smFontSize
-                                    text: tabledelegate.rowModel[value]==="" ? "--" : tabledelegate.rowModel[value]
+                                    text: tabledelegate.rowModel[value]==="" ? "N/A" : tabledelegate.rowModel[value]
                                     verticalAlignment: DsLabel.AlignVCenter
                                     leftPadding: Theme.smSpacing
                                     rightPadding: Theme.smSpacing

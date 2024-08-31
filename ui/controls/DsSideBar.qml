@@ -87,7 +87,15 @@ Item {
                             label: "inventory",
                             tooltip: "Org. Inventory",
                             isBusy: false,
-                            iconType: IconType.buildingWarehouse
+                            iconType: IconType.stack2
+                        })
+
+        sideMenu.append({
+                            checkable: true,
+                            label: "supply",
+                            tooltip: "Inventory Supply",
+                            isBusy: false,
+                            iconType: IconType.truckLoading
                         })
 
         sideMenu.append({
