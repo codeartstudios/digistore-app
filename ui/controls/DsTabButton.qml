@@ -9,7 +9,7 @@ Button {
     implicitWidth: row.width + 3*Theme.smSpacing
     height: implicitHeight
     width: implicitWidth
-    hoverEnabled: true
+    hoverEnabled: !active
     checkable: true
     checked: active
 

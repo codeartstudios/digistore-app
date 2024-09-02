@@ -50,5 +50,9 @@
         <file>ui/controls/DsSearchInputNoPopup.qml</file>
         <file>ui/popups/DsNewSupplierPopup.qml</file>
         <file>ui/controls/DsTabButton.qml</file>
+        <file>ui/views/OrganizationInfo.qml</file>
+        <file>ui/views/OrganizationSettings.qml</file>
+        <file>ui/views/OrganizationBranches.qml</file>
+        <file>ui/popups/DsMessageBox.qml</file>
     </qresource>
 </RCC>

@@ -4,7 +4,8 @@ import app.digisto.modules
 
 Item {
     id: root
-    height: col.height
+    implicitHeight: col.height
+    height: implicitHeight
     width: parent.width
 
     property string label: ""
@@ -21,7 +22,8 @@ Item {
             elide: DsLabel.ElideRight
             width: parent.width
             text: root.label
-            fontSize: Theme.xlFontSize
+            fontSize: Theme.baseFontSize
+            color: Theme.txtHintColor
         }
 
         DsLabel {
@@ -29,8 +31,8 @@ Item {
             wrapMode: DsLabel.NoWrap
             elide: DsLabel.ElideRight
             width: parent.width
-            text: root.value
-            fontSize: Theme.smFontSize
+            text: root.value==="" ? qsTr("N/A") : root.value
+            fontSize: Theme.lgFontSize
         }
     }
 }

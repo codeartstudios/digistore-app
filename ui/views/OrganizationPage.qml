@@ -4,138 +4,193 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
+import "../flow"
 
 DsPage {
     id: root
     title: qsTr("Organization Page")
     headerShown: true
 
-    Item {
+    property ListModel orgTabModel: ListModel{}
+
+    ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.lgSpacing
+        spacing: Theme.smSpacing
 
         RowLayout {
-            spacing: Theme.baseSpacing
-            anchors.fill: parent
+            Layout.fillWidth: true
+            Layout.preferredHeight: Theme.lgBtnHeight
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+            Layout.topMargin: Theme.smSpacing
+            spacing: Theme.smSpacing
 
-            Rectangle {
-                radius: Theme.btnRadius
-                color: Theme.baseColor
-                Layout.preferredWidth: Theme.pageSidebarWidth
-                Layout.fillHeight: true
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("Organization")
+                Layout.alignment: Qt.AlignVCenter
+            }
 
-                Column {
-                    spacing: Theme.xsSpacing
-                    anchors.fill: parent
-                    anchors.margins: Theme.xsSpacing
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: qsTr("/")
+                Layout.alignment: Qt.AlignVCenter
+            }
 
-                    Rectangle {
-                        width: parent.width
-                        height: width
-                        radius: width/2
-                        color: ma.hovered ? withOpacity(Theme.baseColor, 0.8) : Theme.baseColor
+            DsLabel {
+                fontSize: Theme.h2
+                color: Theme.txtPrimaryColor
+                text: tabslv.currentItem.text ? tabslv.currentItem.text : ""
+                Layout.alignment: Qt.AlignVCenter
+            }
 
-                        DsIconButton {
-                            iconType: IconType.camera
-                            visible: ma.hovered
-                            anchors.centerIn: parent
-                        }
+            DsIconButton {
+                // enabled: !getproductrequest.running
+                iconType: IconType.reload
+                textColor: Theme.txtPrimaryColor
+                bgColor: "transparent"
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                radius: height/2
+                Layout.alignment: Qt.AlignVCenter
 
-                        MouseArea {
-                            id: ma
-
-                            property bool hovered: false
-
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onEntered: hovered=true
-                            onExited: hovered=false
-                            onClicked: {}
-                        }
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Name")
-                        value: qsTr("Koaley Group Ltd.")
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Description")
-                        value: qsTr("A short description of the organization and the location details.")
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Date Added")
-                        value: "12th June 2023"
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Plan")
-                        value: "Basic"
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Mobile")
-                        value: "+254700986567"
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Email")
-                        value: "admin@koaleygroup.com"
-                    }
-
-                    DsFormTextElement {
-                        label: qsTr("Website")
-                        value: "https://koaleygroup.com"
-                    }
-
-                    DsButton {
-                        iconType: IconType.edit
-                        width: parent.width
-                        text: qsTr("Edit Information")
-                    }
-                }
+                onClicked: getProducts()
             }
 
             Item {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
+                height: 1
+            }
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
+            // DsButton {
+            //     iconType: IconType.tablePlus
+            //     text: qsTr("New Product")
+            //     // onClicked: newproductpopup.open()
+            // }
+        }
 
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: Theme.btnHeight
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.leftMargin: Theme.baseSpacing
+            Layout.rightMargin: Theme.baseSpacing
+            Layout.bottomMargin: Theme.baseSpacing
 
-                        ListView {
-                            id: tabslv
-                            model: ["Info", "Branches", "Details", "Settings"]
-                            orientation: ListView.Horizontal
-                            anchors.fill: parent
-                            currentIndex: 0
-                            delegate: DsTabButton {
-                                active: index===tabslv.currentIndex
-                                text: modelData
-                                iconType: IconType.settings
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                                onClicked: tabslv.currentIndex=index
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Theme.btnHeight
+
+                    ListView {
+                        id: tabslv
+                        model: orgTabModel
+                        orientation: ListView.Horizontal
+                        anchors.fill: parent
+                        currentIndex: 0
+                        delegate: DsTabButton {
+                            active: index===tabslv.currentIndex
+                            text: model.label
+                            iconType: model.iconType
+
+                            onClicked: {
+                                tabslv.currentIndex=index
+                                model.componentId.active=true
                             }
                         }
                     }
+                }
+
+                Rectangle {
+                    color: Theme.baseAlt1Color
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
                     Rectangle {
-                        color: Theme.baseAlt1Color
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        height: 1
+                        color: Theme.bodyColor
+                        width: parent.width
+                        anchors.top: parent.top
+                    }
 
-                        // Tabbar for:  1. Sub Organizational Units
-                        //              2. User Accounts in the organization
-                        //              2. //
+                    StackLayout {
+                        anchors.fill: parent
+                        currentIndex: tabslv.currentIndex
+
+                        Component.onCompleted: orginfoloader.active=true
+
+                        // OrganizationInfoPage
+                        DsFlowLoader {
+                            id: orginfoloader
+                            active: false
+                            asynchronous: true
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            sourceComponent: Component {
+                                id: orginfocomponent
+
+                                OrganizationInfo {
+                                    id: orginfopage
+                                }
+                            }
+                        } // OrganizationInfoPage Loader
+
+                        // OrganizationBranchesPage
+                        DsFlowLoader {
+                            id: orgbranchesloader
+                            active: false
+                            asynchronous: true
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            sourceComponent: Component {
+                                id: orgbranchescomponent
+
+                                OrganizationBranches {
+                                    id: orgbranchespage
+                                }
+                            }
+                        } // OrganizationBranchesPage Loader
+
+                        // OrganizationSettingsPage
+                        DsFlowLoader {
+                            id: orgsettingsloader
+                            active: false
+                            asynchronous: true
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            sourceComponent: Component {
+                                id: orgsettingscomponent
+
+                                OrganizationSettings {
+                                    id: orgsettingspage
+                                }
+                            }
+                        } // OrganizationSettingsPage Loader
                     }
                 }
             }
         }
     }
+
+    Component.onCompleted: orgTabModel.append([
+                                                  {
+                                                      label: "Info",
+                                                      iconType: IconType.infoCircle,
+                                                      componentId: orginfoloader
+                                                  },
+                                                  {
+                                                      label: "Branches",
+                                                      iconType: IconType.gitMerge,
+                                                      componentId: orgbranchesloader
+                                                  },
+                                                  {
+                                                      label: "Settings",
+                                                      iconType: IconType.settings,
+                                                      componentId: orgsettingsloader
+                                                  }
+                                              ])
 }
