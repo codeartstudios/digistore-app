@@ -13,6 +13,8 @@ DsPage {
 
     property ListModel orgTabModel: ListModel{}
 
+    signal refreshPage()
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Theme.smSpacing
@@ -56,7 +58,7 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: getProducts()
+                onClicked: root.refreshPage()
             }
 
             Item {
@@ -79,6 +81,7 @@ DsPage {
             Layout.bottomMargin: Theme.baseSpacing
 
             ColumnLayout {
+                id: orgStack
                 anchors.fill: parent
                 spacing: 0
 
@@ -135,6 +138,15 @@ DsPage {
 
                                 OrganizationInfo {
                                     id: orginfopage
+
+                                    Connections {
+                                        target: root
+
+                                        function onRefreshPage() {
+                                            if(orgStack.currentIndex===0)
+                                                orginfopage.fetchOrganizationDetails();
+                                        }
+                                    }
                                 }
                             }
                         } // OrganizationInfoPage Loader

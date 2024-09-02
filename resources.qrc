@@ -54,5 +54,8 @@
         <file>ui/views/OrganizationSettings.qml</file>
         <file>ui/views/OrganizationBranches.qml</file>
         <file>ui/popups/DsMessageBox.qml</file>
+        <file>ui/controls/DsImage.qml</file>
+        <file>assets/imgs/org-banner-default.jpg</file>
+        <file>assets/imgs/org-logo-default.jpg</file>
     </qresource>
 </RCC>

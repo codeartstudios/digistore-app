@@ -43,7 +43,9 @@ Item {
                     color: Theme.baseAlt2Color
                     radius: Theme.btnRadius
 
-                    Image {
+                    DsImage {
+                        source: orgBanner==="" ? "qrc:/assets/imgs/org-banner-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgBanner}`
+                        radius: Theme.btnRadius
                         anchors.fill: parent
                     }
 
@@ -56,6 +58,13 @@ Item {
                         anchors.verticalCenter: parent.bottom
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.baseSpacing
+
+                        DsImage {
+                            source: orgLogo==="" ? "qrc:/assets/imgs/org-logo-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgLogo}`
+                            radius: parent.height/2
+                            anchors.fill: parent
+                            anchors.margins: 2
+                        }
                     }
                 }
             }
