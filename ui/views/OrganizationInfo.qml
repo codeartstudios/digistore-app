@@ -22,6 +22,7 @@ Item {
     property bool orgActivated: false
 
     property DsMessageBox messageBox: DsMessageBox{}
+    property bool isRequestRunning: getorgrequest.running
 
     ScrollView {
         anchors.fill: parent
@@ -47,6 +48,14 @@ Item {
                         source: orgBanner==="" ? "qrc:/assets/imgs/org-banner-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgBanner}`
                         radius: Theme.btnRadius
                         anchors.fill: parent
+
+                        DsButton {
+                            iconType: IconType.edit
+                            text: qsTr("Edit Details")
+                            anchors.right: parent.right
+                            anchors.top: parent.bottom
+                            anchors.topMargin: Theme.baseSpacing
+                        }
                     }
 
                     Rectangle {

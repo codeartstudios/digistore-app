@@ -12,6 +12,7 @@ DsPage {
     headerShown: true
 
     property ListModel orgTabModel: ListModel{}
+    property alias refreshEnabled: refreshBtn.enabled
 
     signal refreshPage()
 
@@ -49,7 +50,7 @@ DsPage {
             }
 
             DsIconButton {
-                // enabled: !getproductrequest.running
+                id: refreshBtn
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -65,12 +66,6 @@ DsPage {
                 Layout.fillWidth: true
                 height: 1
             }
-
-            // DsButton {
-            //     iconType: IconType.tablePlus
-            //     text: qsTr("New Product")
-            //     // onClicked: newproductpopup.open()
-            // }
         }
 
         Item {
@@ -138,6 +133,11 @@ DsPage {
 
                                 OrganizationInfo {
                                     id: orginfopage
+
+                                    // Binding {
+                                    //     refreshBtn.enabled: orginfopage.isRequestRunning
+                                    //     when: orgStack.currentIndex===0
+                                    // }
 
                                     Connections {
                                         target: root
