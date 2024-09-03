@@ -83,20 +83,26 @@ Item {
                         break;
                     }
 
-                    case "supply": {
+                    case "suppliers": {
                         appStackLayout.currentIndex=3;
+                        appStackLayout.suppliersLoader.active=true;
+                        break;
+                    }
+
+                    case "supply": {
+                        appStackLayout.currentIndex=4;
                         appStackLayout.supplyLoader.active=true;
                         break;
                     }
 
                     case "organization": {
-                        appStackLayout.currentIndex=4;
+                        appStackLayout.currentIndex=5;
                         appStackLayout.organizationLoader.active=true;
                         break;
                     }
 
                     case "sales": {
-                        appStackLayout.currentIndex=5;
+                        appStackLayout.currentIndex=6;
                         appStackLayout.salesLoader.active=true;
                         break;
                     }

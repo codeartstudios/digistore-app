@@ -57,5 +57,6 @@
         <file>ui/controls/DsImage.qml</file>
         <file>assets/imgs/org-banner-default.jpg</file>
         <file>assets/imgs/org-logo-default.jpg</file>
+        <file>ui/views/SuppliersPage.qml</file>
     </qresource>
 </RCC>

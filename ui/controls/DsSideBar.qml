@@ -92,10 +92,18 @@ Item {
 
         sideMenu.append({
                             checkable: true,
+                            label: "suppliers",
+                            tooltip: "Inventory Suppliers",
+                            isBusy: false,
+                            iconType: IconType.truckLoading
+                        })
+
+        sideMenu.append({
+                            checkable: true,
                             label: "supply",
                             tooltip: "Inventory Supply",
                             isBusy: false,
-                            iconType: IconType.truckLoading
+                            iconType: IconType.stackPush
                         })
 
         sideMenu.append({

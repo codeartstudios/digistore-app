@@ -50,12 +50,12 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h2
                 color: Theme.txtPrimaryColor
-                text: qsTr("Supply")
+                text: qsTr("Suppliers")
                 Layout.alignment: Qt.AlignVCenter
             }
 
             DsIconButton {
-                enabled: !getSupplyRequest.running
+                enabled: !getsuppliersrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -64,7 +64,7 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: getInventorySupply()
+                onClicked: getSuppliers()
             }
 
             Item {
@@ -74,21 +74,21 @@ DsPage {
 
             DsButton {
                 iconType: IconType.tablePlus
-                text: qsTr("New Supply")
-                onClicked: newproductpopup.open()
+                text: qsTr("New Supplier")
+                onClicked: newsupplierpopup.open()
             }
         }
 
         DsSearchInputNoPopup {
             id: dsSearchInput
-            busy: getSupplyRequest.running
-            placeHolderText: qsTr("What are you looking for?")
+            busy: getsuppliersrequest.running
+            placeHolderText: qsTr("Who are you looking for?")
             Layout.preferredHeight: Theme.lgBtnHeight
             Layout.fillWidth: true
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getInventorySupply(txt)
+            onAccepted: (txt) => getSuppliers(txt)
         }
 
         DsTable {
@@ -96,7 +96,7 @@ DsPage {
             Layout.fillHeight: true
             headerModel: headermodel
             dataModel: datamodel
-            busy: getSupplyRequest.running
+            busy: getsuppliersrequest.running
 
             onSortBy: function(key) {
                 if(key===sortByKey) {
@@ -107,7 +107,7 @@ DsPage {
 
                 sortByKey = key;
 
-                getInventorySupply()
+                getSuppliers()
             }
         }
 
@@ -119,7 +119,7 @@ DsPage {
             DsBusyIndicator {
                 width: Theme.btnHeight
                 height: Theme.btnHeight
-                running: getSupplyRequest.running
+                running: getsuppliersrequest.running
                 visible: running
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
@@ -138,7 +138,7 @@ DsPage {
                 }
 
                 DsIconButton {
-                    enabled: pageNo>1 && !getSupplyRequest.running
+                    enabled: pageNo>1 && !getsuppliersrequest.running
                     iconType: IconType.arrowLeft
                     textColor: Theme.txtPrimaryColor
                     bgColor: "transparent"
@@ -147,7 +147,7 @@ DsPage {
 
                     onClicked: {
                         pageNo -= 1
-                        getInventorySupply()
+                        getSuppliers()
                     }
                 }
 
@@ -159,7 +159,7 @@ DsPage {
                 }
 
                 DsIconButton {
-                    enabled: pageNo<totalPages && !getSupplyRequest.running
+                    enabled: pageNo<totalPages && !getsuppliersrequest.running
                     iconType: IconType.arrowRight
                     textColor: Theme.txtPrimaryColor
                     bgColor: "transparent"
@@ -168,7 +168,7 @@ DsPage {
 
                     onClicked: {
                         pageNo += 1
-                        getInventorySupply()
+                        getSuppliers()
                     }
                 }
             }
@@ -179,15 +179,7 @@ DsPage {
         id: headermodel
 
         ListElement {
-            title: qsTr("Unit")
-            sortable: true
-            width: 100
-            flex: 0
-            value: "unit"
-        }
-
-        ListElement {
-            title: qsTr("Product Name")
+            title: qsTr("Supplier")
             sortable: true
             width: 300
             flex: 2
@@ -195,60 +187,45 @@ DsPage {
         }
 
         ListElement {
-            title: qsTr("Barcode")
-            sortable: true
-            width: 150
-            flex: 0
-            value: "barcode"
-        }
-
-        ListElement {
-            title: qsTr("Buying Price")
+            title: qsTr("Mobile")
             sortable: true
             width: 200
             flex: 1
-            value: "buying_price"
+            value: "mobile"
         }
 
         ListElement {
-            title: qsTr("Selling Price")
+            title: qsTr("Email")
             sortable: true
             width: 200
             flex: 1
-            value: "selling_price"
-        }
-
-        ListElement {
-            title: qsTr("Stock")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "stock"
+            value: "email"
         }
     }
 
     // Components
-    DsNewProductPopup {
-        id: newproductpopup
+    DsNewSupplierPopup {
+        id: newsupplierpopup
     }
 
     Requests {
-        id: getSupplyRequest
+        id: getsuppliersrequest
         baseUrl: "https://pb.digisto.app"
-        path: "/api/collections/supply/records"
+        path: "/api/collections/suppliers/records"
     }
 
-    function getInventorySupply(txt='') {
+    function getSuppliers(txt='') {
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
+            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-        getSupplyRequest.clear()
-        getSupplyRequest.query = query;
-        var res = getSupplyRequest.send();
+        // console.log(JSON.stringify(query))
+        getsuppliersrequest.clear()
+        getsuppliersrequest.query = query;
+        var res = getsuppliersrequest.send();
 
         if(res.status===200) {
             var data = res.data;
@@ -269,5 +246,5 @@ DsPage {
         }
     }
 
-    Component.onCompleted: getInventorySupply()
+    Component.onCompleted: getSuppliers()
 }
