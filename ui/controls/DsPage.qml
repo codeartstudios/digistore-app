@@ -1,6 +1,8 @@
 import QtQuick
 import app.digisto.modules
 
+import "../popups"
+
 Item {
     property string title: qsTr("New Page")
     property bool awaitingRequest: false
@@ -11,4 +13,5 @@ Item {
     property bool headerTitleShown: true
 
     property Requests request: Requests{}
+    property DsMessageBox messageBox: DsMessageBox{}
 }

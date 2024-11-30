@@ -50,6 +50,7 @@ DsPage {
             }
 
             DsIconButton {
+                visible: false
                 enabled: !searchitemrequest.running
                 iconType: IconType.plus
                 textColor: Theme.txtPrimaryColor
@@ -108,11 +109,16 @@ DsPage {
             }
 
             DsButton {
-                enabled: cartModel.count>0
+                // enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
-                onClicked: checkoutpopup.open()
+
+                onClicked: {
+                    checkoutpopup.open()
+                    checkoutpopup.totals = checkoutTotals
+                    checkoutpopup.model = cartModel
+                }
             }
 
             DsButton {
@@ -155,8 +161,19 @@ DsPage {
                     quantity,
                     subtotal: quantity * obj.selling_price
                 }
+
+                // Push new item to cart model
                 cartModel.append(cartObj)
+
+                // Recalculate cart totals on append
                 calculateTotals()
+
+                // Force the current index for the table to
+                // remain on last added item, that way the
+                // added item can be edited immediately
+                table.currentIndex = cartModel.count - 1
+                if(table.currentIndex >= 0)
+                    table.selectionChanged(table.currentIndex, cartModel.get(table.currentIndex))
             }
         }
 
@@ -171,18 +188,19 @@ DsPage {
             delegateActionIconType: IconType.shoppingBagEdit
 
             onHeaderActionButtonSelected: {
+                table.currentIndex = -1
                 cartModel.clear()
                 calculateTotals()
             }
 
             onDelegateActionButtonSelected: function(index, model) {
                 currentIndex=index;
-                selectionChanged(model);
+                selectionChanged(index, model);
             }
 
             onCurrentIndexChanged: if(table.currentIndex===-1) selectedObjectItem.selectedObject=null
 
-            onSelectionChanged: function(obj) {
+            onSelectionChanged: function(_, obj) {
                 selectedObjectItem.selectedObject={
                     id: obj.id,
                     collectionId: obj.collectionId,
@@ -200,6 +218,7 @@ DsPage {
                 }
             }
 
+            // Build headers
             Component.onCompleted: addheaders()
         }
 
@@ -292,9 +311,10 @@ DsPage {
                         var index = table.currentIndex
                         var qty = qtysbox.value
                         var sp = parent.obj.selling_price
-                        cartModel.setProperty(index, "quantity", qty)
-                        cartModel.setProperty(index, "subtotal", qty*sp)
+
+                        cartModel.set(index, { quantity: qty, subtotal: qty*sp })
                         calculateTotals()
+
                         table.currentIndex=-1
                     }
                 }
@@ -327,7 +347,6 @@ DsPage {
 
     Requests {
         id: searchitemrequest
-        baseUrl: "https://pb.digisto.app"
         path: "/api/collections/product/records"
     }
 

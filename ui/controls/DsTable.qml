@@ -22,7 +22,7 @@ Rectangle {
 
     // When any column header is clicked
     signal sortSelected(var index)
-    signal selectionChanged(var model)
+    signal selectionChanged(var index, var model)
 
     // When the action button on the header is selected
     signal headerActionButtonSelected
@@ -211,7 +211,7 @@ Rectangle {
             property string selectedColor: withOpacity(Theme.baseAlt1Color)
 
             property var rowModel: model    // Model data for the current delegate
-            property var rowIndex: index    // Row index assigned
+            property int rowIndex: index    // Row index assigned
             property bool selected: listview.currentIndex===index
 
             MouseArea {
@@ -224,7 +224,7 @@ Rectangle {
 
                 onClicked: {
                     listview.currentIndex=index
-                    root.selectionChanged(model)
+                    root.selectionChanged(tabledelegate.rowIndex, tabledelegate.rowModel)
                 }
             }
 

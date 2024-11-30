@@ -4,7 +4,7 @@ import QtQuick.Controls.Basic
 import app.digisto.modules
 
 Rectangle {
-    id: control
+    id: root
     radius: Theme.btnRadius
     implicitWidth: 200
     height: col.height + Theme.xsSpacing
@@ -22,6 +22,7 @@ Rectangle {
 
     signal clicked()
     signal inFullClicked()
+    signal inputTextChanged(value: var)
 
     function showError() { tt.show(errorString) }
     function closeError() { tt.close() }
@@ -74,9 +75,13 @@ Rectangle {
                 font.pixelSize: Theme.lgFontSize
                 echoMode: isPasswordInput ? TextField.Password : TextField.Normal
                 background: Item{}
-                readOnly: control.readOnly
+                readOnly: root.readOnly
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+
+                onTextChanged: {
+                    root.inputTextChanged(input.text)
+                }
 
                 DsToolTip {
                     id: tt
@@ -100,6 +105,6 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: { input.forceActiveFocus(); control.clicked() }
+        onClicked: { input.forceActiveFocus(); root.clicked() }
     }
 }

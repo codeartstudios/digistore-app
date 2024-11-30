@@ -16,10 +16,15 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    onOpened: clearInputs()
+    property bool submitCheckoutEnabled: false
 
+    // Passed in Data
     property real totals: 0
     property var model: null
+
+    property ListModel paymentModel: ListModel{}
+
+    onClosed: clearInputs()
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -105,41 +110,28 @@ Popup {
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
 
-                    DsCheckoutPaymentMethod {
-                        id: cashinput
-                        label: qsTr("Cash")
-                        input.placeholderText: qsTr("0.0")
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
+                    Repeater {
+                        id: paymentmethodsrepeater
+                        signal recomputePaydVsTotals
+
+                        model: paymentModel
+                        delegate: DsCheckoutPaymentMethod {
+                            label: model.label
+                            input.placeholderText: qsTr("0.00")
+                            input.text: model.amount===0 ? '' : `${model.amount}`
+                            input.validator: DoubleValidator{bottom: 0}
+                            width: scrollview.width - 2*Theme.baseSpacing
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            onInputTextChanged: (val) => {
+                                                    // console.log("Changed: ", val)
+                                                    var num = parseFloat(val.trim())
+                                                    val = isNaN(num) ? 0 : num
+                                                    paymentModel.setProperty(index, "amount", val)
+                                                    paymentmethodsrepeater.recomputePaydVsTotals()
+                                                }
+                        }
                     }
-
-                    DsCheckoutPaymentMethod {
-                        id: mpesainput
-                        label: qsTr("M-Pesa")
-                        input.placeholderText: qsTr("0.0")
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-
-                    DsCheckoutPaymentMethod {
-                        id: chequeinput
-                        label: qsTr("Cheque")
-                        mandatory: true
-                        input.placeholderText: qsTr("0.0")
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-
-                    DsCheckoutPaymentMethod {
-                        id: creditinput
-                        label: qsTr("Credit")
-                        mandatory: true
-                        input.placeholderText: qsTr("0.0")
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-
-
                 }
             }
 
@@ -156,11 +148,12 @@ Popup {
                     anchors.right: parent.right
 
                     DsButton {
-                        busy: addproductrequest.running
-                        text: qsTr("Submit")
+                        busy: checkoutrequest.running
+                        text: qsTr("Submit Payment")
                         endIcon: IconType.arrowRight
                         // iconType: IconType.plus
-                        onClicked: goToCheckout()
+                        onClicked: submitSale()
+                        enabled: root.submitCheckoutEnabled
                     }
                 }
             }
@@ -168,60 +161,135 @@ Popup {
     }
 
     Requests {
-        id: addproductrequest
-        baseUrl: "https://pb.digisto.app"
-        path: "/api/collections/product/records"
+        id: checkoutrequest
+        path: "/api/fn/checkout"
         method: "POST"
     }
 
-    function goToCheckout() {
-        var barcode = "" //  barcodeinput.input.text.trim()
-        var units = "" //  unitinput.input.text.trim()
-        var name = "" //  nameinput.input.text.trim()
-        var bp = "" //  bpinput.input.text.trim()
-        var sp = "" //  spinput.input.text.trim()
-        var stock = "" //  stockinput.input.text.trim()
-        var thumbnail = "" //  thumbnailinput.input.text.trim()
+    Connections {
+        target: paymentmethodsrepeater
 
-        if(units.length===0) {
-            return;
-        }
+        function onRecomputePaydVsTotals() {
+            var payedSum = 0;
 
-        if(name.length <= 2) {
-            return;
-        }
+            for(var j=0; j<paymentModel.count; j++) {
+                var paymentMethod = paymentModel.get(j)
+                payedSum += paymentMethod.amount
+            }
 
-        if(bp==="") bp=0
-        if(sp==="") sp=0
-        if(stock==="") stock=0
-
-        var body = {
-            name,
-            unit: units,
-            barcode,
-            buying_price: bp,
-            selling_price: sp,
-            stock: stock,
-            organization: "clhyn7tolbhy98k"
-        }
-
-        var files = {
-            thumbnail
-        }
-
-        addproductrequest.clear()
-        addproductrequest.body = body
-        if(thumbnail!=="") addproductrequest.files = files
-
-        var res = addproductrequest.send();
-        console.log(JSON.stringify(res))
-
-        if(res.status===200) {
-            root.close()
-        } else {
+            root.submitCheckoutEnabled = root.totals > 0 && payedSum >= root.totals
         }
     }
 
+    function submitSale() {
+        if(!model) {
+            messageBox.title = qsTr("Ooops!")
+            messageBox.info = qsTr("We encountered a problem, the cart is empty! Pick some few items and try again.")
+            messageBox.open()
+            return;
+        }
+
+        var payments = {}
+        for(var j=0; j<paymentModel.count; j++) {
+            var paymentmethod = paymentModel.get(j)
+            payments[paymentmethod.uid] = paymentmethod
+        }
+
+        var products = []
+        var mp = new Map();
+
+        for(j=0; j<model.count; j++) {
+            var obj = model.get(j)
+
+            if(mp.has(obj.id)) {
+                var indx = mp.get(obj.id)
+                var old_obj = products[indx]
+                var old_qty = old_obj.quantity
+                var new_qty = old_qty + obj.quantity
+                old_obj.quantity = new_qty
+                products[indx] = old_obj
+            } else {
+                products.push({
+                                  id: obj.id,
+                                  name: obj.name,
+                                  unit: obj.unit,
+                                  barcode: obj.barcode,
+                                  buying_price: obj.buying_price,
+                                  selling_price: obj.selling_price,
+                                  quantity: obj.quantity
+                              })
+                mp.set(obj.id, products.length-1)
+            }
+
+
+        }
+
+        var body = {
+            totals: root.totals,
+            payments,
+            organization: dsController.organizationID,
+            products
+        }
+
+        checkoutrequest.clear()
+        checkoutrequest.body = body
+        console.log(body, JSON.stringify(body))
+
+        // var res = checkoutrequest.send();
+        // console.log(JSON.stringify(res))
+
+        // if(res.status===200) {
+        //     root.close()
+        // } else {
+        // }
+    }
+
     function clearInputs() {
+        root.totals = 0;
+        root.model = null
+
+        for(var j=0; j<paymentModel.count; j++) {
+            paymentModel.setProperty(j, "amount",  0)
+        }
+    }
+
+    Component.onCompleted: {
+        paymentModel.append({
+                                label: "Cash",
+                                uid: "cash",
+                                type: "",
+                                amount: 0,
+                                data: {}
+                            })
+
+        paymentModel.append({
+                                label: "M-Pesa",
+                                uid: "mpesa",
+                                type: "",
+                                amount: 0,
+                                data: {}
+                            })
+
+        paymentModel.append({
+                                label: "Credit",
+                                uid: "credit",
+                                type: "",
+                                amount: 0,
+                                data: {}
+                            })
+
+        paymentModel.append({
+                                label: "Cheque",
+                                uid: "cheque",
+                                type: "",
+                                amount: 0,
+                                data: {}
+                            })
+
+    }
+
+    onOpened: {
+        // Update flags
+        paymentmethodsrepeater.recomputePaydVsTotals()
     }
 }

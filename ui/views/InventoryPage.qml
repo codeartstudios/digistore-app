@@ -75,7 +75,7 @@ DsPage {
             DsButton {
                 iconType: IconType.tablePlus
                 text: qsTr("New Product")
-                onClicked: newproductpopup.open()
+                onClicked: addoredit_productpopup.open()
             }
         }
 
@@ -109,6 +109,10 @@ DsPage {
 
                 getProducts()
             }
+
+            onSelectionChanged: (index, model) => {
+                                    launchEditOrViewDrawer(index, model)
+                                }
         }
 
         Item {
@@ -229,10 +233,14 @@ DsPage {
 
     // Components
     DsNewProductPopup {
-        id: newproductpopup
+        id: addoredit_productpopup
 
         // Handle product add success
-        onProductAddSuccessful: getProducts()
+        onProductAdded: getProducts()
+    }
+
+    DsViewOrEditProductDrawer {
+        id: vieworeditdrawer
     }
 
     Requests {
@@ -245,7 +253,7 @@ DsPage {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
+            filter: `organization = '${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
         }
 
         getproductrequest.clear()
@@ -267,8 +275,34 @@ DsPage {
         }
 
         else {
-
+            messageBox.title = qsTr("Error fetching products")
+            messageBox.info = qsTr("There was an issue when fetching products, please try again later.")
+            messageBox.open()
         }
+    }
+
+    function launchEditOrViewDrawer(index, model) {
+        console.log(model.size, model.count, model.length)
+
+        var obj = {
+            id: model.id,
+            collectionId: model.collectionId,
+            collectionName: model.collectionName,
+            created: model.created,
+            updated: model.updated,
+            name: model.name,
+            unit: model.unit,
+            barcode: model.barcode,
+            buying_price: model.buying_price,
+            selling_price: model.selling_price,
+            stock: model.stock,
+            thumbnail: model.thumbnail,
+            organization: model.organization
+        }
+
+        addoredit_productpopup.isCreatingNewProduct = false
+        addoredit_productpopup.model = obj
+        addoredit_productpopup.open()
     }
 
     Component.onCompleted: getProducts()

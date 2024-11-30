@@ -16,10 +16,47 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    // Product add signals
-    signal productAddSuccessful
+    property bool isCreatingNewProduct: true
+    property var model: null    // Model passed in from product we are viewing or updating ...
+    property bool isEditing: false
 
-    onOpened: clearInputs()
+    // Product add signals
+    signal productAdded
+    signal productUpdated
+    signal productDeleted
+
+    QtObject {
+        id: internal
+
+        // Cant bind directly to the text value, throws an error
+        // ie, with
+        // property alias barcode: barcodeinput.input.text
+        // Asigning as follows
+        //  `barcode = "xyz"`
+        // throws list assertation error
+
+        property alias barcode: barcodeinput.input
+        property alias units: unitinput.input
+        property alias name: nameinput.input
+        property alias bp: bpinput.input
+        property alias sp: spinput.input
+        property alias stock: stockinput.input
+        property alias thumbnail: thumbnailinput.input
+    }
+
+    onOpened: {
+        if(!isCreatingNewProduct && model) {
+            internal.barcode.text = model['barcode']
+            internal.units.text = model['unit']
+            internal.name.text = model['name']
+            internal.bp.text = model['buying_price']
+            internal.sp.text = model['selling_price']
+            internal.stock.text = model['stock']
+            internal.thumbnail.text = model['thumbnail']
+        }
+    }
+
+    onClosed: clearInputs() // Clear inputs when closing
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -195,7 +232,7 @@ Popup {
                 }
             }
 
-            thumbnailinput.input.text=filePath
+            internal.thumbnailinput=filePath
         }
     }
 
@@ -206,13 +243,13 @@ Popup {
     }
 
     function addItem() {
-        var barcode = barcodeinput.input.text.trim()
-        var units = unitinput.input.text.trim()
-        var name = nameinput.input.text.trim()
-        var bp = bpinput.input.text.trim()
-        var sp = spinput.input.text.trim()
-        var stock = stockinput.input.text.trim()
-        var thumbnail = thumbnailinput.input.text.trim()
+        var barcode = internal.barcodeinput.trim()
+        var units = internal.unitinput.trim()
+        var name = internal.nameinput.trim()
+        var bp = internal.bpinput.trim()
+        var sp = internal.spinput.trim()
+        var stock = internal.stockinput.trim()
+        var thumbnail = internal.thumbnailinput.trim()
 
         console.log("Thumbanail: ", thumbnail)
 
@@ -251,7 +288,7 @@ Popup {
 
         if(res.status===200) {
             // Emit product add success
-            root.productAddSuccessful()
+            root.productAdded()
             root.close()
         } else {
         }
@@ -266,5 +303,9 @@ Popup {
         stockinput.input.text=""
         thumbnailinput.input.text=""
         selectthumbnaildialog.file=""
+
+        // Reset model and flags
+        root.isCreatingNewProduct = true
+        root.model = null
     }
 }
