@@ -30,4 +30,9 @@ Window {
     ApplicationFlow {
         id: appFlow
     }
+
+    Component.onCompleted: {
+        // TODO set these from API response
+        dsController.organizationID = "clhyn7tolbhy98k";
+    }
 }

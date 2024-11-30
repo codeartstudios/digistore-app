@@ -18,6 +18,8 @@
 #include <QMimeType>
 #include <QEventLoop>
 
+#include "dscontroller.h"
+
 class Requests : public QObject
 {
     Q_OBJECT
@@ -31,7 +33,7 @@ public:
     Q_PROPERTY(QVariantMap query MEMBER m_query NOTIFY queryChanged FINAL)
     Q_PROPERTY(bool running MEMBER m_running NOTIFY runningChanged FINAL)
 
-    explicit Requests(const QString& baseurl="", QObject *parent = nullptr);
+    explicit Requests(QObject *parent = nullptr);
 
     // Create a full URL for requests, concatenates the
     // base URL and the endpoint (path)

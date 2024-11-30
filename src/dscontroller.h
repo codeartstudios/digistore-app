@@ -20,16 +20,22 @@ public:
     Q_PROPERTY(QString encryptionSalt MEMBER m_encryptionSalt NOTIFY encryptionSaltChanged FINAL)
     Q_PROPERTY(QString platform MEMBER m_platform NOTIFY platformChanged FINAL)
 
+    // Application specific global apps
+    Q_PROPERTY(QString organizationID MEMBER m_organizationID NOTIFY organizationIDChanged FINAL)
+
 signals:
     void encryptionKeyChanged();
     void encryptionSaltChanged();
     void platformChanged();
+
+    void organizationIDChanged();
 
 private:
     std::shared_ptr<QSettings> settings;
     QString m_encryptionKey;
     QString m_encryptionSalt;
     QString m_platform;
+    QString m_organizationID;
 };
 
 #endif // DSCONTROLLER_H

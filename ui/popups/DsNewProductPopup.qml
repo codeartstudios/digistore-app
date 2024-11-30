@@ -16,6 +16,9 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
+    // Product add signals
+    signal productAddSuccessful
+
     onOpened: clearInputs()
 
     background: Rectangle {
@@ -170,6 +173,9 @@ Popup {
         }
     }
 
+    // Native file dialog to allow picking of image thumbnails
+    //  - If a picture is selected, we sanitize the path and
+    //    pass it to the request engine for upload.
     FileDialog {
         id: selectthumbnaildialog
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
@@ -195,7 +201,6 @@ Popup {
 
     Requests {
         id: addproductrequest
-        baseUrl: "https://pb.digisto.app"
         path: "/api/collections/product/records"
         method: "POST"
     }
@@ -230,7 +235,7 @@ Popup {
             buying_price: bp,
             selling_price: sp,
             stock: stock,
-            organization: "clhyn7tolbhy98k"
+            organization: dsController.organizationID
         }
 
         var files = {
@@ -245,6 +250,8 @@ Popup {
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
+            // Emit product add success
+            root.productAddSuccessful()
             root.close()
         } else {
         }

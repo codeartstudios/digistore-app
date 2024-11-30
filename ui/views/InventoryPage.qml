@@ -230,11 +230,13 @@ DsPage {
     // Components
     DsNewProductPopup {
         id: newproductpopup
+
+        // Handle product add success
+        onProductAddSuccessful: getProducts()
     }
 
     Requests {
         id: getproductrequest
-        baseUrl: "https://pb.digisto.app"
         path: "/api/collections/product/records"
     }
 
@@ -243,7 +245,7 @@ DsPage {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
+            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
         }
 
         getproductrequest.clear()
