@@ -343,6 +343,12 @@ DsPage {
         id: checkoutpopup
         totals: root.checkoutTotals ? root.checkoutTotals : 0
         model: root.cartModel
+
+        // On successful checkout, clear cart model and search input
+        onCheckoutSuccessful: {
+            cartModel.clear()
+            searchitemrequest.clear()
+        }
     }
 
     Requests {

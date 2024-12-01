@@ -45,6 +45,8 @@ Popup {
     }
 
     onOpened: {
+        addItem()
+
         if(!isCreatingNewProduct && model) {
             internal.barcode.text = model['barcode']
             internal.units.text = model['unit']
@@ -243,13 +245,13 @@ Popup {
     }
 
     function addItem() {
-        var barcode = internal.barcodeinput.trim()
-        var units = internal.unitinput.trim()
-        var name = internal.nameinput.trim()
-        var bp = internal.bpinput.trim()
-        var sp = internal.spinput.trim()
-        var stock = internal.stockinput.trim()
-        var thumbnail = internal.thumbnailinput.trim()
+        var barcode = barcodeinput.input.text.trim()
+        var units = unitinput.input.text.trim()
+        var name = nameinput.input.text.trim()
+        var bp = bpinput.input.text.trim()
+        var sp = spinput.input.text.trim()
+        var stock = stockinput.input.text.trim()
+        var thumbnail = thumbnailinput.input.text.trim()
 
         console.log("Thumbanail: ", thumbnail)
 

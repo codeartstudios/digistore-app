@@ -3,7 +3,7 @@
 Requests::Requests(QObject *parent)
     : QObject{parent},
     netman(std::make_unique<QNetworkAccessManager>(this)),
-    m_baseUrl("https://pbs.digisto.app"),
+    m_baseUrl("http://127.0.0.1:8090"), // "https://pbs.digisto.app"),
     m_path(""),
     m_method("GET"),
     m_headers(QVariantMap()),

@@ -24,6 +24,8 @@ Popup {
 
     property ListModel paymentModel: ListModel{}
 
+    signal checkoutSuccessful()
+
     onClosed: clearInputs()
 
     background: Rectangle {
@@ -162,7 +164,7 @@ Popup {
 
     Requests {
         id: checkoutrequest
-        path: "/api/fn/checkout"
+        path: "/fn/checkout"
         method: "POST"
     }
 
@@ -220,8 +222,6 @@ Popup {
                               })
                 mp.set(obj.id, products.length-1)
             }
-
-
         }
 
         var body = {
@@ -235,13 +235,17 @@ Popup {
         checkoutrequest.body = body
         console.log(body, JSON.stringify(body))
 
-        // var res = checkoutrequest.send();
-        // console.log(JSON.stringify(res))
+        var res = checkoutrequest.send();
+        console.log(JSON.stringify(res))
 
-        // if(res.status===200) {
-        //     root.close()
-        // } else {
-        // }
+        if(res.status===200) {
+            root.checkoutSuccessful()
+            root.close()
+        } else {
+            messageBox.title = qsTr("Something went wrong!")
+            messageBox.info = qsTr("Checkout process encontered an error, if the issue persists contact admin.")
+            messageBox.open()
+        }
     }
 
     function clearInputs() {
