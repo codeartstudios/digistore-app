@@ -111,26 +111,6 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                // ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
-                // ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
-
-                // onContentWidthChanged: root.hscrollbarShown = c_sv.contentWidth > c_sv.width
-
-                // Binding {
-                //     target: hscrollbar
-                //     property: "size"
-                //     value: c_sv.contentWidth>c_sv.width ? c_sv.width/c_sv.contentWidth : 1
-                // }
-
-                // Connections {
-                //     target: hscrollbar
-
-                //     function onPositionChanged() {
-                //         var newContentX = hscrollbar.position * (c_sv.contentWidth - c_sv.width);
-                //         c_sv.contentItem.contentX = newContentX
-                //     }
-                // }
-
                 Row {
                     height: tableheader.height
 

@@ -75,10 +75,13 @@ DsPage {
                 height: 1
             }
 
-            DsButton {
-                iconType: IconType.tablePlus
-                text: qsTr("New Supplier")
-                onClicked: newsupplierpopup.open()
+            // DsButton {
+            //     iconType: IconType.tablePlus
+            //     text: qsTr("New Supplier")
+            //     onClicked: newsupplierpopup.open()
+            // }
+            DsDateRangeSelector {
+                model: ["Today", "This Week", "Past Week", "This Month", "Custom"]
             }
         }
 

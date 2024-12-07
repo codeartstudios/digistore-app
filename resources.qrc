@@ -59,5 +59,6 @@
         <file>assets/imgs/org-logo-default.jpg</file>
         <file>ui/views/SuppliersPage.qml</file>
         <file>ui/popups/DsViewOrEditProductDrawer.qml</file>
+        <file>ui/controls/DsDateRangeSelector.qml</file>
     </qresource>
 </RCC>
