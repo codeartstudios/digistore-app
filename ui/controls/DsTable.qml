@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.qmlmodels
 import app.digisto.modules
 
 Rectangle {
@@ -32,18 +33,157 @@ Rectangle {
     signal sortBy(var col)
 
     property bool hscrollbarShown: false
-    property alias hscrollbar: hscrollbar
+    // property alias hscrollbar: hscrollbar
 
-    ScrollBar {
-        id: hscrollbar
-        z: 11
-        policy: hscrollbarShown ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
-        active: hovered || pressed
-        hoverEnabled: true
-        orientation: Qt.Horizontal
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+    // ScrollBar {
+    //     id: hscrollbar
+    //     z: 11
+    //     policy: hscrollbarShown ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+    //     active: hovered || pressed
+    //     hoverEnabled: true
+    //     orientation: Qt.Horizontal
+    //     anchors.bottom: parent.bottom
+    //     anchors.left: parent.left
+    //     anchors.right: parent.right
+    // }
+
+    Item {
+        id: tableheader
+        z: 3
+        width: listView.width
+        height: 50
+        clip: true
+        anchors.top: parent.top
+
+        // Bind width changes to column width recalculation
+        onWidthChanged: calculateWidthChanges();
+
+        Connections {
+            target: headerModel
+
+            function onCountChanged() {
+                calculateWidthChanges();
+            }
+        }
+
+        RowLayout {
+            spacing: 0
+            anchors.fill: parent
+
+            Rectangle {
+                color: root.color
+                z: 10
+                Layout.fillHeight: true
+                Layout.preferredWidth: listview.headerWidth
+
+                Rectangle {
+                    height: 1
+                    color: Theme.baseAlt2Color
+                    width: parent.width
+                    anchors.bottom: parent.bottom
+                }
+
+                DsBusyIndicator {
+                    width: 50
+                    height: 50
+                    iconSize: 20
+                    running: busy
+                    visible: running
+                    anchors.right: parent.right
+                }
+
+                DsLabel {
+                    width: 35
+                    height: 50
+                    text: "#"
+                    visible: !busy
+                    color: Theme.txtHintColor
+                    fontWeight: Font.DemiBold
+                    font.pixelSize: Theme.xlFontSize
+                    verticalAlignment: DsLabel.AlignVCenter
+                    anchors.right: parent.right
+                }
+            }
+
+            ScrollView {
+                id: c_sv
+                z: 1
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
+                // ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
+                // ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
+
+                // onContentWidthChanged: root.hscrollbarShown = c_sv.contentWidth > c_sv.width
+
+                // Binding {
+                //     target: hscrollbar
+                //     property: "size"
+                //     value: c_sv.contentWidth>c_sv.width ? c_sv.width/c_sv.contentWidth : 1
+                // }
+
+                // Connections {
+                //     target: hscrollbar
+
+                //     function onPositionChanged() {
+                //         var newContentX = hscrollbar.position * (c_sv.contentWidth - c_sv.width);
+                //         c_sv.contentItem.contentX = newContentX
+                //     }
+                // }
+
+                Row {
+                    height: tableheader.height
+
+                    Repeater {
+                        model: headerModel
+                        delegate: DsTableHeaderButton {
+                            text: title
+                            height: tableheader.height
+                            sortable: sortable
+                            width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
+                            font.pixelSize: Theme.xlFontSize
+
+                            onClicked: root.sortBy(value)
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                color: root.color
+                z: 10
+                Layout.fillHeight: true
+                Layout.preferredWidth: listview.footerWidth
+
+                Rectangle {
+                    height: 1
+                    color: Theme.baseAlt2Color
+                    width: parent.width
+                    anchors.bottom: parent.bottom
+                }
+
+                DsIconButton {
+                    bgColor: "transparent"
+                    width: 50
+                    height: 50
+                    iconType: headerAcionIconType
+                    textColor: Theme.txtHintColor
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: root.headerActionButtonSelected()
+                }
+            }
+        }
+
+        Rectangle {
+            height: 1
+            width: parent.width
+            color: Theme.baseAlt2Color
+            anchors.bottom: parent.bottom
+        }
     }
 
     ListView {
@@ -57,148 +197,13 @@ Rectangle {
         model: dataModel
         currentIndex: -1
         headerPositioning: ListView.OverlayHeader
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.top: tableheader.bottom
 
         ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AsNeeded }
         ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
-
-        header: Item {
-            id: tableheader
-            z: 3
-            width: listView.width
-            height: 50
-            clip: true
-
-            // Bind width changes to column width recalculation
-            onWidthChanged: calculateWidthChanges();
-
-            Connections {
-                target: headerModel
-
-                function onCountChanged() {
-                    calculateWidthChanges();
-                }
-            }
-
-            RowLayout {
-                spacing: 0
-                anchors.fill: parent
-
-                Rectangle {
-                    color: root.color
-                    z: 10
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: listview.headerWidth
-
-                    Rectangle {
-                        height: 1
-                        color: Theme.baseAlt2Color
-                        width: parent.width
-                        anchors.bottom: parent.bottom
-                    }
-
-                    DsBusyIndicator {
-                        width: 50
-                        height: 50
-                        iconSize: 20
-                        running: busy
-                        visible: running
-                        anchors.right: parent.right
-                    }
-
-                    DsLabel {
-                        width: 35
-                        height: 50
-                        text: "#"
-                        visible: !busy
-                        color: Theme.txtHintColor
-                        fontWeight: Font.DemiBold
-                        font.pixelSize: Theme.xlFontSize
-                        verticalAlignment: DsLabel.AlignVCenter
-                        anchors.right: parent.right
-                    }
-                }
-
-                ScrollView {
-                    id: c_sv
-                    z: 1
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-
-                    ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
-                    ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
-
-                    onContentWidthChanged: root.hscrollbarShown = c_sv.contentWidth > c_sv.width
-
-                    Binding {
-                        target: hscrollbar
-                        property: "size"
-                        value: c_sv.contentWidth>c_sv.width ? c_sv.width/c_sv.contentWidth : 1
-                    }
-
-                    Connections {
-                        target: hscrollbar
-
-                        function onPositionChanged() {
-                            var newContentX = hscrollbar.position * (c_sv.contentWidth - c_sv.width);
-                            c_sv.contentItem.contentX = newContentX
-                        }
-                    }
-
-                    Row {
-                        height: tableheader.height
-
-                        Repeater {
-                            model: headerModel
-                            delegate: DsTableHeaderButton {
-                                text: title
-                                height: tableheader.height
-                                sortable: sortable
-                                width: listview.columnWidths.length===0 ? 0 : listview.columnWidths[index]
-                                font.pixelSize: Theme.xlFontSize
-
-                                onClicked: root.sortBy(value)
-                            }
-                        }
-                    }
-                }
-
-                Rectangle {
-                    color: root.color
-                    z: 10
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: listview.footerWidth
-
-                    Rectangle {
-                        height: 1
-                        color: Theme.baseAlt2Color
-                        width: parent.width
-                        anchors.bottom: parent.bottom
-                    }
-
-                    DsIconButton {
-                        bgColor: "transparent"
-                        width: 50
-                        height: 50
-                        iconType: headerAcionIconType
-                        textColor: Theme.txtHintColor
-                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        onClicked: root.headerActionButtonSelected()
-                    }
-                }
-            }
-
-            Rectangle {
-                height: 1
-                width: parent.width
-                color: Theme.baseAlt2Color
-                anchors.bottom: parent.bottom
-            }
-        }
 
         delegate: Rectangle {
             id: tabledelegate
@@ -260,58 +265,41 @@ Rectangle {
                     }
                 }
 
-                ScrollView {
-                    id: tablerowscrollview
+                Row {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    ScrollBar.horizontal: ScrollBar{ policy: ScrollBar.AlwaysOff }
-                    ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AlwaysOff }
+                    Repeater {
+                        model: headerModel
 
-                    Connections {
-                        target: hscrollbar
+                        delegate: Item {
+                            height: tabledelegate.height
+                            width: listview.columnWidths[index]
 
-                        function onPositionChanged() {
-                            var newContentX = hscrollbar.position * (tablerowscrollview.contentWidth - tablerowscrollview.width);
-                            tablerowscrollview.contentItem.contentX = newContentX
-                        }
-                    }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: ma.hovered=true
+                                onExited: ma.hovered=false
+                                onClicked: (e) => ma.clicked(e)
+                            }
 
-                    Row {
-                        height: tabledelegate.height
+                            Connections {
+                                target: listview
 
-                        Repeater {
-                            model: headerModel
-
-                            delegate: Item {
-                                height: tabledelegate.height
-                                width: listview.columnWidths[index]
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    onEntered: ma.hovered=true
-                                    onExited: ma.hovered=false
-                                    onClicked: (e) => ma.clicked(e)
+                                function onColumnWidthsChanged() {
+                                    width = listview.columnWidths[index]
                                 }
+                            }
 
-                                Connections {
-                                    target: listview
-
-                                    function onColumnWidthsChanged() {
-                                        width = listview.columnWidths[index]
-                                    }
-                                }
-
-                                DsLabel {
-                                    elide: DsLabel.ElideRight
-                                    fontSize: Theme.smFontSize
-                                    text: tabledelegate.rowModel[value]==="" ? "N/A" : tabledelegate.rowModel[value]
-                                    verticalAlignment: DsLabel.AlignVCenter
-                                    leftPadding: Theme.smSpacing
-                                    rightPadding: Theme.smSpacing
-                                    anchors.fill: parent
-                                }
+                            DsLabel {
+                                elide: DsLabel.ElideRight
+                                fontSize: Theme.smFontSize
+                                text: tabledelegate.rowModel[value]==="" ? "N/A" : tabledelegate.rowModel[value]
+                                verticalAlignment: DsLabel.AlignVCenter
+                                leftPadding: Theme.smSpacing
+                                rightPadding: Theme.smSpacing
+                                anchors.fill: parent
                             }
                         }
                     }
@@ -357,7 +345,6 @@ Rectangle {
             }
         }
     }
-
 
     function populateColumnWidths() {
         var newcolwidths=[]     // Hold new width values

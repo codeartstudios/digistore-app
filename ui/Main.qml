@@ -33,6 +33,6 @@ Window {
 
     Component.onCompleted: {
         // TODO set these from API response
-        dsController.organizationID = "9xdd88ee9525205";
+        dsController.organizationID = "main";
     }
 }
