@@ -24,6 +24,119 @@ DsPage {
 
     property ListModel datamodel: ListModel{}
 
+    QtObject {
+        id: internal
+        property string startDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 00:00:00.000Z")
+        property string endDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 23:59:59.999Z")
+        property string selectedDuration: durationSelector.model[durationSelector.currentIndex]
+
+        onSelectedDurationChanged: findStartAndEndDatesInUTC()
+
+        function findStartAndEndDatesInUTC(){
+            console.log("Find Start & end date time UTC")
+            switch(internal.selectedDuration) {
+                // Get start and end date & time for 'today' in UTC
+            case "Today": {
+                var now = new Date() // Current Date & Time
+
+                internal.startDateTimeUTC = Qt.formatDateTime(now, "yyyy-MM-dd 00:00:00.000Z")
+                internal.endDateTimeUTC = Qt.formatDateTime(now, "yyyy-MM-dd 23:59:59.999Z")
+
+                salesDateRange = qsTr("Today")
+                getSales()
+
+                break;
+            }
+
+            // Find start and end date for the current week
+            case "This Week": {
+                const now = new Date();
+                const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+                // Calculate start and end dates
+                const startDate = new Date(now);
+                startDate.setDate(now.getDate() - dayOfWeek); // Go back to Sunday
+
+                const endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6); // Add 6 days to get Saturday
+
+                internal.startDateTimeUTC = Qt.formatDateTime(startDate, "yyyy-MM-dd 00:00:00.000Z")
+                internal.endDateTimeUTC = Qt.formatDateTime(endDate, "yyyy-MM-dd 23:59:59.999Z")
+
+                salesDateRange = qsTr("This Week")
+                getSales()
+
+                break;
+            }
+
+            case "Last Week": {
+                const now = new Date();
+                const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+                // Calculate the start of the current week
+                const currentWeekStart = new Date(now);
+                currentWeekStart.setDate(now.getDate() - dayOfWeek);
+
+                // Calculate the start and end dates of last week
+                const lastWeekEnd = new Date(currentWeekStart);
+                lastWeekEnd.setDate(currentWeekStart.getDate() - 1); // One day before this week's start
+
+                const lastWeekStart = new Date(lastWeekEnd);
+                lastWeekStart.setDate(lastWeekEnd.getDate() - 6); // Go back 6 days for the previous week's start
+
+                internal.startDateTimeUTC = Qt.formatDateTime(lastWeekStart, "yyyy-MM-dd 00:00:00.000Z")
+                internal.endDateTimeUTC = Qt.formatDateTime(lastWeekEnd, "yyyy-MM-dd 23:59:59.999Z")
+
+                salesDateRange = qsTr("Last Week")
+                getSales()
+
+                break;
+            }
+
+            // Calculate first and last day of the current month
+            case "This Month": {
+                let now = new Date()
+
+                // Get current year and month
+                var year = now.getUTCFullYear()
+                var month = now.getUTCMonth()
+
+                const sd = new Date(year, month, 1);
+                const ed = new Date(year, month + 1, 0); // 0th day of the next month = last day of current month
+
+                internal.startDateTimeUTC = Qt.formatDateTime(sd, "yyyy-MM-dd 00:00:00.000Z")
+                internal.endDateTimeUTC = Qt.formatDateTime(ed, "yyyy-MM-dd 23:59:59.999Z")
+
+                salesDateRange = qsTr("This Month")
+                getSales()
+
+                break;
+            }
+
+            // Calculate first and last day of the current month
+            case "This Year": {
+                let now = new Date()
+
+                // Get current year
+                let year = now.getUTCFullYear()
+
+                internal.startDateTimeUTC = `${year}-01-01 00:00:00.000Z`
+                internal.endDateTimeUTC = `${year}-12-31 23:59:59.999Z`
+
+                salesDateRange = qsTr("This Year")
+                getSales()
+
+                break;
+            }
+
+            case "Custom":
+            default: {
+                // Open Custom Date Selector
+            }
+            }
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Theme.smSpacing
@@ -75,13 +188,10 @@ DsPage {
                 height: 1
             }
 
-            // DsButton {
-            //     iconType: IconType.tablePlus
-            //     text: qsTr("New Supplier")
-            //     onClicked: newsupplierpopup.open()
-            // }
             DsDateRangeSelector {
-                model: ["Today", "This Week", "Past Week", "This Month", "Custom"]
+                id: durationSelector
+                enabled: !getsalesrequest.running
+                model: ["Today", "This Week", "Last Week", "This Month", "This Year", "Custom"]
             }
         }
 
@@ -220,14 +330,18 @@ DsPage {
     }
 
     function getSales(txt='') {
+        var dateQuery = `created >= '${internal.startDateTimeUTC}' && created <= '${internal.endDateTimeUTC}'`
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+            filter: `organization='${dsController.organizationID}'`
+                    + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+                    + ` && ${dateQuery}`
         }
 
         console.log(JSON.stringify(query))
+
         getsalesrequest.clear()
         getsalesrequest.query = query;
         var res = getsalesrequest.send();
