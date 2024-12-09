@@ -60,5 +60,7 @@
         <file>ui/views/SuppliersPage.qml</file>
         <file>ui/popups/DsViewOrEditProductDrawer.qml</file>
         <file>ui/controls/DsDateRangeSelector.qml</file>
+        <file>ui/popups/DsSalesSelectCustomDateTimePopup.qml</file>
+        <file>ui/popups/DsDateTimePicker.qml</file>
     </qresource>
 </RCC>

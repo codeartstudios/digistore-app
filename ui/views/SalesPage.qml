@@ -123,7 +123,7 @@ DsPage {
                 internal.startDateTimeUTC = `${year}-01-01 00:00:00.000Z`
                 internal.endDateTimeUTC = `${year}-12-31 23:59:59.999Z`
 
-                salesDateRange = qsTr("This Year")
+                salesDateRange = qsTr("This Year") + `: (${year})`
                 getSales()
 
                 break;

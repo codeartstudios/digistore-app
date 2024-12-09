@@ -4,6 +4,7 @@ import app.digisto.modules
 import "controls"
 import "store"
 import "flow"
+import "popups"
 
 Window {
     id: mainApp
@@ -31,20 +32,14 @@ Window {
         id: appFlow
     }
 
+    DsDateTimePicker {
+        id: datetimepickerdialog
+    }
+
     Component.onCompleted: {
         // TODO set these from API response
         dsController.organizationID = "main";
 
-        const now = new Date();
-        const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
-
-        // Calculate start and end dates
-        const startDate = new Date(now);
-        startDate.setDate(now.getDate() - dayOfWeek); // Go back to Sunday
-
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6); // Add 6 days to get Saturday
-
-        console.log(startDate, endDate)
+        datetimepickerdialog.open()
     }
 }
