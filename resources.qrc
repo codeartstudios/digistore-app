@@ -62,5 +62,6 @@
         <file>ui/controls/DsDateRangeSelector.qml</file>
         <file>ui/popups/DsSalesSelectCustomDateTimePopup.qml</file>
         <file>ui/popups/DsDateTimePicker.qml</file>
+        <file>ui/controls/DsComboBox.qml</file>
     </qresource>
 </RCC>
