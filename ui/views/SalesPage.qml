@@ -132,6 +132,7 @@ DsPage {
             case "Custom":
             default: {
                 // Open Custom Date Selector
+                daterangeselectorpopup.open()
             }
             }
         }
@@ -319,9 +320,8 @@ DsPage {
         }
     }
 
-    // Components
-    DsNewSupplierPopup {
-        id: newsupplierpopup
+    DsSalesCustomDateSelectorPopup {
+        id: daterangeselectorpopup
     }
 
     Requests {

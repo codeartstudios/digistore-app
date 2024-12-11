@@ -32,14 +32,8 @@ Window {
         id: appFlow
     }
 
-    DsDateTimePicker {
-        id: datetimepickerdialog
-    }
-
     Component.onCompleted: {
         // TODO set these from API response
         dsController.organizationID = "main";
-
-        datetimepickerdialog.open()
     }
 }

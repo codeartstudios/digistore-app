@@ -3,6 +3,8 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import app.digisto.modules
 
+import "../popups"
+
 Button {
     id: control
     implicitHeight: Theme.btnHeight
