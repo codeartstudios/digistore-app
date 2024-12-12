@@ -66,6 +66,20 @@ DsDrawer {
                     text: qsTr("Sale View")
                     Layout.alignment: Qt.AlignVCenter
                 }
+
+                DsLabel {
+                    fontSize: Theme.h1
+                    color: Theme.txtHintColor
+                    text: qsTr("/")
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                DsLabel {
+                    fontSize: Theme.h1
+                    color: Theme.txtHintColor
+                    text: `KES ${internal.totals}`
+                    Layout.alignment: Qt.AlignVCenter
+                }
             }
 
             DsLabel {
