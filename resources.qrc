@@ -63,5 +63,7 @@
         <file>ui/popups/DsDateTimePicker.qml</file>
         <file>ui/controls/DsComboBox.qml</file>
         <file>ui/popups/DsSalesCustomDateSelectorPopup.qml</file>
+        <file>ui/popups/DsSelectedSaleProductsDrawer.qml</file>
+        <file>app/digisto/modules/Utils.js</file>
     </qresource>
 </RCC>

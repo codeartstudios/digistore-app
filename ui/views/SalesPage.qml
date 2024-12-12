@@ -127,6 +127,13 @@ DsPage {
 
                 getSales()
             }
+
+            // When current selected index changes, get the sales data
+            // at given index and pass it to the drawer
+            onCurrentIndexChanged: {
+                saleDrawer.dataModel = dataModel.get(currentIndex);
+                saleDrawer.open();
+            }
         }
 
         Item {
@@ -228,10 +235,8 @@ DsPage {
 
         onRangeSelected: {
             // Update internal dates for filters
-            internal.startDateTimeUTC = filterStartDate.getUTCDate()
-            internal.endDateTimeUTC = filterEndDate.getUTCDate()
-
-            console.log(filterEndDate, filterEndDate.getUTCDate())
+            internal.startDateTimeUTC = Utils.dateToUTC(filterStartDate, "zero")
+            internal.endDateTimeUTC = Utils.dateToUTC(filterEndDate, "max")
 
             // Update the top label string
             salesDateRange = qsTr("Custom") +
@@ -242,6 +247,8 @@ DsPage {
             getSales()
         }
     }
+
+    DsSelectedSaleProductsDrawer { id: saleDrawer }
 
     Requests {
         id: getsalesrequest
@@ -255,17 +262,17 @@ DsPage {
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
             filter: `organization='${dsController.organizationID}'`
-                    + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+                    + (txt==='' ? '' : ` && (total ~ '${txt}' || payments ~ '${txt}' || created ~ '${txt}')`)
                     + ` && ${dateQuery}`
         }
 
-        console.log(JSON.stringify(query))
+        // console.log(JSON.stringify(query))
 
         getsalesrequest.clear()
         getsalesrequest.query = query;
         var res = getsalesrequest.send();
 
-        console.log(res, JSON.stringify(res))
+        // console.log(res, JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
