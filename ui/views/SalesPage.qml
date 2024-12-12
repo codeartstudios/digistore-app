@@ -26,6 +26,7 @@ DsPage {
 
     QtObject {
         id: internal
+
         property string startDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 00:00:00.000Z")
         property string endDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 23:59:59.999Z")
         property string selectedDuration: durationSelector.model[durationSelector.currentIndex]
@@ -33,7 +34,8 @@ DsPage {
         onSelectedDurationChanged: findStartAndEndDatesInUTC()
 
         function findStartAndEndDatesInUTC(){
-            console.log("Find Start & end date time UTC")
+            // durationSelector.close() // Close the popup
+
             switch(internal.selectedDuration) {
                 // Get start and end date & time for 'today' in UTC
             case "Today": {
@@ -133,6 +135,7 @@ DsPage {
             default: {
                 // Open Custom Date Selector
                 daterangeselectorpopup.open()
+                salesDateRange = qsTr("Custom") + ": * to *"
             }
             }
         }
@@ -169,6 +172,21 @@ DsPage {
                 color: Theme.txtPrimaryColor
                 text: salesDateRange
                 Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsIconButton {
+                visible: durationSelector.currentIndex === durationSelector.model.length - 1
+                enabled: !getsalesrequest.running
+                iconType: IconType.edit
+                textColor: Theme.txtPrimaryColor
+                bgColor: "transparent"
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                radius: height/2
+                Layout.alignment: Qt.AlignVCenter
+
+                // TODO pass current date as input to the popup
+                onClicked: daterangeselectorpopup.open()
             }
 
             DsIconButton {
@@ -322,6 +340,22 @@ DsPage {
 
     DsSalesCustomDateSelectorPopup {
         id: daterangeselectorpopup
+
+        onClosed: datamodel.clear() // Clear current items
+
+        onRangeSelected: {
+            // Update internal dates for filters
+            internal.startDateTimeUTC = filterStartDate.getUTCDate()
+            internal.endDateTimeUTC = filterEndDate.getUTCDate()
+
+            // Update the top label string
+            salesDateRange = qsTr("Custom") +
+                    `: (${Qt.formatDateTime(filterStartDate, "yyyy-MM-dd hh:mm ap")}) to (${Qt.formatDateTime(filterEndDate, "yyyy-MM-dd hh:mm ap")})`
+
+            // Close popup before fetching the sales data
+            daterangeselectorpopup.close()
+            getSales()
+        }
     }
 
     Requests {

@@ -121,11 +121,15 @@ Button {
                     }
 
                     onClicked: {
+                        popup.close()   // Close popup before setting index
                         lv.currentIndex = index
-                        popup.close()
                     }
                 }
             }
         }
+    }
+
+    function close() {
+        popup.close()
     }
 }
