@@ -14,4 +14,10 @@ Item {
 
     property Requests request: Requests{}
     property DsMessageBox messageBox: DsMessageBox{}
+
+    function showMessage(title="", info="") {
+        messageBox.title = title
+        messageBox.info = info
+        messageBox.open()
+    }
 }
