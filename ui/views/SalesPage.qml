@@ -110,6 +110,7 @@ DsPage {
         }
 
         DsTable {
+            id: salestable
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: headermodel
@@ -131,8 +132,14 @@ DsPage {
             // When current selected index changes, get the sales data
             // at given index and pass it to the drawer
             onCurrentIndexChanged: {
-                saleDrawer.dataModel = dataModel.get(currentIndex);
-                saleDrawer.open();
+                // Open drawer only if current index is valid
+                if( currentIndex >= 0 ) {
+                    saleDrawer.dataModel = dataModel.get(currentIndex);
+                    saleDrawer.open();
+                } else {
+                    // Close Drawer if already opened
+                    if( saleDrawer.opened ) saleDrawer.close()
+                }
             }
         }
 
@@ -228,6 +235,8 @@ DsPage {
         }
     }
 
+    // Popup to show date selection for custom
+    // date range selection
     DsSalesCustomDateSelectorPopup {
         id: daterangeselectorpopup
 
@@ -248,7 +257,13 @@ DsPage {
         }
     }
 
-    DsSelectedSaleProductsDrawer { id: saleDrawer }
+    // Drawer to display selected sales item from the table
+    DsSelectedSaleProductsDrawer {
+        id: saleDrawer
+
+        // Reset table current index when the drawer closes
+        onClosed: salestable.currentIndex = -1
+    }
 
     Requests {
         id: getsalesrequest
