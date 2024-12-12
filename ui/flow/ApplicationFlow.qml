@@ -58,7 +58,7 @@ Item {
         AppStackLayout {
             id: appStackLayout
 
-            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
+            Component.onCompleted: appStackLayout.salesLoader.active=true;
 
             Connections {
                 target: sideBar

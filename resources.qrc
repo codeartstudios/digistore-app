@@ -59,5 +59,12 @@
         <file>assets/imgs/org-logo-default.jpg</file>
         <file>ui/views/SuppliersPage.qml</file>
         <file>ui/popups/DsViewOrEditProductDrawer.qml</file>
+        <file>ui/controls/DsDateRangeSelector.qml</file>
+        <file>ui/popups/DsDateTimePicker.qml</file>
+        <file>ui/controls/DsComboBox.qml</file>
+        <file>ui/popups/DsSalesCustomDateSelectorPopup.qml</file>
+        <file>ui/popups/DsSelectedSaleProductsDrawer.qml</file>
+        <file>app/digisto/modules/Utils.js</file>
+        <file>ui/controls/DsDrawer.qml</file>
     </qresource>
 </RCC>

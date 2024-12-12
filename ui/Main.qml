@@ -4,6 +4,7 @@ import app.digisto.modules
 import "controls"
 import "store"
 import "flow"
+import "popups"
 
 Window {
     id: mainApp
