@@ -226,17 +226,21 @@ Popup {
 
         var body = {
             totals: root.totals,
-            payments,
+            payments, // : JSON.stringify(payments),
             organization: dsController.organizationID,
             products
         }
 
         checkoutrequest.clear()
         checkoutrequest.body = body
-        console.log(body, JSON.stringify(body))
+        console.log("Body: ", JSON.stringify(body))
+
+        // return
 
         var res = checkoutrequest.send();
         console.log(JSON.stringify(res))
+
+        console.log('> ', res.status)
 
         if(res.status===200) {
             root.checkoutSuccessful()

@@ -193,16 +193,16 @@ DsPage {
                                                       label: "Info",
                                                       iconType: IconType.infoCircle,
                                                       componentId: orginfoloader
-                                                  },
-                                                  {
-                                                      label: "Branches",
-                                                      iconType: IconType.gitMerge,
-                                                      componentId: orgbranchesloader
-                                                  },
-                                                  {
-                                                      label: "Settings",
-                                                      iconType: IconType.settings,
-                                                      componentId: orgsettingsloader
                                                   }
+                                                  // {
+                                                  //     label: "Branches",
+                                                  //     iconType: IconType.gitMerge,
+                                                  //     componentId: orgbranchesloader
+                                                  // },
+                                                  // {
+                                                  //     label: "Settings",
+                                                  //     iconType: IconType.settings,
+                                                  //     componentId: orgsettingsloader
+                                                  // }
                                               ])
 }

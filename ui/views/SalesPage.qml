@@ -7,7 +7,7 @@ import "../controls"
 import "../popups"
 
 DsPage {
-    id: dashboardPage
+    id: root
     title: ""
     headerShown: false
 
@@ -21,7 +21,6 @@ DsPage {
 
     // Page properties
     property string salesDateRange: qsTr("Today")
-
     property ListModel datamodel: ListModel{}
 
     ColumnLayout {
@@ -116,6 +115,8 @@ DsPage {
             headerModel: headermodel
             dataModel: datamodel
             busy: getsalesrequest.running
+            pageNo: root.pageNo - 1
+            itemsPerPage: root.itemsPerPage
 
             onSortBy: function(key) {
                 if(key===sortByKey) {

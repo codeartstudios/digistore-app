@@ -75,6 +75,22 @@ QVariantMap Requests::send()
     QNetworkReply* reply;
     QJsonDocument doc = QJsonDocument::fromVariant(m_body);
 
+    // Convert to QJsonValue using the recursive function
+    QJsonValue jsonValue = variantToJson(m_body);
+
+    // Convert to QByteArray
+    //QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonValue.toObject());
+    // QByteArray byteArray = jsonDoc.toJson();
+
+    // Print the result
+    qDebug() << "Serialized JSON:" << jsonValue;
+
+    // TODO
+    // JSON Obj in a JSON key gets nullated
+    qDebug() << doc;
+    qDebug() << m_body;
+    // qDebug() << byteArray;
+
     // If we have files to upload, lets handle it in the multipart
     if ( !m_files.isEmpty() &&
         (m_method == "POST" ||
@@ -266,4 +282,23 @@ QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {
     }
 
     return byteArray;
+}
+
+QJsonValue Requests::variantToJson(const QVariant &variant) {
+    if (variant.type() == QVariant::Map) {
+        QJsonObject obj;
+        for (auto it = variant.toMap().begin(); it != variant.toMap().end(); ++it) {
+            obj.insert(it.key(), variantToJson(it.value()));
+        }
+        return obj;
+    } else if (variant.type() == QVariant::List) {
+        QJsonArray array;
+        for (const QVariant &value : variant.toList()) {
+            array.append(variantToJson(value));
+        }
+        return array;
+    } else {
+        // For simple types, directly convert
+        return QJsonValue::fromVariant(variant);
+    }
 }

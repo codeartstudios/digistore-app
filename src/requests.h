@@ -67,6 +67,8 @@ signals:
 private:
     // Functions
     QByteArray convertJsonValueToByteArray(const QJsonValue &value);
+    // Function to recursively convert QVariant to QJsonValue
+    QJsonValue variantToJson(const QVariant &variant);
 
     // Create Network Access Manager
     std::unique_ptr<QNetworkAccessManager> netman;
