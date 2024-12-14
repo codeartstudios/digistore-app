@@ -17,8 +17,8 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QEventLoop>
+#include <QMetaProperty>
 
-#include "dscontroller.h"
 
 class Requests : public QObject
 {
@@ -67,6 +67,10 @@ signals:
 private:
     // Functions
     QByteArray convertJsonValueToByteArray(const QJsonValue &value);
+    // Function to recursively convert QVariant to QJsonValue
+    QJsonValue variantToJson(const QVariant &variant);
+    // Helper to convert QObject* to QJsonObject
+    QJsonObject objectToJson(QObject *object);
 
     // Create Network Access Manager
     std::unique_ptr<QNetworkAccessManager> netman;

@@ -109,7 +109,7 @@ DsPage {
             }
 
             DsButton {
-                // enabled: cartModel.count>0
+                enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
@@ -348,6 +348,7 @@ DsPage {
         onCheckoutSuccessful: {
             cartModel.clear()
             searchitemrequest.clear()
+            calculateTotals()
         }
     }
 

@@ -33,19 +33,11 @@ Rectangle {
     signal sortBy(var col)
 
     property bool hscrollbarShown: false
-    // property alias hscrollbar: hscrollbar
 
-    // ScrollBar {
-    //     id: hscrollbar
-    //     z: 11
-    //     policy: hscrollbarShown ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
-    //     active: hovered || pressed
-    //     hoverEnabled: true
-    //     orientation: Qt.Horizontal
-    //     anchors.bottom: parent.bottom
-    //     anchors.left: parent.left
-    //     anchors.right: parent.right
-    // }
+    // Hold a reference to the count of items nin the response
+    // model: itemsPerPage & pageNo
+    property real pageNo: 0
+    property real itemsPerPage: 0
 
     Item {
         id: tableheader
@@ -238,7 +230,7 @@ Rectangle {
                         height: 50
                         elide: DsLabel.ElideRight
                         fontSize: Theme.smFontSize
-                        text: `${tabledelegate.rowIndex + 1}.`
+                        text: `${ pageNo * itemsPerPage + (tabledelegate.rowIndex + 1)}.`
                         verticalAlignment: DsLabel.AlignVCenter
                         horizontalAlignment: DsLabel.AlignLeft
                         anchors.right: parent.right

@@ -1,4 +1,5 @@
 #include "requests.h"
+#include "dscontroller.h"
 
 Requests::Requests(QObject *parent)
     : QObject{parent},
@@ -41,8 +42,6 @@ QVariantMap Requests::send()
     m_running=true;
     emit runningChanged();
 
-    // qDebug() << m_path << m_body;
-
     // Build path URL from the base URL and the route
     QUrl url = buildUrl(m_path);
 
@@ -50,7 +49,7 @@ QVariantMap Requests::send()
     if( !m_query.isEmpty() ) {
         QUrlQuery q1;
 
-        for( const auto& key : m_query.keys() ) {
+        foreach( const auto& key, m_query.keys() ) {
             QString value = m_query.value(key).toString();
             q1.addQueryItem(key, value);
         }
@@ -67,7 +66,7 @@ QVariantMap Requests::send()
 
     // Add user headers to the request
     if(!m_headers.isEmpty()) {
-        for(const auto &key : m_headers.keys()) {
+        foreach(const auto &key, m_headers.keys()) {
             request.setRawHeader(key.toUtf8(), m_headers.value(key).toByteArray());
         }
     }
@@ -266,4 +265,30 @@ QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {
     }
 
     return byteArray;
+}
+
+QJsonValue Requests::variantToJson(const QVariant &variant) {
+    if (variant.typeId() == QMetaType::QVariantMap) {
+        QJsonObject obj;
+        auto map = variant.toMap();
+
+        foreach (const auto& key, map.keys()) {
+            obj.insert(key, variantToJson(map.value(key)));
+        }
+
+        return obj;
+    }
+
+    else if (variant.typeId() == QMetaType::QVariantList) {
+        QJsonArray array;
+        for (const QVariant &value : variant.toList()) {
+            array.append(variantToJson(value));
+        }
+        return array;
+    }
+
+    else {
+        // For simple types, directly convert
+        return QJsonValue::fromVariant(variant);
+    }
 }

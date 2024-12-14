@@ -193,8 +193,15 @@ Popup {
 
         var payments = {}
         for(var j=0; j<paymentModel.count; j++) {
-            var paymentmethod = paymentModel.get(j)
-            payments[paymentmethod.uid] = paymentmethod
+            const paymentObject = paymentModel.get(j)
+            // Set the payment uid key to payment object [JSON]
+            payments[paymentObject.uid] = {
+                label: paymentObject.label,
+                uid: paymentObject.uid,
+                type: paymentObject.type,
+                amount: paymentObject.amount,
+                data: paymentObject.data
+            }
         }
 
         var products = []
@@ -233,7 +240,7 @@ Popup {
 
         checkoutrequest.clear()
         checkoutrequest.body = body
-        console.log(body, JSON.stringify(body))
+        console.log("Body: ", JSON.stringify(body))
 
         var res = checkoutrequest.send();
         console.log(JSON.stringify(res))

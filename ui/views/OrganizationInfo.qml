@@ -22,7 +22,8 @@ Item {
     property bool orgActivated: false
 
     property DsMessageBox messageBox: DsMessageBox{}
-    property bool isRequestRunning: getorgrequest.running
+    property Requests requests: Requests{}
+    property bool isRequestRunning: requests.running
 
     ScrollView {
         anchors.fill: parent
@@ -126,16 +127,11 @@ Item {
         }
     }
 
-    Requests {
-        id: getorgrequest
-        baseUrl: "https://pb.digisto.app"
-    }
-
     function fetchOrganizationDetails() {
-        var orgid = 'clhyn7tolbhy98k'
-        getorgrequest.clear()
-        getorgrequest.path = `/api/collections/organization/records/${orgid}`
-        var res = getorgrequest.send();
+        var orgid = dsController.organizationID
+        requests.clear()
+        requests.path = `/api/collections/organization/records/${orgid}`
+        var res = requests.send();
 
         if(res.status===200) {
             var data = res.data;
@@ -152,10 +148,12 @@ Item {
             orgCreated = data.created
         }
 
+        else if(res.status === 403) {
+            showMessage("Access Error", "Only admins can access this action.")
+        }
+
         else {
-            messageBox.title = `Failed to fetch organization, something went wrong!`
-            messageBox.info = res.status===403 ?  "Only admins can access this action." : "The requested resource wasn't found."
-            messageBox.open()
+            showMessage("Organization Error", "The requested resource wasn't found.")
         }
     }
 
