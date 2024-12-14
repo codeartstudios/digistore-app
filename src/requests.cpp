@@ -1,4 +1,5 @@
 #include "requests.h"
+#include "dscontroller.h"
 
 Requests::Requests(QObject *parent)
     : QObject{parent},
@@ -41,8 +42,6 @@ QVariantMap Requests::send()
     m_running=true;
     emit runningChanged();
 
-    // qDebug() << m_path << m_body;
-
     // Build path URL from the base URL and the route
     QUrl url = buildUrl(m_path);
 
@@ -50,7 +49,7 @@ QVariantMap Requests::send()
     if( !m_query.isEmpty() ) {
         QUrlQuery q1;
 
-        for( const auto& key : m_query.keys() ) {
+        foreach( const auto& key, m_query.keys() ) {
             QString value = m_query.value(key).toString();
             q1.addQueryItem(key, value);
         }
@@ -67,29 +66,13 @@ QVariantMap Requests::send()
 
     // Add user headers to the request
     if(!m_headers.isEmpty()) {
-        for(const auto &key : m_headers.keys()) {
+        foreach(const auto &key, m_headers.keys()) {
             request.setRawHeader(key.toUtf8(), m_headers.value(key).toByteArray());
         }
     }
 
     QNetworkReply* reply;
     QJsonDocument doc = QJsonDocument::fromVariant(m_body);
-
-    // Convert to QJsonValue using the recursive function
-    QJsonValue jsonValue = variantToJson(m_body);
-
-    // Convert to QByteArray
-    //QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonValue.toObject());
-    // QByteArray byteArray = jsonDoc.toJson();
-
-    // Print the result
-    qDebug() << "Serialized JSON:" << jsonValue;
-
-    // TODO
-    // JSON Obj in a JSON key gets nullated
-    qDebug() << doc;
-    qDebug() << m_body;
-    // qDebug() << byteArray;
 
     // If we have files to upload, lets handle it in the multipart
     if ( !m_files.isEmpty() &&
@@ -285,19 +268,26 @@ QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {
 }
 
 QJsonValue Requests::variantToJson(const QVariant &variant) {
-    if (variant.type() == QVariant::Map) {
+    if (variant.typeId() == QMetaType::QVariantMap) {
         QJsonObject obj;
-        for (auto it = variant.toMap().begin(); it != variant.toMap().end(); ++it) {
-            obj.insert(it.key(), variantToJson(it.value()));
+        auto map = variant.toMap();
+
+        foreach (const auto& key, map.keys()) {
+            obj.insert(key, variantToJson(map.value(key)));
         }
+
         return obj;
-    } else if (variant.type() == QVariant::List) {
+    }
+
+    else if (variant.typeId() == QMetaType::QVariantList) {
         QJsonArray array;
         for (const QVariant &value : variant.toList()) {
             array.append(variantToJson(value));
         }
         return array;
-    } else {
+    }
+
+    else {
         // For simple types, directly convert
         return QJsonValue::fromVariant(variant);
     }

@@ -348,6 +348,7 @@ DsPage {
         onCheckoutSuccessful: {
             cartModel.clear()
             searchitemrequest.clear()
+            calculateTotals()
         }
     }
 
