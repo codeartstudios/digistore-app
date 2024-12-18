@@ -1,15 +1,15 @@
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import Qt.labs.platform
+import QtQuick.Controls.Basic
 import app.digisto.modules
 
 import "../controls"
 
 Popup {
     id: root
-    width: 500
+    width: 800
     height: 600
     modal: true
     x: (mainApp.width-width)/2
@@ -37,14 +37,15 @@ Popup {
         anchors.fill: parent
 
         ColumnLayout {
-            spacing: Theme.baseSpacing
+            spacing: Theme.smSpacing
             anchors.fill: parent
+            anchors.leftMargin: Theme.baseSpacing
+            anchors.rightMargin: Theme.baseSpacing
+            anchors.bottomMargin: Theme.baseSpacing
 
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Theme.btnHeight
-                Layout.leftMargin: Theme.baseSpacing
-                Layout.rightMargin: Theme.baseSpacing
                 Layout.topMargin: Theme.xsSpacing
 
                 Rectangle {
@@ -56,7 +57,7 @@ Popup {
                 DsLabel {
                     fontSize: Theme.h1
                     color: Theme.txtHintColor
-                    text: qsTr("Checkout")
+                    text: qsTr("Checkout > Payments")
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                 }
@@ -73,89 +74,149 @@ Popup {
 
                     onClicked: root.close()
                 }
-
             }
 
-            ScrollView {
-                id: scrollview
+            RowLayout {
+                spacing: Theme.baseSpacing
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                Column {
-                    width: scrollview.width
-                    spacing: Theme.smSpacing
+                ColumnLayout {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 200
 
-                    Row {
+                    ListView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
                         spacing: Theme.xsSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        clip: true
+                        model: root.paymentModel
+                        delegate: DsButton {
+                            width: 250
+                            height: 150
+                            radius: Theme.btnRadius
+                            bgColor: Theme.baseColor
+                            bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                            bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
-                        DsLabel {
-                            fontSize: Theme.h1
-                            color: Theme.txtHintColor
-                            text: qsTr("TOTALS")
-                            anchors.baseline: totalslabel.baseline
-                        }
+                            contentItem: Item {
+                                anchors.fill: parent
 
-                        DsLabel {
-                            id: totalslabel
-                            isBold: true
-                            fontSize: Theme.btnHeight
-                            color: Theme.txtHintColor
-                            text: `KES ${totals}`
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
+                                ColumnLayout {
+                                    spacing: Theme.btnRadius
+                                    anchors.fill: parent
+                                    anchors.margins: Theme.btnRadius
 
-                    Rectangle {
-                        width: parent.width; height: 1
-                        color: Theme.baseAlt1Color
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
+                                    Image {
+                                        fillMode: Image.PreserveAspectCrop
+                                        source: model.image
+                                        sourceSize.width: implicitWidth
+                                        sourceSize.height: implicitHeight
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                    }
 
-                    Repeater {
-                        id: paymentmethodsrepeater
-                        signal recomputePaydVsTotals
-
-                        model: paymentModel
-                        delegate: DsCheckoutPaymentMethod {
-                            label: model.label
-                            input.placeholderText: qsTr("0.00")
-                            input.text: model.amount===0 ? '' : `${model.amount}`
-                            input.validator: DoubleValidator{bottom: 0}
-                            width: scrollview.width - 2*Theme.baseSpacing
-                            anchors.horizontalCenter: parent.horizontalCenter
-
-                            onInputTextChanged: (val) => {
-                                                    // console.log("Changed: ", val)
-                                                    var num = parseFloat(val.trim())
-                                                    val = isNaN(num) ? 0 : num
-                                                    paymentModel.setProperty(index, "amount", val)
-                                                    paymentmethodsrepeater.recomputePaydVsTotals()
-                                                }
+                                    DsLabel {
+                                        color: Theme.txtPrimaryColor
+                                        text: model.label
+                                        fontSize: Theme.smFontSize
+                                        Layout.fillWidth: true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: Theme.btnHeight
-                Layout.leftMargin: Theme.baseSpacing
-                Layout.rightMargin: Theme.baseSpacing
-                Layout.bottomMargin: Theme.baseSpacing
+                ColumnLayout {
+                    spacing: Theme.baseSpacing
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                Row {
-                    spacing: Theme.smSpacing
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
+                    ScrollView {
+                        id: scrollview
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
 
-                    DsButton {
-                        busy: checkoutrequest.running
-                        text: qsTr("Submit Payment")
-                        endIcon: IconType.arrowRight
-                        // iconType: IconType.plus
-                        onClicked: submitSale()
-                        enabled: root.submitCheckoutEnabled
+                        Column {
+                            width: scrollview.width
+                            spacing: Theme.smSpacing
+
+                            Row {
+                                spacing: Theme.xsSpacing
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                DsLabel {
+                                    fontSize: Theme.h1
+                                    color: Theme.txtHintColor
+                                    text: qsTr("TOTALS")
+                                    anchors.baseline: totalslabel.baseline
+                                }
+
+                                DsLabel {
+                                    id: totalslabel
+                                    isBold: true
+                                    fontSize: Theme.btnHeight
+                                    color: Theme.txtHintColor
+                                    text: `KES ${totals}`
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            Rectangle {
+                                width: parent.width; height: 1
+                                color: Theme.baseAlt1Color
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            Repeater {
+                                id: paymentmethodsrepeater
+                                signal recomputePaydVsTotals
+
+                                model: paymentModel
+                                delegate: DsCheckoutPaymentMethod {
+                                    label: model.label
+                                    input.placeholderText: qsTr("0.00")
+                                    input.text: model.amount===0 ? '' : `${model.amount}`
+                                    input.validator: DoubleValidator{bottom: 0}
+                                    width: scrollview.width - 2*Theme.baseSpacing
+                                    anchors.horizontalCenter: parent.horizontalCenter
+
+                                    onInputTextChanged: (val) => {
+                                                            // console.log("Changed: ", val)
+                                                            var num = parseFloat(val.trim())
+                                                            val = isNaN(num) ? 0 : num
+                                                            paymentModel.setProperty(index, "amount", val)
+                                                            paymentmethodsrepeater.recomputePaydVsTotals()
+                                                        }
+                                }
+                            }
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Theme.btnHeight
+                        Layout.leftMargin: Theme.baseSpacing
+                        Layout.rightMargin: Theme.baseSpacing
+                        Layout.bottomMargin: Theme.baseSpacing
+
+                        Row {
+                            spacing: Theme.smSpacing
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+
+                            DsButton {
+                                busy: checkoutrequest.running
+                                text: qsTr("Submit Payment")
+                                endIcon: IconType.arrowRight
+                                // iconType: IconType.plus
+                                onClicked: submitSale()
+                                enabled: root.submitCheckoutEnabled
+                            }
+                        }
                     }
                 }
             }
@@ -266,6 +327,7 @@ Popup {
 
     Component.onCompleted: {
         paymentModel.append({
+                                image: "qrc:/assets/imgs/payments/1.jpg",
                                 label: "Cash",
                                 uid: "cash",
                                 type: "",
@@ -274,6 +336,7 @@ Popup {
                             })
 
         paymentModel.append({
+                                image: "qrc:/assets/imgs/payments/2.jpg",
                                 label: "M-Pesa",
                                 uid: "mpesa",
                                 type: "",
@@ -282,6 +345,7 @@ Popup {
                             })
 
         paymentModel.append({
+                                image: "",
                                 label: "Credit",
                                 uid: "credit",
                                 type: "",
@@ -290,6 +354,7 @@ Popup {
                             })
 
         paymentModel.append({
+                                image: "",
                                 label: "Cheque",
                                 uid: "cheque",
                                 type: "",

@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Controls.Basic as QQCB
 import QtQuick.Layouts
 import app.digisto.modules
@@ -108,8 +107,8 @@ DsPage {
                 }
             }
 
-            DsButton {
-                enabled: cartModel.count>0
+            DsButton { // TODO
+                // enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
