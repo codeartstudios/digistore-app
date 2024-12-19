@@ -12,6 +12,7 @@ Rectangle {
 
     property string label: qsTr("Input")
     property alias input: input
+    property alias value: input.text
     property bool isPasswordInput: false
     property alias validator: input.validator
     property bool hasError: false

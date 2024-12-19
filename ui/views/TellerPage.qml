@@ -115,8 +115,8 @@ DsPage {
 
                 onClicked: {
                     checkoutpopup.open()
-                    checkoutpopup.totals = checkoutTotals
-                    checkoutpopup.model = cartModel
+                    // checkoutpopup.totals = checkoutTotals
+                    // checkoutpopup.model = cartModel
                 }
             }
 

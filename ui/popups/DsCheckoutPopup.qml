@@ -19,9 +19,10 @@ Popup {
     property bool submitCheckoutEnabled: false
 
     // Passed in Data
-    property real totals: 0
+    property real totals: 1000
     property var model: null
 
+    property ListModel paymentMethodsModel: ListModel{}
     property ListModel paymentModel: ListModel{}
 
     signal checkoutSuccessful()
@@ -82,48 +83,53 @@ Popup {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                ColumnLayout {
-                    Layout.fillHeight: true
+                ListView {
+                    id: paymentModesLV
                     Layout.preferredWidth: 200
+                    Layout.fillHeight: true
 
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                    spacing: Theme.xsSpacing
+                    clip: true
+                    model: root.paymentMethodsModel
+                    delegate: DsButton {
+                        width: paymentModesLV.width
+                        height: 150
+                        radius: Theme.btnRadius
+                        bgColor: Theme.baseColor
+                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
-                        spacing: Theme.xsSpacing
-                        clip: true
-                        model: root.paymentModel
-                        delegate: DsButton {
-                            width: 250
-                            height: 150
-                            radius: Theme.btnRadius
-                            bgColor: Theme.baseColor
-                            bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                            bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                        onClicked: {
+                            root.paymentModel.append({
+                                                         amount: paymentModel.count===0 ? root.totals : 0,
+                                                         label: model.label,
+                                                         uid: model.uid,
 
-                            contentItem: Item {
+                                                     })
+                        }
+
+                        contentItem: Item {
+                            anchors.fill: parent
+
+                            ColumnLayout {
+                                spacing: Theme.btnRadius
                                 anchors.fill: parent
+                                anchors.margins: Theme.btnRadius
 
-                                ColumnLayout {
-                                    spacing: Theme.btnRadius
-                                    anchors.fill: parent
-                                    anchors.margins: Theme.btnRadius
+                                Image {
+                                    fillMode: Image.PreserveAspectCrop
+                                    source: model.image
+                                    sourceSize.width: implicitWidth
+                                    sourceSize.height: implicitHeight
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
 
-                                    Image {
-                                        fillMode: Image.PreserveAspectCrop
-                                        source: model.image
-                                        sourceSize.width: implicitWidth
-                                        sourceSize.height: implicitHeight
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-                                    }
-
-                                    DsLabel {
-                                        color: Theme.txtPrimaryColor
-                                        text: model.label
-                                        fontSize: Theme.smFontSize
-                                        Layout.fillWidth: true
-                                    }
+                                DsLabel {
+                                    color: Theme.txtPrimaryColor
+                                    text: model.label
+                                    fontSize: Theme.smFontSize
+                                    Layout.fillWidth: true
                                 }
                             }
                         }
@@ -135,66 +141,56 @@ Popup {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    ScrollView {
-                        id: scrollview
+                    //             DsLabel {
+                    //                 fontSize: Theme.h1
+                    //                 color: Theme.txtHintColor
+                    //                 text: qsTr("TOTALS")
+                    //                 anchors.baseline: totalslabel.baseline
+                    //             }
+
+                    //             DsLabel {
+                    //                 id: totalslabel
+                    //                 isBold: true
+                    //                 fontSize: Theme.btnHeight
+                    //                 color: Theme.txtHintColor
+                    //                 text: `KES ${totals}`
+                    //                 anchors.verticalCenter: parent.verticalCenter
+                    //             }
+                    //         }
+
+                    ListView {
+                        id: paymentMethodsLV
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        Column {
-                            width: scrollview.width
-                            spacing: Theme.smSpacing
+                        signal recomputePaydVsTotals
 
-                            Row {
-                                spacing: Theme.xsSpacing
-                                anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: Theme.xsSpacing/2.0
+                        model: root.paymentModel
+                        delegate: DsCheckoutPaymentMethod {
+                            label: model.label
+                            input.placeholderText: qsTr("0.00")
+                            input.text: model.amount===0 ? '' : `${model.amount}`
+                            input.validator: DoubleValidator{ bottom: 0 }
+                            width: paymentMethodsLV.width
+                            anchors.horizontalCenter: parent.horizontalCenter
 
-                                DsLabel {
-                                    fontSize: Theme.h1
-                                    color: Theme.txtHintColor
-                                    text: qsTr("TOTALS")
-                                    anchors.baseline: totalslabel.baseline
-                                }
+                            onInputTextChanged: (val) => {
+                                                    // console.log("Changed: ", val)
+                                                    var num = parseFloat(val.trim())
+                                                    val = isNaN(num) ? 0 : num
+                                                    root.paymentModel.setProperty(index, "amount", val)
+                                                    paymentMethodsLV.recomputePaydVsTotals()
+                                                }
 
-                                DsLabel {
-                                    id: totalslabel
-                                    isBold: true
-                                    fontSize: Theme.btnHeight
-                                    color: Theme.txtHintColor
-                                    text: `KES ${totals}`
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                            }
-
-                            Rectangle {
-                                width: parent.width; height: 1
-                                color: Theme.baseAlt1Color
-                                anchors.horizontalCenter: parent.horizontalCenter
-                            }
-
-                            Repeater {
-                                id: paymentmethodsrepeater
-                                signal recomputePaydVsTotals
-
-                                model: paymentModel
-                                delegate: DsCheckoutPaymentMethod {
-                                    label: model.label
-                                    input.placeholderText: qsTr("0.00")
-                                    input.text: model.amount===0 ? '' : `${model.amount}`
-                                    input.validator: DoubleValidator{bottom: 0}
-                                    width: scrollview.width - 2*Theme.baseSpacing
-                                    anchors.horizontalCenter: parent.horizontalCenter
-
-                                    onInputTextChanged: (val) => {
-                                                            // console.log("Changed: ", val)
-                                                            var num = parseFloat(val.trim())
-                                                            val = isNaN(num) ? 0 : num
-                                                            paymentModel.setProperty(index, "amount", val)
-                                                            paymentmethodsrepeater.recomputePaydVsTotals()
-                                                        }
-                                }
+                            Component.onCompleted: {
+                                console.log("Adding: ", model.amount)
+                                input.text = model.amount;
                             }
                         }
                     }
+                    //    }
+                    //}
 
                     Item {
                         Layout.fillWidth: true
@@ -230,13 +226,13 @@ Popup {
     }
 
     Connections {
-        target: paymentmethodsrepeater
+        target: paymentMethodsLV
 
         function onRecomputePaydVsTotals() {
             var payedSum = 0;
 
-            for(var j=0; j<paymentModel.count; j++) {
-                var paymentMethod = paymentModel.get(j)
+            for(var j=0; j<root.paymentModel.count; j++) {
+                var paymentMethod = root.paymentModel.get(j)
                 payedSum += paymentMethod.amount
             }
 
@@ -326,46 +322,35 @@ Popup {
     }
 
     Component.onCompleted: {
-        paymentModel.append({
-                                image: "qrc:/assets/imgs/payments/1.jpg",
-                                label: "Cash",
-                                uid: "cash",
-                                type: "",
-                                amount: 0,
-                                data: {}
-                            })
+        paymentMethodsModel.append({
+                                       image: "qrc:/assets/imgs/payments/1.jpg",
+                                       label: "Cash",
+                                       uid: "cash"
+                                   })
 
-        paymentModel.append({
-                                image: "qrc:/assets/imgs/payments/2.jpg",
-                                label: "M-Pesa",
-                                uid: "mpesa",
-                                type: "",
-                                amount: 0,
-                                data: {}
-                            })
+        paymentMethodsModel.append({
+                                       image: "qrc:/assets/imgs/payments/2.jpg",
+                                       label: "M-Pesa",
+                                       uid: "mpesa"
+                                   })
 
-        paymentModel.append({
-                                image: "",
-                                label: "Credit",
-                                uid: "credit",
-                                type: "",
-                                amount: 0,
-                                data: {}
-                            })
+        paymentMethodsModel.append({
+                                       image: "",
+                                       label: "Credit",
+                                       uid: "credit"
+                                   })
 
-        paymentModel.append({
-                                image: "",
-                                label: "Cheque",
-                                uid: "cheque",
-                                type: "",
-                                amount: 0,
-                                data: {}
-                            })
+        paymentMethodsModel.append({
+                                       image: "",
+                                       label: "Cheque",
+                                       uid: "cheque"
+                                   })
 
     }
 
     onOpened: {
         // Update flags
-        paymentmethodsrepeater.recomputePaydVsTotals()
+        paymentMethodsLV.recomputePaydVsTotals()
+        root.totals = 1434
     }
 }
