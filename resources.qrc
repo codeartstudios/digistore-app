@@ -69,4 +69,5 @@
         <file>assets/imgs/payments/1.jpg</file>
         <file>assets/imgs/payments/2.jpg</file>
     </qresource>
+    <qresource prefix="/qt/qml"/>
 </RCC>

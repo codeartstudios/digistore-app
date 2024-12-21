@@ -100,12 +100,33 @@ Popup {
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
                         onClicked: {
-                            root.paymentModel.append({
-                                                         amount: paymentModel.count===0 ? root.totals : 0,
-                                                         label: model.label,
-                                                         uid: model.uid,
+                            var existsAtIndex = -1;
 
-                                                     })
+                            // Find the index of the payment method in the payment Model
+                            for( var i=0; i<root.paymentModel.count; i++ ) {
+                                if( root.paymentModel.get(i).uid === model.uid ) {
+                                    existsAtIndex = i;
+                                    break;
+                                }
+                            }
+
+                            // If the payment method was not found, lets add it to the model
+                            if( existsAtIndex === -1 ) {
+                                const payment = {
+                                    amount: paymentModel.count===0 ? root.totals : 0,
+                                    label: model.label,
+                                    uid: model.uid
+                                };
+
+                                root.paymentModel.append(payment)
+                                paymentMethodsLV.currentIndex = root.paymentModel.count - 1
+                            }
+
+                            else {
+                                // If we have added the method already, make it the current index
+                                // so that we can edit it.
+                                paymentMethodsLV.currentIndex = existsAtIndex;
+                            }
                         }
 
                         contentItem: Item {
@@ -165,23 +186,38 @@ Popup {
 
                         signal recomputePaydVsTotals
 
+                        currentIndex: -1
                         spacing: Theme.xsSpacing/2.0
                         model: root.paymentModel
                         delegate: DsCheckoutPaymentMethod {
+                            id: paymentMethodDelegate
+                            property bool selected: paymentMethodsLV.currentIndex===index
+
+                            onSelectedChanged: if(selected) {
+                                                   console.log("Got focus: ", index)
+                                                   input.forceActiveFocus(Qt.MouseFocusReason)
+                                               }
+
+                            input {
+                                placeholderText: qsTr("0")
+                                text: model.amount===0 ? '' : `${model.amount}`
+                                validator: DoubleValidator{ bottom: 0 }
+                            }
+
                             label: model.label
-                            input.placeholderText: qsTr("0.00")
-                            input.text: model.amount===0 ? '' : `${model.amount}`
-                            input.validator: DoubleValidator{ bottom: 0 }
                             width: paymentMethodsLV.width
+                            readOnly: !paymentMethodDelegate.selected
                             anchors.horizontalCenter: parent.horizontalCenter
 
-                            onInputTextChanged: (val) => {
-                                                    // console.log("Changed: ", val)
-                                                    var num = parseFloat(val.trim())
-                                                    val = isNaN(num) ? 0 : num
-                                                    root.paymentModel.setProperty(index, "amount", val)
-                                                    paymentMethodsLV.recomputePaydVsTotals()
-                                                }
+                            onInputTextChanged: (val) => amountUpdated(val)
+
+                            function amountUpdated(val) {
+                                // console.log("Changed: ", val)
+                                var num = parseFloat(val.trim())
+                                val = isNaN(num) ? 0 : num
+                                root.paymentModel.setProperty(index, "amount", val)
+                                paymentMethodsLV.recomputePaydVsTotals()
+                            }
 
                             Component.onCompleted: {
                                 console.log("Adding: ", model.amount)
@@ -315,6 +351,7 @@ Popup {
     function clearInputs() {
         root.totals = 0;
         root.model = null
+        paymentMethodsLV.currentIndex = -1
 
         for(var j=0; j<paymentModel.count; j++) {
             paymentModel.setProperty(j, "amount",  0)
@@ -352,5 +389,6 @@ Popup {
         // Update flags
         paymentMethodsLV.recomputePaydVsTotals()
         root.totals = 1434
+        paymentMethodsLV.currentIndex = -1
     }
 }

@@ -33,7 +33,7 @@ Rectangle {
     Column {
         id: col
         spacing: 0
-        width: parent.width - 2*Theme.xsSpacing
+        width: parent.width - 2 * Theme.xsSpacing
         anchors.centerIn: parent
 
         Item {
