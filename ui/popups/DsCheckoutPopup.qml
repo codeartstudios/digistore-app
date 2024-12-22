@@ -190,43 +190,36 @@ Popup {
                         spacing: Theme.xsSpacing/2.0
                         model: root.paymentModel
                         delegate: DsCheckoutPaymentMethod {
-                            id: paymentMethodDelegate
                             property bool selected: paymentMethodsLV.currentIndex===index
 
-                            onSelectedChanged: if(selected) {
-                                                   console.log("Got focus: ", index)
-                                                   input.forceActiveFocus(Qt.MouseFocusReason)
-                                               }
-
+                            id: paymentMethodDelegate
+                            label: model.label
+                            width: paymentMethodsLV.width
+                            readOnly: !paymentMethodDelegate.selected
+                            forceInputActiveFocusOnClick: false
                             input {
                                 placeholderText: qsTr("0")
                                 text: model.amount===0 ? '' : `${model.amount}`
                                 validator: DoubleValidator{ bottom: 0 }
                             }
 
-                            label: model.label
-                            width: paymentMethodsLV.width
-                            readOnly: !paymentMethodDelegate.selected
-                            anchors.horizontalCenter: parent.horizontalCenter
-
                             onInputTextChanged: (val) => amountUpdated(val)
+                            onClicked: paymentMethodsLV.currentIndex = index
+                            onRemovePayment: root.paymentModel.remove(index)
+                            onSelectedChanged: if(selected) input.forceActiveFocus(Qt.MouseFocusReason)
 
                             function amountUpdated(val) {
-                                // console.log("Changed: ", val)
                                 var num = parseFloat(val.trim())
                                 val = isNaN(num) ? 0 : num
                                 root.paymentModel.setProperty(index, "amount", val)
+
                                 paymentMethodsLV.recomputePaydVsTotals()
+                                updateCashPaymentAmount(model.uid)
                             }
 
-                            Component.onCompleted: {
-                                console.log("Adding: ", model.amount)
-                                input.text = model.amount;
-                            }
+                            Component.onCompleted: input.text = model.amount;
                         }
                     }
-                    //    }
-                    //}
 
                     Item {
                         Layout.fillWidth: true
@@ -358,6 +351,32 @@ Popup {
         }
     }
 
+    function updateCashPaymentAmount(uid) {
+        if(uid === "cash") return
+
+        var cash = { index: -1, amount: 0}
+        var paidSum = 0;
+
+        // Get cash payment data
+        for(var i=0; i<paymentModel.count; i++) {
+            if( paymentModel.get(i).uid === 'cash' ) {
+                cash.amount = paymentModel.get(i).amount
+                cash.index = i
+                break
+            }
+
+            else {
+                paidSum += paymentModel.get(i).amount
+            }
+        }
+
+        console.log("Totals: ", root.totals, "\t:", paidSum)
+
+        if( paidSum <= root.totals && cash.amount > 0 && cash.index >= 0) {
+            root.paymentModel.setProperty(cash.index, "amount", root.totals - paidSum)
+        }
+    }
+
     Component.onCompleted: {
         paymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/1.jpg",
@@ -390,5 +409,6 @@ Popup {
         paymentMethodsLV.recomputePaydVsTotals()
         root.totals = 1434
         paymentMethodsLV.currentIndex = -1
+        console.log("Opened!")
     }
 }
