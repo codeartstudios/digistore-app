@@ -92,6 +92,7 @@ Popup {
                     clip: true
                     model: root.paymentMethodsModel
                     delegate: DsButton {
+                        id: paymentMethodDelegate
                         width: paymentModesLV.width
                         height: 150
                         radius: Theme.btnRadius
@@ -151,6 +152,24 @@ Popup {
                                     text: model.label
                                     fontSize: Theme.smFontSize
                                     Layout.fillWidth: true
+                                }
+                            }
+
+                            Rectangle {
+                                visible: paymentMethodDelegate.hovered
+                                anchors.fill: parent
+                                color: Qt.rgba(0,0,0,0.3)
+                                opacity: visible ? 1 : 0
+
+                                Behavior on opacity { NumberAnimation{} }
+
+                                DsIcon {
+                                    iconType: IconType.categoryPlus
+                                    color: Theme.baseColor
+                                    iconSize: paymentMethodDelegate.hovered ? Theme.lgBtnHeight : 0
+                                    anchors.centerIn: parent
+
+                                    Behavior on iconSize { NumberAnimation{} }
                                 }
                             }
                         }

@@ -108,15 +108,15 @@ DsPage {
             }
 
             DsButton { // TODO
-                // enabled: cartModel.count>0
+                enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
 
                 onClicked: {
                     checkoutpopup.open()
-                    // checkoutpopup.totals = checkoutTotals
-                    // checkoutpopup.model = cartModel
+                    checkoutpopup.totals = checkoutTotals
+                    checkoutpopup.model = cartModel
                 }
             }
 
