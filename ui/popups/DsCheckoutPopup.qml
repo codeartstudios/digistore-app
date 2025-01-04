@@ -459,13 +459,19 @@ Popup {
                                    })
 
         paymentMethodsModel.append({
-                                       image: "",
+                                       image: "qrc:/assets/imgs/payments/3.png",
                                        label: "Credit",
                                        uid: "credit"
                                    })
 
         paymentMethodsModel.append({
-                                       image: "",
+                                       image: "qrc:/assets/imgs/payments/4.png",
+                                       label: "PDQ",
+                                       uid: "pdq"
+                                   })
+
+        paymentMethodsModel.append({
+                                       image: "qrc:/assets/imgs/payments/5.png",
                                        label: "Cheque",
                                        uid: "cheque"
                                    })
