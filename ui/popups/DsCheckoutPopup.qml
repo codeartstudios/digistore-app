@@ -83,93 +83,110 @@ Popup {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                ListView {
-                    id: paymentModesLV
+                Item {
                     Layout.preferredWidth: 200
                     Layout.fillHeight: true
 
-                    spacing: Theme.xsSpacing
-                    clip: true
-                    model: root.paymentMethodsModel
-                    delegate: DsButton {
-                        id: paymentMethodDelegate
-                        width: paymentModesLV.width
-                        height: 150
-                        radius: Theme.btnRadius
-                        bgColor: Theme.baseColor
-                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: Theme.xsSpacing
 
-                        onClicked: {
-                            var existsAtIndex = -1;
-
-                            // Find the index of the payment method in the payment Model
-                            for( var i=0; i<root.paymentModel.count; i++ ) {
-                                if( root.paymentModel.get(i).uid === model.uid ) {
-                                    existsAtIndex = i;
-                                    break;
-                                }
-                            }
-
-                            // If the payment method was not found, lets add it to the model
-                            if( existsAtIndex === -1 ) {
-                                const payment = {
-                                    amount: paymentModel.count===0 ? root.totals : 0,
-                                    label: model.label,
-                                    uid: model.uid
-                                };
-
-                                root.paymentModel.append(payment)
-                                paymentMethodsLV.currentIndex = root.paymentModel.count - 1
-                            }
-
-                            else {
-                                // If we have added the method already, make it the current index
-                                // so that we can edit it.
-                                paymentMethodsLV.currentIndex = existsAtIndex;
-                            }
+                        DsLabel {
+                            color: Theme.txtHintColor
+                            fontSize: Theme.lgFontSize
+                            text: qsTr("Payment Methods")
+                            Layout.fillWidth: true
                         }
 
-                        contentItem: Item {
-                            anchors.fill: parent
+                        ListView {
+                            id: paymentModesLV
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
 
-                            ColumnLayout {
-                                spacing: Theme.btnRadius
-                                anchors.fill: parent
-                                anchors.margins: Theme.btnRadius
+                            spacing: Theme.xsSpacing
+                            clip: true
+                            model: root.paymentMethodsModel
+                            delegate: DsButton {
+                                id: paymentModeLvDelegate
+                                width: paymentModesLV.width
+                                height: 150
+                                radius: Theme.btnRadius
+                                bgColor: Theme.baseColor
+                                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
 
-                                Image {
-                                    fillMode: Image.PreserveAspectCrop
-                                    source: model.image
-                                    sourceSize.width: implicitWidth
-                                    sourceSize.height: implicitHeight
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
+                                onClicked: {
+                                    var existsAtIndex = -1;
+
+                                    // Find the index of the payment method in the payment Model
+                                    for( var i=0; i<root.paymentModel.count; i++ ) {
+                                        if( root.paymentModel.get(i).uid === model.uid ) {
+                                            existsAtIndex = i;
+                                            break;
+                                        }
+                                    }
+
+                                    // If the payment method was not found, lets add it to the model
+                                    if( existsAtIndex === -1 ) {
+                                        const payment = {
+                                            amount: paymentModel.count===0 ? root.totals : 0,
+                                            label: model.label,
+                                            uid: model.uid
+                                        };
+
+                                        root.paymentModel.append(payment)
+                                        paymentMethodsLV.currentIndex = root.paymentModel.count - 1
+                                    }
+
+                                    else {
+                                        // If we have added the method already, make it the current index
+                                        // so that we can edit it.
+                                        paymentMethodsLV.currentIndex = existsAtIndex;
+                                    }
                                 }
 
-                                DsLabel {
-                                    color: Theme.txtPrimaryColor
-                                    text: model.label
-                                    fontSize: Theme.smFontSize
-                                    Layout.fillWidth: true
-                                }
-                            }
+                                contentItem: Item {
+                                    anchors.fill: parent
 
-                            Rectangle {
-                                visible: paymentMethodDelegate.hovered
-                                anchors.fill: parent
-                                color: Qt.rgba(0,0,0,0.3)
-                                opacity: visible ? 1 : 0
+                                    ColumnLayout {
+                                        spacing: Theme.btnRadius
+                                        anchors.fill: parent
+                                        anchors.margins: Theme.btnRadius
 
-                                Behavior on opacity { NumberAnimation{} }
+                                        Image {
+                                            fillMode: Image.PreserveAspectCrop
+                                            source: model.image
+                                            sourceSize.width: implicitWidth
+                                            sourceSize.height: implicitHeight
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                        }
 
-                                DsIcon {
-                                    iconType: IconType.categoryPlus
-                                    color: Theme.baseColor
-                                    iconSize: paymentMethodDelegate.hovered ? Theme.lgBtnHeight : 0
-                                    anchors.centerIn: parent
+                                        DsLabel {
+                                            color: Theme.txtPrimaryColor
+                                            text: model.label
+                                            fontSize: Theme.smFontSize
+                                            Layout.fillWidth: true
+                                        }
+                                    }
 
-                                    Behavior on iconSize { NumberAnimation{} }
+                                    Rectangle {
+                                        visible: paymentModeLvDelegate.hovered
+                                        anchors.fill: parent
+                                        color: Qt.rgba(0,0,0,0.3)
+                                        opacity: visible ? 1 : 0
+
+                                        Behavior on opacity { NumberAnimation{} }
+
+                                        DsIcon {
+                                            iconType: IconType.categoryPlus
+                                            color: Theme.baseColor
+                                            iconSize: paymentModeLvDelegate.hovered ? Theme.lgBtnHeight : 0
+                                            anchors.centerIn: parent
+
+                                            Behavior on iconSize { NumberAnimation{} }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -181,22 +198,30 @@ Popup {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    //             DsLabel {
-                    //                 fontSize: Theme.h1
-                    //                 color: Theme.txtHintColor
-                    //                 text: qsTr("TOTALS")
-                    //                 anchors.baseline: totalslabel.baseline
-                    //             }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        visible: root.paymentModel.count === 0
 
-                    //             DsLabel {
-                    //                 id: totalslabel
-                    //                 isBold: true
-                    //                 fontSize: Theme.btnHeight
-                    //                 color: Theme.txtHintColor
-                    //                 text: `KES ${totals}`
-                    //                 anchors.verticalCenter: parent.verticalCenter
-                    //             }
-                    //         }
+                        Column {
+                            spacing: Theme.smSpacing
+                            anchors.centerIn: parent
+
+                            DsIcon {
+                                iconSize: Theme.lgBtnHeight
+                                iconType: IconType.scanPosition
+                                color: Theme.txtHintColor
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+
+                            DsLabel {
+                                color: Theme.txtHintColor
+                                fontSize: Theme.lgFontSize
+                                text: qsTr("No payment method selected, yet!")
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                        }
+                    }
 
                     ListView {
                         id: paymentMethodsLV
@@ -205,6 +230,7 @@ Popup {
 
                         signal recomputePaydVsTotals
 
+                        visible: root.paymentModel.count > 0
                         currentIndex: -1
                         spacing: Theme.xsSpacing/2.0
                         model: root.paymentModel
@@ -296,16 +322,40 @@ Popup {
             return;
         }
 
-        var payments = {}
+        var paymentTotals = 0;
+        // Compute payment totals vs checkout totals
         for(var j=0; j<paymentModel.count; j++) {
             const paymentObject = paymentModel.get(j)
-            // Set the payment uid key to payment object [JSON]
-            payments[paymentObject.uid] = {
-                label: paymentObject.label,
-                uid: paymentObject.uid,
-                type: paymentObject.type,
-                amount: paymentObject.amount,
-                data: paymentObject.data
+            paymentTotals += paymentObject.amount
+        }
+
+        if(paymentTotals === 0) {
+            showMessage("Payment Error", "Payment Methods Are Zero")
+            return
+        }
+
+        if(paymentTotals < root.totals) {
+            showMessage("Payment Error", "Payments can't be less than cart totals.")
+            return
+        }
+
+        if(paymentTotals > root.totals) {
+            showMessage("Payment Error", "Payments can't exeed the cart totals.")
+            return
+        }
+
+        var payments = {}
+        for(let j=0; j<paymentModel.count; j++) {
+            const paymentObject = paymentModel.get(j)
+            if(paymentObject.amount > 0) { // Only append if value is non zero
+                // Set the payment uid key to payment object [JSON]
+                payments[paymentObject.uid] = {
+                    label: paymentObject.label,
+                    uid: paymentObject.uid,
+                    type: paymentObject.type,
+                    amount: paymentObject.amount,
+                    data: paymentObject.data
+                }
             }
         }
 
@@ -345,7 +395,7 @@ Popup {
 
         checkoutrequest.clear()
         checkoutrequest.body = body
-        console.log("Body: ", JSON.stringify(body))
+        // console.log("Body: ", JSON.stringify(body))
 
         var res = checkoutrequest.send();
         console.log(JSON.stringify(res))
@@ -354,8 +404,8 @@ Popup {
             root.checkoutSuccessful()
             root.close()
         } else {
-            messageBox.title = qsTr("Something went wrong!")
-            messageBox.info = qsTr("Checkout process encontered an error, if the issue persists contact admin.")
+            messageBox.title = qsTr("Checkout failed!")
+            messageBox.info = res.data.message ? res.data.message : qsTr("Checkout process encontered an error, if the issue persists contact admin.")
             messageBox.open()
         }
     }
@@ -426,8 +476,6 @@ Popup {
     onOpened: {
         // Update flags
         paymentMethodsLV.recomputePaydVsTotals()
-        root.totals = 1434
         paymentMethodsLV.currentIndex = -1
-        console.log("Opened!")
     }
 }
