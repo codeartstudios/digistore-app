@@ -27,8 +27,6 @@ Popup {
 
     signal checkoutSuccessful()
 
-    onClosed: clearInputs()
-
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -236,30 +234,36 @@ Popup {
                         model: root.paymentModel
                         delegate: DsCheckoutPaymentMethod {
                             property bool selected: paymentMethodsLV.currentIndex===index
+                            property real amountPaid: model.amount
 
                             id: paymentMethodDelegate
                             label: model.label
                             width: paymentMethodsLV.width
-                            readOnly: !paymentMethodDelegate.selected
-                            forceInputActiveFocusOnClick: false
-                            input {
-                                placeholderText: qsTr("0")
-                                text: model.amount===0 ? '' : `${model.amount}`
-                                validator: DoubleValidator{ bottom: 0 }
-                            }
+                            readOnly: !paymentMethodDelegate.selected || !forceInputActiveFocusOnClick
+                            forceInputActiveFocusOnClick: model.uid !== "cash"
+                            input.placeholderText: qsTr("0.0")
+                            input.text: model.amount===0 ? '' : model.amount.toString()
+                            input.validator: DoubleValidator{ bottom: 0 }
 
                             onInputTextChanged: (val) => amountUpdated(val)
                             onClicked: paymentMethodsLV.currentIndex = index
-                            onRemovePayment: root.paymentModel.remove(index)
+                            onRemovePayment: removePaymentMethod()
                             onSelectedChanged: if(selected) input.forceActiveFocus(Qt.MouseFocusReason)
+                            onAmountPaidChanged: input.text = model.amount;
 
                             function amountUpdated(val) {
                                 var num = parseFloat(val.trim())
                                 val = isNaN(num) ? 0 : num
                                 root.paymentModel.setProperty(index, "amount", val)
 
-                                paymentMethodsLV.recomputePaydVsTotals()
                                 updateCashPaymentAmount(model.uid)
+                                paymentMethodsLV.recomputePaydVsTotals()
+                            }
+
+                            function removePaymentMethod() {
+                                root.paymentModel.remove(index)
+                                updateCashPaymentAmount("")
+                                paymentMethodsLV.recomputePaydVsTotals()
                             }
 
                             Component.onCompleted: input.text = model.amount;
@@ -282,7 +286,6 @@ Popup {
                                 busy: checkoutrequest.running
                                 text: qsTr("Submit Payment")
                                 endIcon: IconType.arrowRight
-                                // iconType: IconType.plus
                                 onClicked: submitSale()
                                 enabled: root.submitCheckoutEnabled
                             }
@@ -414,15 +417,9 @@ Popup {
         root.totals = 0;
         root.model = null
         paymentMethodsLV.currentIndex = -1
-
-        for(var j=0; j<paymentModel.count; j++) {
-            paymentModel.setProperty(j, "amount",  0)
-        }
     }
 
     function updateCashPaymentAmount(uid) {
-        if(uid === "cash") return
-
         var cash = { index: -1, amount: 0}
         var paidSum = 0;
 
@@ -431,7 +428,6 @@ Popup {
             if( paymentModel.get(i).uid === 'cash' ) {
                 cash.amount = paymentModel.get(i).amount
                 cash.index = i
-                break
             }
 
             else {
@@ -439,14 +435,14 @@ Popup {
             }
         }
 
-        console.log("Totals: ", root.totals, "\t:", paidSum)
-
         if( paidSum <= root.totals && cash.amount > 0 && cash.index >= 0) {
             root.paymentModel.setProperty(cash.index, "amount", root.totals - paidSum)
         }
     }
 
     Component.onCompleted: {
+        paymentMethodsModel.clear()
+
         paymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/1.jpg",
                                        label: "Cash",
@@ -477,5 +473,10 @@ Popup {
         // Update flags
         paymentMethodsLV.recomputePaydVsTotals()
         paymentMethodsLV.currentIndex = -1
+    }
+
+    onClosed: {
+        clearInputs()
+        paymentModel.clear()
     }
 }

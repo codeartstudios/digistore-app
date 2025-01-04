@@ -70,9 +70,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                onTextChanged: {
-                    root.inputTextChanged(input.text)
-                }
+                onTextChanged: root.inputTextChanged(input.text)
 
                 DsToolTip {
                     id: tt
