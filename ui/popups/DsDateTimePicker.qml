@@ -123,8 +123,8 @@ Popup {
             }
 
             DayOfWeekRow {
-                Layout.column: 1
                 Layout.fillWidth: true
+                Layout.preferredHeight: Theme.btnHeight
 
                 delegate: DsButton {
                     width: Theme.smBtnHeight

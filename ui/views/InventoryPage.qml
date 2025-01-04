@@ -306,4 +306,11 @@ DsPage {
     }
 
     Component.onCompleted: getProducts()
+
+    Popup {
+        id: addOptionsPopup
+        width: 300
+        height: 200
+
+    }
 }
