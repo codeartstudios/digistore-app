@@ -319,17 +319,22 @@ Popup {
 
     function submitSale() {
         if(!model) {
-            messageBox.title = qsTr("Ooops!")
-            messageBox.info = qsTr("We encountered a problem, the cart is empty! Pick some few items and try again.")
-            messageBox.open()
+            showMessage(
+                        qsTr("Ooops!"),
+                        qsTr("We encountered a problem, the cart is empty! Pick some few items and try again.")
+                        )
             return;
         }
 
         var paymentTotals = 0;
+        var cashPayment = 0;
         // Compute payment totals vs checkout totals
         for(var j=0; j<paymentModel.count; j++) {
             const paymentObject = paymentModel.get(j)
             paymentTotals += paymentObject.amount
+
+            // Record cash payment done for computing balance due.
+            if(paymentObject.uid === 'cash') cashPayment = paymentObject.amount;
         }
 
         if(paymentTotals === 0) {
@@ -375,7 +380,8 @@ Popup {
                 var new_qty = old_qty + obj.quantity
                 old_obj.quantity = new_qty
                 products[indx] = old_obj
-            } else {
+            }
+            else {
                 products.push({
                                   id: obj.id,
                                   name: obj.name,
@@ -398,19 +404,36 @@ Popup {
 
         checkoutrequest.clear()
         checkoutrequest.body = body
-        // console.log("Body: ", JSON.stringify(body))
 
         var res = checkoutrequest.send();
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            root.checkoutSuccessful()
-            root.close()
-        } else {
+            // If we dont have cash payment, just end the session
+            if(cashPayment === 0) {
+                completeCheckoutSession()
+            }
+
+            // Spin up cash input popup, otherwise
+            else {
+                console.log("Opening checkout complete dialog")
+                // Open the amount entry dialog, compute balance
+                checkoutCompletePopup.open()
+                checkoutCompletePopup.cashAmountPaid = cashPayment;
+            }
+        }
+
+        else {
             messageBox.title = qsTr("Checkout failed!")
             messageBox.info = res.data.message ? res.data.message : qsTr("Checkout process encontered an error, if the issue persists contact admin.")
             messageBox.open()
         }
+    }
+
+    function completeCheckoutSession() {
+        root.checkoutSuccessful()
+        dsController.emitOpenCashDrawer()
+        root.close()
     }
 
     function clearInputs() {
@@ -460,13 +483,13 @@ Popup {
 
         paymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/3.png",
-                                       label: "Credit",
+                                       label: "On Credit",
                                        uid: "credit"
                                    })
 
         paymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/4.png",
-                                       label: "PDQ",
+                                       label: "PDQ (Card)",
                                        uid: "pdq"
                                    })
 
@@ -488,4 +511,7 @@ Popup {
         clearInputs()
         paymentModel.clear()
     }
+
+    // Popups
+    DsCheckoutCompletePopup{ id: checkoutCompletePopup }
 }

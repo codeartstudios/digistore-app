@@ -2,8 +2,8 @@
     "title": "Digisto POS",
     "versioncode": 1,
     "versionname": "1.0.0",
-    "organization_name": "digisto.app",
-    "organization_domain": "app.digisto",
+    "organization_name": "Koaley Group Ltd.",
+    "organization_domain": "digisto.koaleygroup.com",
     "encryption_key":"",
     "encryption_salt":""
 }

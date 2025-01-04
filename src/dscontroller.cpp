@@ -22,3 +22,7 @@ DsController::DsController(QObject *parent)
     settings = std::make_shared<QSettings>(new QSettings(qApp->organizationName(),qApp->applicationDisplayName()));
 
 }
+
+void DsController::emitOpenCashDrawer() {
+    emit openCashDrawer();
+}

@@ -71,6 +71,8 @@
         <file>assets/imgs/payments/3.png</file>
         <file>assets/imgs/payments/4.png</file>
         <file>assets/imgs/payments/5.png</file>
+        <file>ui/popups/DsCheckoutCompletePopup.qml</file>
+        <file>ui/popups/DsCheckoutBalanceDisplayPopup.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>
