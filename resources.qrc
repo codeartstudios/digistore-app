@@ -73,6 +73,7 @@
         <file>assets/imgs/payments/5.png</file>
         <file>ui/popups/DsCheckoutCompletePopup.qml</file>
         <file>ui/popups/DsCheckoutBalanceDisplayPopup.qml</file>
+        <file>ui/views/PocketbaseAdminPage.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

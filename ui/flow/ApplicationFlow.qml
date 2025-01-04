@@ -121,10 +121,19 @@ Item {
                         // postAuthLoader.sourceComponent = salesStackComponent;
                         break;
                     }
+
+                    case "pocketbaseadmin": {
+                        pocketbaseAdminPage.show()
+                        break;
+                    }
                     }
                 }
             }
         }
+    }
+
+    PocketbaseAdminPage {
+        id: pocketbaseAdminPage
     }
 
     function withOpacity(color, opacity) {
