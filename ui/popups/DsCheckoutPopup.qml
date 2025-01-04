@@ -56,7 +56,7 @@ Popup {
                 DsLabel {
                     fontSize: Theme.h1
                     color: Theme.txtHintColor
-                    text: qsTr("Checkout > Payments")
+                    text: qsTr("Checkout / Payments") + ` / KES ${root.totals}`
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                 }
@@ -419,6 +419,9 @@ Popup {
         paymentMethodsLV.currentIndex = -1
     }
 
+    // TODO
+    // Adding cash later after removing it does not
+    // update cash value to the full
     function updateCashPaymentAmount(uid) {
         var cash = { index: -1, amount: 0}
         var paidSum = 0;
