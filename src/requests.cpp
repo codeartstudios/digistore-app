@@ -1,5 +1,4 @@
 #include "requests.h"
-#include "dscontroller.h"
 
 Requests::Requests(QObject *parent)
     : QObject{parent},
@@ -60,9 +59,9 @@ QVariantMap Requests::send()
     // Create request object
     QNetworkRequest request;
     request.setUrl(url);
-    qDebug() << "\n[Requests] Making a ("
+    qDebug() << "\n["
              << m_method
-             << ") request to '" << request.url().toString() << "'";
+             << "] '" << request.url().toString() << "'";
 
     // Add user headers to the request
     if(!m_headers.isEmpty()) {
@@ -233,6 +232,14 @@ void Requests::clear()
     emit bodyChanged();
     emit filesChanged();
     emit queryChanged();
+}
+
+void Requests::logRequest(const QString &method, const QString &endpoint, const int &statusCode)
+{
+    qDebug() << "\n["
+             << m_method
+        << statusCode
+             << "] '" << endpoint << "'";
 }
 
 QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {

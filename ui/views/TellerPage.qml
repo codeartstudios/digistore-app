@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Controls.Basic as QQCB
 import QtQuick.Layouts
 import app.digisto.modules
@@ -108,7 +107,7 @@ DsPage {
                 }
             }
 
-            DsButton {
+            DsButton { // TODO
                 enabled: cartModel.count>0
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")

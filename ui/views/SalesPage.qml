@@ -297,27 +297,32 @@ DsPage {
             totalItems=data.totalItems
             var items = data.items;
 
-            items.forEach(
-                        function(p, index) {
-                            p.created =  new Date(p.created).toLocaleString('en-US', {
-                                                                                year: 'numeric',
-                                                                                month: '2-digit',
-                                                                                day: '2-digit',
-                                                                                hour: '2-digit',
-                                                                                minute: '2-digit'
-                                                                            });
-                            var payments_methods = []
-                            const keys = Object.keys(p.payments)
-                            for(var i=0; i<keys.length; i++) {
-                                if(p.payments[keys[i]].amount > 0) {
-                                    payments_methods.push(p.payments[keys[i]].label.toString())
+            try {
+                items.forEach(
+                            function(p, index) {
+                                p.created =  new Date(p.created).toLocaleString('en-US', {
+                                                                                    year: 'numeric',
+                                                                                    month: '2-digit',
+                                                                                    day: '2-digit',
+                                                                                    hour: '2-digit',
+                                                                                    minute: '2-digit'
+                                                                                });
+                                var payments_methods = []
+                                const keys = Object.keys(p.payments)
+                                for(var i=0; i<keys.length; i++) {
+                                    if(p.payments[keys[i]].amount > 0) {
+                                        payments_methods.push(p.payments[keys[i]].label.toString())
+                                    }
                                 }
-                            }
 
-                            var payment_lbl = payments_methods.length === 0 ? "--" : payments_methods.join(', ')
-                            p["payments_label"] = payment_lbl
-                            items[index] = p
-                        });
+                                var payment_lbl = payments_methods.length === 0 ? "--" : payments_methods.join(', ')
+                                p["payments_label"] = payment_lbl
+                                items[index] = p
+                            });
+            }
+            catch(err) {
+                console.log("Sales Page: ", err)
+            }
 
             datamodel.clear()
 

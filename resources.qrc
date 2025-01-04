@@ -66,5 +66,14 @@
         <file>ui/popups/DsSelectedSaleProductsDrawer.qml</file>
         <file>app/digisto/modules/Utils.js</file>
         <file>ui/controls/DsDrawer.qml</file>
+        <file>assets/imgs/payments/1.jpg</file>
+        <file>assets/imgs/payments/2.jpg</file>
+        <file>assets/imgs/payments/3.png</file>
+        <file>assets/imgs/payments/4.png</file>
+        <file>assets/imgs/payments/5.png</file>
+        <file>ui/popups/DsCheckoutCompletePopup.qml</file>
+        <file>ui/popups/DsCheckoutBalanceDisplayPopup.qml</file>
+        <file>ui/views/PocketbaseAdminPage.qml</file>
     </qresource>
+    <qresource prefix="/qt/qml"/>
 </RCC>

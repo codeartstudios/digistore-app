@@ -9,9 +9,12 @@ Rectangle {
     implicitWidth: 200
     height: col.height + Theme.xsSpacing
     color: Theme.baseAlt1Color
+    border.width: input.activeFocus ? 1 : 0
+    border.color: Theme.successColor
 
     property string label: qsTr("Input")
     property alias input: input
+    property alias value: input.text
     property bool isPasswordInput: false
     property alias validator: input.validator
     property bool hasError: false
@@ -19,9 +22,10 @@ Rectangle {
     property bool showBusyIndicator: false
     property string errorString: ""
     property bool readOnly: false
+    property bool forceInputActiveFocusOnClick: true
 
     signal clicked()
-    signal inFullClicked()
+    signal removePayment()
     signal inputTextChanged(value: var)
 
     function showError() { tt.show(errorString) }
@@ -31,9 +35,11 @@ Rectangle {
 
     Column {
         id: col
-        spacing: 0
-        width: parent.width - 2*Theme.xsSpacing
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: removeBtn.left
+        anchors.leftMargin: Theme.xsSpacing
+        anchors.rightMargin: Theme.xsSpacing
+        anchors.verticalCenter: parent.verticalCenter
 
         Item {
             height: 20
@@ -46,21 +52,6 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            DsLabel {
-                text: qsTr("In full")
-                isUnderlined: true
-                color: Theme.txtPrimaryColor
-                fontSize: Theme.smFontSize
-                height: parent.height
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-
-                MouseArea {
-                    enabled: root.enabled
-                    anchors.fill: parent
-                    onClicked: root.inFullClicked()
-                }
-            }
         }
 
         RowLayout {
@@ -79,9 +70,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                onTextChanged: {
-                    root.inputTextChanged(input.text)
-                }
+                onTextChanged: root.inputTextChanged(input.text)
 
                 DsToolTip {
                     id: tt
@@ -105,6 +94,26 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: { input.forceActiveFocus(); root.clicked() }
+        onClicked: {
+            if(root.forceInputActiveFocusOnClick)
+                input.forceActiveFocus();
+            root.clicked()
+        }
+    }
+
+    DsIconButton {
+        id: removeBtn
+        iconType: IconType.x
+        textColor: Theme.txtPrimaryColor
+        bgColor: "transparent"
+        bgHover: withOpacity(Theme.dangerAltColor, 0.8)
+        bgDown: withOpacity(Theme.dangerAltColor, 0.6)
+        radius: height/2
+
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.xsSpacing
+        anchors.verticalCenter: parent.verticalCenter
+
+        onClicked: root.removePayment()
     }
 }

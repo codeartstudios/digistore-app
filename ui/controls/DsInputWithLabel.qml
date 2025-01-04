@@ -19,6 +19,7 @@ Rectangle {
     property bool readOnly: false
 
     signal clicked()
+    signal textAccepted()
 
     function showError() { tt.show(errorString) }
     function closeError() { tt.close() }
@@ -60,6 +61,8 @@ Rectangle {
             echoMode: isPasswordInput ? TextField.Password : TextField.Normal
             background: Item{}
             readOnly: control.readOnly
+
+            onAccepted: control.textAccepted()
 
             DsToolTip {
                 id: tt

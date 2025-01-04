@@ -1,6 +1,7 @@
-#include <QApplication>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtWebView/QtWebView>
 
 // User defined headers
 #include "dscontroller.h"
@@ -8,7 +9,9 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
+
+    QtWebView::initialize();
 
     // Create the dscontroller instance
     DsController dsController;
@@ -19,8 +22,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dsController", &dsController);
 
     qmlRegisterType<Requests>("app.digisto.modules", 1, 0, "Requests");
-    // qmlRegisterSingletonType(QUrl("qrc:/ui/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
-    // qmlRegisterSingletonType(QUrl("qrc:/ui/IconType.qml"), "app.digisto.modules", 1, 0, "IconType");
+    // qmlRegisterSingletonType(QUrl("qrc:/app/digisto/modules/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
+    // qmlRegisterSingletonType(QUrl("qrc:/app/digisto/modules/IconType.qml"), "app.digisto.modules", 1, 0, "IconType");
 
     const QUrl url(QStringLiteral("qrc:/ui/Main.qml"));
 

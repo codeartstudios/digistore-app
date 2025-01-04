@@ -23,12 +23,16 @@ public:
     // Application specific global apps
     Q_PROPERTY(QString organizationID MEMBER m_organizationID NOTIFY organizationIDChanged FINAL)
 
+    //
+    Q_INVOKABLE void emitOpenCashDrawer();
 signals:
     void encryptionKeyChanged();
     void encryptionSaltChanged();
     void platformChanged();
 
     void organizationIDChanged();
+
+    void openCashDrawer();
 
 private:
     std::shared_ptr<QSettings> settings;

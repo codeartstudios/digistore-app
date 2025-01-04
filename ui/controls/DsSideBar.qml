@@ -121,6 +121,13 @@ Item {
                             isBusy: false,
                             iconType: IconType.tableShare
                         })
+        sideMenu.append({
+                            checkable: false,
+                            label: "pocketbaseadmin",
+                            tooltip: "Pocketbase Admin",
+                            isBusy: false,
+                            iconType: IconType.databaseCog
+                        })
 
         sideMenuExtras.append({
                                   checkable: true,
