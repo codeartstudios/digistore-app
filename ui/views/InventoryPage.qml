@@ -72,10 +72,10 @@ DsPage {
                 height: 1
             }
 
-            DsButton {
-                iconType: IconType.tablePlus
-                text: qsTr("New Product")
-                onClicked: addoredit_productpopup.open()
+            DsMenu {
+                id: toolsMenu
+                iconType: IconType.pencilCog
+                text: qsTr("Options")
             }
         }
 
@@ -239,8 +239,20 @@ DsPage {
         onProductAdded: getProducts()
     }
 
+    DsNewSupplierPopup {
+        id: newsupplierpopup
+    }
+
     DsViewOrEditProductDrawer {
         id: vieworeditdrawer
+    }
+
+    DsSupplierViewPopup {
+        id: supplierviewpopup
+    }
+
+    DsSupplyHistoryViewPopup {
+        id: supplyhistorypopup
     }
 
     Requests {
@@ -305,12 +317,41 @@ DsPage {
         addoredit_productpopup.open()
     }
 
-    Component.onCompleted: getProducts()
+    Component.onCompleted: {
+        toolsMenu.model.append({ label: "Add New Product",      icon: IconType.cubePlus })
+        toolsMenu.model.append({ label: "Add New Supplier",     icon: IconType.rowInsertTop })
+        toolsMenu.model.append({ label: "View All Suppliers",   icon: IconType.layoutList })
+        toolsMenu.model.append({ label: "Supply History",       icon: IconType.listTree })
 
-    Popup {
-        id: addOptionsPopup
-        width: 300
-        height: 200
+        getProducts()
+    }
 
+    // Handle menu selection in the products tab
+    Connections {
+        target: toolsMenu
+
+        function onCurrentMenuChanged(index) {
+            switch(index) {
+            case 0: {
+                addoredit_productpopup.open()
+                break;
+            }
+
+            case 1: {
+                newsupplierpopup.open()
+                break;
+            }
+
+            case 2: {
+                supplierviewpopup.open()
+                break;
+            }
+
+            case 2: {
+                supplyhistorypopup.open()
+                break;
+            }
+            }
+        }
     }
 }

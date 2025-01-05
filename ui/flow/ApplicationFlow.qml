@@ -83,26 +83,14 @@ Item {
                         break;
                     }
 
-                    case "suppliers": {
-                        appStackLayout.currentIndex=3;
-                        appStackLayout.suppliersLoader.active=true;
-                        break;
-                    }
-
-                    case "supply": {
-                        appStackLayout.currentIndex=4;
-                        appStackLayout.supplyLoader.active=true;
-                        break;
-                    }
-
                     case "organization": {
-                        appStackLayout.currentIndex=5;
+                        appStackLayout.currentIndex=3;
                         appStackLayout.organizationLoader.active=true;
                         break;
                     }
 
                     case "sales": {
-                        appStackLayout.currentIndex=6;
+                        appStackLayout.currentIndex=4;
                         appStackLayout.salesLoader.active=true;
                         break;
                     }
@@ -122,8 +110,9 @@ Item {
                         break;
                     }
 
-                    case "pocketbaseadmin": {
-                        pocketbaseAdminPage.show()
+                    case "pocketbaseadmin": {                        
+                        Qt.openUrlExternally('http://127.0.0.1:8090/_/')
+                        // pocketbaseAdminPage.show()
                         break;
                     }
                     }
@@ -132,9 +121,9 @@ Item {
         }
     }
 
-    PocketbaseAdminPage {
-        id: pocketbaseAdminPage
-    }
+    // PocketbaseAdminPage {
+    //     id: pocketbaseAdminPage
+    // }
 
     function withOpacity(color, opacity) {
         var r, g, b;

@@ -46,7 +46,6 @@
         <file>app/digisto/modules/qmldir</file>
         <file>app/digisto/modules/IconType.qml</file>
         <file>app/digisto/modules/Theme.qml</file>
-        <file>ui/views/SupplyPage.qml</file>
         <file>ui/controls/DsSearchInputNoPopup.qml</file>
         <file>ui/popups/DsNewSupplierPopup.qml</file>
         <file>ui/controls/DsTabButton.qml</file>
@@ -57,7 +56,6 @@
         <file>ui/controls/DsImage.qml</file>
         <file>assets/imgs/org-banner-default.jpg</file>
         <file>assets/imgs/org-logo-default.jpg</file>
-        <file>ui/views/SuppliersPage.qml</file>
         <file>ui/popups/DsViewOrEditProductDrawer.qml</file>
         <file>ui/controls/DsDateRangeSelector.qml</file>
         <file>ui/popups/DsDateTimePicker.qml</file>
@@ -74,6 +72,9 @@
         <file>ui/popups/DsCheckoutCompletePopup.qml</file>
         <file>ui/popups/DsCheckoutBalanceDisplayPopup.qml</file>
         <file>ui/views/PocketbaseAdminPage.qml</file>
+        <file>ui/controls/DsMenu.qml</file>
+        <file>ui/popups/DsSupplierViewPopup.qml</file>
+        <file>ui/popups/DsSupplyHistoryViewPopup.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

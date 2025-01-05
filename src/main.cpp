@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QtWebView::initialize();
+    // QtWebView::initialize();
 
     // Create the dscontroller instance
     DsController dsController;
