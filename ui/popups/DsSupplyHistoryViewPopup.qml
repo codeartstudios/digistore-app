@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
-import QtQuick.Dialogs
-import Qt.labs.platform
 import app.digisto.modules
 
 import "../controls"
@@ -38,7 +36,7 @@ Popup {
             spacing: Theme.baseSpacing
             anchors.fill: parent
 
-            RowLayout {
+            RowLayout { // Header
                 Layout.fillWidth: true
                 Layout.preferredHeight: Theme.btnHeight
                 Layout.leftMargin: Theme.baseSpacing
@@ -101,7 +99,7 @@ Popup {
 
                     onClicked: root.close()
                 }
-            }
+            } // Header
 
             DsSearchInputNoPopup {
                 id: dsSearchInput
@@ -118,8 +116,11 @@ Popup {
             DsTable {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.leftMargin: Theme.baseSpacing
+                Layout.rightMargin: Theme.baseSpacing
+
                 headerModel: headermodel
-                dataModel: datamodel
+                dataModel: root.datamodel
                 busy: getsupplysrequest.running
 
                 onSortBy: function(key) {
@@ -265,28 +266,55 @@ Popup {
             filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-        // console.log(JSON.stringify(query))
+        //
         getsupplysrequest.clear()
         getsupplysrequest.query = query;
         var res = getsupplysrequest.send();
+        console.log(JSON.stringify(res))
 
         if(res.status===200) {
+            console.log("200")
             var data = res.data;
             pageNo=data.page
             totalPages=data.totalPages
             totalItems=data.totalItems
             var items = data.items;
 
-            datamodel.clear()
+            root.datamodel.clear()
 
             for(var i=0; i<items.length; i++) {
-                datamodel.append(items[i])
+                root.datamodel.append(items[i])
             }
         }
 
-        else {
-            showMessage(qsTr("Supply Error!"), qsTr("Error fetching supply list, error ")+res.status.toString())
+        else if(res.status===403) {
+            console.log("403")
+            showMessage(qsTr("Supply Fetch Error!"), qsTr("Only admins can perform this task!"))
         }
+
+        else {
+            console.log("Something else")
+            showMessage(qsTr("Supply Fetch Error!"), `${res.status.toString()} - ${res.data.message}`)
+        }
+    }
+
+    DsMessageBox {
+        id: messageBox
+        anchors.centerIn: mainApp
+        z: parent.z
+
+        x: (root.width-width)/2
+        y: (root.height-height)/2
+    }
+
+    function showMessage(title="", info="") {
+        console.log(root.z)
+        messageBox.title = title
+        messageBox.info = info
+        messageBox.open()
+        console.log(messageBox.z, messageBox.title, messageBox.info, messageBox.opened)
+        messageBox.visible = true
+        console.log(messageBox.z, messageBox.title, messageBox.info, messageBox.opened)
     }
 
     onOpened: getSupplys()

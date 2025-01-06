@@ -75,6 +75,9 @@
         <file>ui/controls/DsMenu.qml</file>
         <file>ui/popups/DsSupplierViewPopup.qml</file>
         <file>ui/popups/DsSupplyHistoryViewPopup.qml</file>
+        <file>ui/popups/DsNewSupplyPopup.qml</file>
+        <file>ui/controls/DsInputSelectorWithSearch.qml</file>
+        <file>ui/controls/DsPopup.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

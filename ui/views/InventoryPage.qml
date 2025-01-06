@@ -233,7 +233,7 @@ DsPage {
 
     // Components
     DsNewProductPopup {
-        id: addoredit_productpopup
+        id: addproductpopup
 
         // Handle product add success
         onProductAdded: getProducts()
@@ -312,9 +312,9 @@ DsPage {
             organization: model.organization
         }
 
-        addoredit_productpopup.isCreatingNewProduct = false
-        addoredit_productpopup.model = obj
-        addoredit_productpopup.open()
+        addproductpopup.isCreatingNewProduct = false
+        addproductpopup.model = obj
+        addproductpopup.open()
     }
 
     Component.onCompleted: {
@@ -333,7 +333,7 @@ DsPage {
         function onCurrentMenuChanged(index) {
             switch(index) {
             case 0: {
-                addoredit_productpopup.open()
+                addproductpopup.open()
                 break;
             }
 
@@ -347,7 +347,8 @@ DsPage {
                 break;
             }
 
-            case 2: {
+            case 3: {
+                // TODO open this popup
                 supplyhistorypopup.open()
                 break;
             }
