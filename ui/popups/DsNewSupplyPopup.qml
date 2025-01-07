@@ -12,9 +12,11 @@ Popup {
     width: 700
     height: 400
     modal: true
-    x: (mainApp.width-width)/2
-    y: (mainApp.height-height)/2
+    x: (parent.width-width)/2
+    y: (parent.height-height)/2
     closePolicy: Popup.NoAutoClose
+
+    property var selectedSupplier: null
 
     onOpened: clearInputs()
 
@@ -64,48 +66,39 @@ Popup {
                 id: scrollview
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.leftMargin: Theme.baseSpacing
+                Layout.rightMargin: Theme.baseSpacing
 
                 Column {
                     width: scrollview.width
                     spacing: Theme.smSpacing
 
-                    DsLabel {
-                        text: qsTr("Find or Add Supplier")
-                        color: Theme.txtPrimaryColor
-                        fontSize: Theme.baseFontSize
-                    }
-
-                    Row {
-                        DsSearchInput {
-
-                        }
-                    }
-
-                    DsInputWithLabel {
-                        id: nameinput
-                        label: qsTr("Supplier Name")
-                        mandatory: true
-                        input.placeholderText: qsTr("i.e. Blue Pen")
-                        width: parent.width - 2*Theme.baseSpacing
-                        anchors.horizontalCenter: parent.horizontalCenter
+                    DsInputSelectorWithSearch {
+                        label: qsTr("Select Supplier")
+                        allowMultipleSelection: false
+                        width: scrollview.width
+                        displayFields: ["name"]
+                        collection: "suppliers"
+                        searchInput.placeholderText: qsTr("Search the supplier by name ...")
                     }
 
                     Row {
                         spacing: Theme.smSpacing
-                        width: parent.width - 2*Theme.baseSpacing
+                        width: scrollview.width
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         DsInputWithLabel {
-                            id: emailinput
-                            label: qsTr("Email")
-                            input.placeholderText: qsTr("i.e. user@email.com")
+                            id: amountinput
+                            mandatory: true
+                            label: qsTr("Total Cost")
+                            input.placeholderText: qsTr("0.0")
                             width: (parent.width-parent.spacing)/2
                         }
 
                         DsInputWithLabel {
-                            id: mobileinput
-                            label: qsTr("Mobile")
-                            input.placeholderText: qsTr("i.e. 07xx xxx xxx")
+                            id: fileinput
+                            label: qsTr("Supporting Docs")
+                            input.placeholderText: qsTr(".pdf, .png, .jpg, .jpeg")
                             width: (parent.width-parent.spacing)/2
                         }
                     }
@@ -173,8 +166,8 @@ Popup {
     }
 
     function clearInputs() {
-        nameinput.input.text=""
-        emailinput.input.text=""
-        mobileinput.input.text=""
+        //nameinput.input.text=""
+        //emailinput.input.text=""
+        //mobileinput.input.text=""
     }
 }

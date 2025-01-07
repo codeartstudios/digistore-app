@@ -12,8 +12,32 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
+    property alias radius: bg.radius
+    property alias borderColor: bg.borderColor
+    property alias borderWidth: bg.borderWidth
+    property bool closeDelayElapsed: true
+
+    onClosed: {
+        closeDelayElapsed = false;
+        timer.start()
+    }
+
+    Timer {
+        id: timer
+        interval: 500
+        repeat: false
+        running: false
+        onTriggered: closeDelayElapsed=true
+    }
+
     background: Rectangle {
+        id: bg
+        property real borderWidth: 0
+        property string borderColor: "#000"
+
         color: Theme.bodyColor
         radius: Theme.btnRadius
+        border.color: borderColor
+        border.width: borderWidth
     }
 }

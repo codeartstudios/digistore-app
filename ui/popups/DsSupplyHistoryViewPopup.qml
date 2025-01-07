@@ -84,8 +84,8 @@ Popup {
 
                 DsButton {
                     iconType: IconType.tablePlus
-                    text: qsTr("New Supplier")
-                    // onClicked: newsupplierpopup.open()
+                    text: qsTr("New Supply")
+                    onClicked: newsupplypopup.open()
                 }
 
                 DsIconButton {
@@ -263,10 +263,9 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+            // filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-        //
         getsupplysrequest.clear()
         getsupplysrequest.query = query;
         var res = getsupplysrequest.send();
@@ -288,33 +287,31 @@ Popup {
         }
 
         else if(res.status===403) {
-            console.log("403")
             showMessage(qsTr("Supply Fetch Error!"), qsTr("Only admins can perform this task!"))
         }
 
         else {
-            console.log("Something else")
             showMessage(qsTr("Supply Fetch Error!"), `${res.status.toString()} - ${res.data.message}`)
         }
     }
 
+    // New Supply Addition
+    DsNewSupplyPopup {
+        id: newsupplypopup
+    }
+
+    // MessageBox popup for warnings/errors/info
     DsMessageBox {
         id: messageBox
-        anchors.centerIn: mainApp
         z: parent.z
-
         x: (root.width-width)/2
         y: (root.height-height)/2
     }
 
     function showMessage(title="", info="") {
-        console.log(root.z)
         messageBox.title = title
         messageBox.info = info
         messageBox.open()
-        console.log(messageBox.z, messageBox.title, messageBox.info, messageBox.opened)
-        messageBox.visible = true
-        console.log(messageBox.z, messageBox.title, messageBox.info, messageBox.opened)
     }
 
     onOpened: getSupplys()
