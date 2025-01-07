@@ -16,6 +16,14 @@ Rectangle {
     property bool hasError: false
     property bool mandatory: false
 
+    property real pageNo: 1
+    property real totalPages: 0
+    property real totalItems: 0
+    property real itemsPerPage: 200
+
+    property string sortByKey: "created"
+    property bool sortAsc: false
+
     // Collection name/id to do the query from
     required property string collection
 
@@ -34,6 +42,9 @@ Rectangle {
 
     // Fields to be extracted from the model response for display
     property var displayFields: []
+
+    // Popup height
+    property alias popupHeight: popup.height
 
     // Control MouseArea control
     MouseArea {
@@ -58,7 +69,7 @@ Rectangle {
     // Layout for the control
     Column {
         id: col
-        spacing: Theme.xsSpacing
+        spacing: Theme.btnRadius
         width: parent.width - 2*Theme.xsSpacing
         anchors.centerIn: parent
 
@@ -85,9 +96,10 @@ Rectangle {
             width: parent.width
             spacing: Theme.xsSpacing
 
+            // Show as placeholder
             DsLabel {
-                height: Theme.inputHeight
-                visible: dataModel.count===0 // Show as placeholder
+                height: Theme.xsBtnHeight + 2*Theme.btnRadius
+                visible: dataModel.count===0
                 text: qsTr("Nothing selected yet!")
                 font.pixelSize: Theme.smFontSize
                 color: Theme.txtHintColor
@@ -129,7 +141,11 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
 
                             onClicked: {
-                                dataModel.remove(index)
+                                if(allowMultipleSelection) {
+                                    dataModel.remove(index)
+                                } else {
+                                    dataModel.clear()
+                                }
                             }
                         }
                     }
@@ -166,21 +182,11 @@ Rectangle {
                     Layout.preferredHeight: Theme.btnHeight
 
                     DsIcon {
+                        id: ico
                         iconSize: input.font.pixelSize
                         iconType: searchRequest.running ? IconType.loader2 : IconType.search
                         Layout.leftMargin: Theme.xsSpacing
                         Layout.alignment: Qt.AlignVCenter
-
-                        RotationAnimation {
-                            target: parent
-                            duration: 1000
-                            running: searchRequest.running
-                            from: 0
-                            to: 360
-                            loops: RotationAnimation.Infinite
-
-                            onRunningChanged: if(!running) parent.rotation = 0
-                        }
                     }
 
                     TextField {
@@ -271,20 +277,35 @@ Rectangle {
                         onClicked: {
                             if(control.allowMultipleSelection) {
                                 control.dataModel.append(model)
+
+                                searchModel.clear()
+                                input.clear()
+                                input.forceActiveFocus()
                             } else {
                                 // Clear selection model then append
                                 control.dataModel.clear()
                                 control.dataModel.append(model)
-                            }
 
-                            searchModel.clear()
-                            input.clear()
-                            input.forceActiveFocus()
+                                popup.close()
+                                searchModel.clear()
+                                input.clear()
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    RotationAnimation {
+        target: ico
+        duration: 1000
+        running: searchRequest.running
+        from: 0
+        to: 360
+        loops: RotationAnimation.Infinite
+
+        onRunningChanged: if(!running) ico.rotation = 0
     }
 
     function getDisplayString(model, index) {
@@ -305,6 +326,8 @@ Rectangle {
 
     function doSearch() {
         var txt = input.text.trim()
+        if(txt==="") return
+
         var query = {
             page: pageNo,
             perPage: itemsPerPage,

@@ -78,6 +78,7 @@
         <file>ui/popups/DsNewSupplyPopup.qml</file>
         <file>ui/controls/DsInputSelectorWithSearch.qml</file>
         <file>ui/controls/DsPopup.qml</file>
+        <file>ui/popups/DsSupplyAddProductPopup.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

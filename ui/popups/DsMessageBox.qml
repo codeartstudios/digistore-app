@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
@@ -28,79 +29,64 @@ Popup {
     background: Rectangle {
         radius: Theme.xsSpacing
         color: Theme.bodyColor
+        border.width: 1
+        border.color: Theme.baseAlt1Color
     }
 
     contentItem: Item {
         Column {
             id: col
-            spacing: 0
             width: parent.width-2*Theme.baseSpacing
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.topMargin: Theme.baseSpacing
-            anchors.leftMargin: Theme.baseSpacing
-            anchors.rightMargin: Theme.baseSpacing
-
-            DsLabel {
-                id: infolabel
-                visible: infolabel.text!==''
-                width: parent.width
-                fontSize: Theme.lgFontSize
-                color: Theme.txtPrimaryColor
-                wrapMode: DsLabel.WordWrap
-                bottomPadding: Theme.smSpacing
-            }
-
-            DsLabel {
-                id: desclabel
-                visible: desclabel.text!==''
-                width: parent.width
-                fontSize: Theme.smFontSize
-                color: Theme.txtPrimaryColor
-                wrapMode: DsLabel.WordWrap
-                bottomPadding: Theme.baseSpacing
-            }
 
             Item {
-                width: popup.width
-                height: Theme.lgBtnHeight + Theme.xsSpacing
-                anchors.horizontalCenter: parent.horizontalCenter
-                clip: true
+                height: Theme.btnHeight
+                width: parent.width
 
                 Rectangle {
-                    radius: Theme.xsSpacing
+                    height: 1
                     width: parent.width
-                    height: parent.height + Theme.xsSpacing
-                    color: Theme.baseColor
+                    color: Theme.baseAlt1Color
                     anchors.bottom: parent.bottom
                 }
 
-                Row {
-                    spacing: Theme.smSpacing
-                    height: Theme.btnHeight
-                    anchors.right: parent.right
-                    anchors.rightMargin: Theme.baseSpacing
-                    anchors.verticalCenter: parent.verticalCenter
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: Theme.xsSpacing
 
-                    DsButton {
-                        id: cancelBtn
-                        text: secondaryText
+                    DsLabel {
+                        id: infolabel
+                        fontSize: Theme.xlFontSize
+                        color: Theme.txtPrimaryColor
+                        height: Theme.btnHeight
+                        elide: DsLabel.ElideRight
+                        leftPadding: Theme.xsSpacing
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    DsIconButton {
                         textColor: Theme.txtPrimaryColor
                         bgColor: "transparent"
                         bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-                        onClicked: popup.cancelled()
-                    }
+                        iconType: IconType.x
 
-                    DsButton {
-                        id: acceptedBtn
-                        text: primaryText
-                        textColor: Theme.primaryColor
-                        bgColor: Theme.warningAltColor
-                        onClicked: popup.accepted()
+                        Layout.alignment: Qt.AlignVCenter
+                        onClicked: popup.close()
                     }
                 }
+            }
+
+            DsLabel {
+                id: desclabel
+                width: parent.width
+                fontSize: Theme.lgFontSize
+                color: Theme.txtPrimaryColor
+                wrapMode: DsLabel.WordWrap
+                padding: Theme.smSpacing
             }
         }
     }

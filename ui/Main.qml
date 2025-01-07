@@ -35,10 +35,5 @@ Window {
     Component.onCompleted: {
         // TODO set these from API response
         dsController.organizationID = "main";
-
-        var x = "d"
-        var y = ["d"]
-
-        console.log(x.constructor === String, y.constructor === Array)
     }
 }

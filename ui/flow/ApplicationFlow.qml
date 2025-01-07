@@ -121,10 +121,6 @@ Item {
         }
     }
 
-    // PocketbaseAdminPage {
-    //     id: pocketbaseAdminPage
-    // }
-
     function withOpacity(color, opacity) {
         var r, g, b;
 

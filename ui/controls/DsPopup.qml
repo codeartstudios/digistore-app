@@ -13,6 +13,7 @@ Popup {
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
     property alias radius: bg.radius
+    property alias backgroundColor: bg.color
     property alias borderColor: bg.borderColor
     property alias borderWidth: bg.borderWidth
     property bool closeDelayElapsed: true
