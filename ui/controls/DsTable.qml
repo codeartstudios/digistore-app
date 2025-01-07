@@ -265,13 +265,22 @@ Rectangle {
                             }
 
                             DsLabel {
+                                property var val: value.split('.').reduce((acc, key) => acc && acc[key], tabledelegate.rowModel)
                                 elide: DsLabel.ElideRight
                                 fontSize: Theme.smFontSize
-                                text: tabledelegate.rowModel[value]==="" ? "N/A" : tabledelegate.rowModel[value]
+                                text: val==="" ? "N/A" : getDisplayString(val)
                                 verticalAlignment: DsLabel.AlignVCenter
                                 leftPadding: Theme.smSpacing
                                 rightPadding: Theme.smSpacing
                                 anchors.fill: parent
+
+                                function getDisplayString(data) {
+                                    if(model.formatBy) {
+                                        return model.formatBy(data)
+                                    }
+
+                                    return data
+                                }
                             }
                         }
                     }

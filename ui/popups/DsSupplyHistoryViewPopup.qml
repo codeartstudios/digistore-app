@@ -19,7 +19,7 @@ Popup {
     property real totalItems: 0
     property real itemsPerPage: 100
 
-    property string sortByKey: "name"
+    property string sortByKey: "created"
     property bool sortAsc: true
 
     property ListModel datamodel: ListModel{}
@@ -110,7 +110,7 @@ Popup {
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
 
-                onAccepted: (txt) => getSuppliers(txt)
+                onAccepted: (txt) => getSupplys(txt)
             }
 
             DsTable {
@@ -205,51 +205,29 @@ Popup {
         id: headermodel
 
         ListElement {
-            title: qsTr("Unit")
+            title: qsTr("Supplier")
             sortable: true
             width: 100
-            flex: 0
-            value: "unit"
+            flex: 2
+            value: "expand.supplier.name"
         }
 
         ListElement {
-            title: qsTr("Product Name")
+            title: qsTr("Amount")
             sortable: true
             width: 300
-            flex: 2
-            value: "name"
+            flex: 0
+            value: "amount"
+            formatBy: (amount) => `KES. ${amount}`
         }
 
         ListElement {
-            title: qsTr("Barcode")
+            title: qsTr("Date Added")
             sortable: true
             width: 150
-            flex: 0
-            value: "barcode"
-        }
-
-        ListElement {
-            title: qsTr("Buying Price")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "buying_price"
-        }
-
-        ListElement {
-            title: qsTr("Selling Price")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "selling_price"
-        }
-
-        ListElement {
-            title: qsTr("Stock")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "stock"
+            flex: 2
+            value: "created"
+            formatBy: (dt) => Qt.formatDateTime(new Date(dt), 'ddd MMM dd, yyyy hh:mm ap')
         }
     }
 
@@ -263,13 +241,15 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            // filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || supplier ~ '${txt}')`),
+            expand: "supplier",
+            fields: "*,expand.supplier.name"
         }
 
         getsupplysrequest.clear()
         getsupplysrequest.query = query;
         var res = getsupplysrequest.send();
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             console.log("200")

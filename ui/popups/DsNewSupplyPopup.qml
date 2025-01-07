@@ -9,8 +9,8 @@ import "../controls"
 
 Popup {
     id: root
-    width: 800
-    height: 700
+    width: mainApp.width * 0.7
+    height: mainApp.height * 0.7
     modal: true
     x: (parent.width-width)/2
     y: (parent.height-height)/2
@@ -216,6 +216,19 @@ Popup {
                         }
                     }
 
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        visible: root.supplyProductsModel.count === 0
+
+                        DsLabel {
+                            fontSize: Theme.baseFontSize
+                            color: Theme.txtHintColor
+                            text: qsTr("No supply items added yet!")
+                            anchors.centerIn: parent
+                        }
+                    }
+
                     ListView {
                         id: splv
                         clip: true
@@ -223,6 +236,7 @@ Popup {
                         Layout.fillHeight: true
                         spacing: Theme.btnRadius
                         model: root.supplyProductsModel
+                        visible: root.supplyProductsModel.count > 0
                         delegate: Rectangle {
                             height: Theme.inputHeight + 2*Theme.btnRadius
                             width: splv.width
