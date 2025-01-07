@@ -256,9 +256,7 @@ Rectangle {
                         height: Theme.btnHeight
                         text: getDisplayString(model, index)
                         textColor: Theme.txtPrimaryColor
-                        bgColor: Theme.baseAlt1Color // "transparent"
-                        // bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                        // bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                        bgColor: Theme.baseAlt1Color
 
                         contentItem: DsLabel {
                             fontSize: _searchdlgt.fontSize
@@ -279,8 +277,9 @@ Rectangle {
                                 control.dataModel.append(model)
                             }
 
-                            input.clear()
                             searchModel.clear()
+                            input.clear()
+                            input.forceActiveFocus()
                         }
                     }
                 }
@@ -289,11 +288,8 @@ Rectangle {
     }
 
     function getDisplayString(model, index) {
-        console.log(model, model.count, index)
         // Ensure the index is not greater than model size
         if(index < 0 || index >= model.count) return
-
-        console.log(index)
 
         if(displayFields.constructor === Array) {
             var data = []
@@ -318,9 +314,7 @@ Rectangle {
 
         searchRequest.clear()
         searchRequest.query = query;
-        console.log(JSON.stringify(query))
         var res = searchRequest.send();
-        console.log(JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -332,7 +326,6 @@ Rectangle {
             control.searchModel.clear()
 
             data.items.forEach((item) => {
-                                   console.log(JSON.stringify(item))
                                    control.searchModel.append(item)
                                })
         }
