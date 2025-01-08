@@ -11,7 +11,7 @@ import "../views/auth"
 Item {
     anchors.fill: parent
 
-    property bool sidebarShown: true
+    property bool sidebarShown: true    
 
     ColumnLayout {
         id: collayout
@@ -58,7 +58,13 @@ Item {
         AppStackLayout {
             id: appStackLayout
 
-            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
+            Component.onCompleted: appStackLayout.dashboardLoader.active=true; // overrideActiveTab() //
+
+            function overrideActiveTab() {
+                sideBar.currentSideBarMenu = "inventory"
+                appStackLayout.currentIndex=2;
+                appStackLayout.inventoryLoader.active=true;
+            }
 
             Connections {
                 target: sideBar
@@ -83,26 +89,14 @@ Item {
                         break;
                     }
 
-                    case "suppliers": {
-                        appStackLayout.currentIndex=3;
-                        appStackLayout.suppliersLoader.active=true;
-                        break;
-                    }
-
-                    case "supply": {
-                        appStackLayout.currentIndex=4;
-                        appStackLayout.supplyLoader.active=true;
-                        break;
-                    }
-
                     case "organization": {
-                        appStackLayout.currentIndex=5;
+                        appStackLayout.currentIndex=3;
                         appStackLayout.organizationLoader.active=true;
                         break;
                     }
 
                     case "sales": {
-                        appStackLayout.currentIndex=6;
+                        appStackLayout.currentIndex=4;
                         appStackLayout.salesLoader.active=true;
                         break;
                     }
@@ -122,18 +116,15 @@ Item {
                         break;
                     }
 
-                    case "pocketbaseadmin": {
-                        pocketbaseAdminPage.show()
+                    case "pocketbaseadmin": {                        
+                        Qt.openUrlExternally('http://127.0.0.1:8090/_/')
+                        // pocketbaseAdminPage.show()
                         break;
                     }
                     }
                 }
             }
         }
-    }
-
-    PocketbaseAdminPage {
-        id: pocketbaseAdminPage
     }
 
     function withOpacity(color, opacity) {

@@ -15,6 +15,7 @@ Item {
     property int delay: 500
     property alias placeHolderText: input.placeholderText
     property alias busy: searchbtn.busy
+    property alias text: input.text
 
     MouseArea {
         anchors.fill: parent

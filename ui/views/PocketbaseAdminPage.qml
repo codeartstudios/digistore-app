@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
-import QtWebView
+// import QtWebView
 
 import "../controls"
 
@@ -11,9 +11,8 @@ Window {
     x: (mainApp.width-width)/2
     y: (mainApp.height-height)/2
     title: qsTr("Pocketbase Admin")
-
-    WebView {
-        anchors.fill: parent
-        url: `http://127.0.0.1:8090/_/`
-    }
+    // WebView {
+    //     anchors.fill: parent
+    //     url: `http://127.0.0.1:8090/_/`
+    // }
 }

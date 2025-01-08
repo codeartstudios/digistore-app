@@ -123,32 +123,8 @@ Popup {
         }
     }
 
-    FileDialog {
-        id: selectthumbnaildialog
-        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-        fileMode: FileDialog.OpenFile
-        nameFilters: ["Image Files (*.png *jpg *jpeg *bmp)"]
-
-        onAccepted: {
-            var filePath = file.toString(); // Get the file URL
-
-            if (filePath.startsWith("file:///")) {
-                if (dsController.platform==="windows") {
-                    // Windows path (e.g., file:///C:/path/to/file.txt)
-                    filePath = filePath.substring(8); // Remove "file:///"
-                } else {
-                    // Linux path (e.g., file:///home/user/file.txt)
-                    filePath = filePath.substring(7); // Remove "file://"
-                }
-            }
-
-            thumbnailinput.input.text=filePath
-        }
-    }
-
     Requests {
         id: addproductrequest
-        baseUrl: "https://pb.digisto.app"
         path: "/api/collections/suppliers/records"
         method: "POST"
     }
@@ -159,14 +135,17 @@ Popup {
         var mobile = mobileinput.input.text.trim()
 
         if(name.length <= 2) {
+            showMessage(qsTr("Supplier Error!"), qsTr("Supplier name is required, must be more than 4 characters long!"))
             return;
         }
+
+        // TODO parse correct mobile number & email
 
         var body = {
             name,
             email,
             mobile,
-            organization: "clhyn7tolbhy98k"
+            organization: dsController.organizationID
         }
 
         addproductrequest.clear()
@@ -177,6 +156,7 @@ Popup {
         if(res.status===200) {
             root.close()
         } else {
+            showMessage(qsTr("Supplier Error!"), qsTr("Error creating new supplier, error ")+res.status.toString())
         }
     }
 

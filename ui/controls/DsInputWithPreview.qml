@@ -11,29 +11,26 @@ Rectangle {
     color: Theme.baseAlt1Color
 
     property string label: qsTr("Input")
-    property alias input: input
-    property bool isPasswordInput: false
-    property alias validator: input.validator
-    property bool hasError: false
     property bool mandatory: false
-    property string errorString: ""
-    property bool readOnly: false
     property alias secondaryActionLabel: secondaryActionLabel
+
+    // Value label
+    property string value: ""
+    property alias placeHolderText: valuelabel.placeHolderText
+
+    // Container properties
+    property alias preview: container
+    property alias previewHeight: container.height
+    default property alias previewContent: container.children
 
     signal clicked()
     signal textAccepted()
     signal secondaryAction()
 
-    function showError() { tt.show(errorString) }
-    function closeError() { tt.close() }
-
-    onHasErrorChanged: hasError ? showError() : closeError()
-
     MouseArea {
         anchors.fill: parent
         onClicked: {
             if(control.enabled) {
-                input.forceActiveFocus();
                 control.clicked()
             }
         }
@@ -85,29 +82,23 @@ Rectangle {
             }
         }
 
-        TextField {
-            id: input
-            padding: 0
-            height: Theme.inputHeight
-            width: parent.width
-            color: Theme.txtPrimaryColor
-            placeholderTextColor: Theme.txtDisabledColor
+        DsLabel {
+            id: valuelabel
+            property string placeHolderText: ""
+
+            topPadding: Theme.xsSpacing/3
+            bottomPadding: Theme.xsSpacing/2
+            text: control.value==="" ? placeHolderText : control.value
             font.pixelSize: Theme.lgFontSize
-            echoMode: isPasswordInput ? TextField.Password : TextField.Normal
-            background: Item{}
-            readOnly: control.readOnly
+            fontSize: Theme.xsFontSize
+            width: parent.width
+            color: control.value==="" ? Theme.txtDisabledColor : Theme.txtPrimaryColor
+        }
 
-            onAccepted: control.textAccepted()
-
-            DsToolTip {
-                id: tt
-                text: errorString
-                delay: 0
-                width: parent.width
-                side: DsToolTip.Bottom
-                bgRect.color: Theme.warningColor
-                onClosed: hasError=false
-            }
+        Item {
+            id: container
+            width: parent.width
+            implicitHeight: 0
         }
     }
 }

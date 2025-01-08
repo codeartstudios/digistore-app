@@ -19,7 +19,7 @@ DsPage {
     property string sortByKey: "name"
     property bool sortAsc: true
 
-    property ListModel datamodel: ListModel{}
+   property ListModel datamodel: ListModel{}
 
     ColumnLayout {
         anchors.fill: parent
@@ -72,10 +72,10 @@ DsPage {
                 height: 1
             }
 
-            DsButton {
-                iconType: IconType.tablePlus
-                text: qsTr("New Product")
-                onClicked: addoredit_productpopup.open()
+            DsMenu {
+                id: toolsMenu
+                iconType: IconType.pencilCog
+                text: qsTr("Options")
             }
         }
 
@@ -88,10 +88,11 @@ DsPage {
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getProducts(txt)
+            onAccepted: getProducts()
         }
 
         DsTable {
+            id: inventorytable
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: headermodel
@@ -231,16 +232,25 @@ DsPage {
         }
     }
 
-    // Components
-    DsNewProductPopup {
-        id: addoredit_productpopup
-
-        // Handle product add success
-        onProductAdded: getProducts()
+    DsNewSupplierPopup {
+        id: newsupplierpopup
     }
 
     DsViewOrEditProductDrawer {
         id: vieworeditdrawer
+
+        onClosed: inventorytable.currentIndex=-1
+        onProductAdded: getProducts()
+        onProductDeleted: getProducts()
+        onProductUpdated: getProducts()
+    }
+
+    DsSupplierViewPopup {
+        id: supplierviewpopup
+    }
+
+    DsSupplyHistoryViewPopup {
+        id: supplyhistorypopup
     }
 
     Requests {
@@ -248,7 +258,8 @@ DsPage {
         path: "/api/collections/product/records"
     }
 
-    function getProducts(txt='') {
+    function getProducts() {
+        var txt = dsSearchInput.text.trim()
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
@@ -269,29 +280,36 @@ DsPage {
 
             datamodel.clear()
 
+            // Workaround to get tags:['str'] extractable later
             for(var i=0; i<items.length; i++) {
-                datamodel.append(items[i])
+                var tags = []
+                var obj = items[i]
+                if(!obj.tags) obj.tags = []
+                obj.tags.forEach((tag) => {
+                                          tags.push({ data: tag })
+                                      })
+                obj.tags = tags
+                datamodel.append(obj)
             }
         }
 
         else {
-            messageBox.title = qsTr("Error fetching products")
-            messageBox.info = qsTr("There was an issue when fetching products, please try again later.")
-            messageBox.open()
+            showMessage(
+                        qsTr("Error fetching products"),
+                        qsTr("There was an issue when fetching products: ") + `[${res.status}]${res.data.message}`
+                        )
         }
     }
 
     function launchEditOrViewDrawer(index, model) {
-        console.log(model.size, model.count, model.length)
-
         var obj = {
             id: model.id,
             collectionId: model.collectionId,
-            collectionName: model.collectionName,
+            // collectionName: model.collectionName,
             created: model.created,
-            updated: model.updated,
             name: model.name,
             unit: model.unit,
+            tags: model.tags,
             barcode: model.barcode,
             buying_price: model.buying_price,
             selling_price: model.selling_price,
@@ -300,10 +318,49 @@ DsPage {
             organization: model.organization
         }
 
-        addoredit_productpopup.isCreatingNewProduct = false
-        addoredit_productpopup.model = obj
-        addoredit_productpopup.open()
+        vieworeditdrawer.open()
+        vieworeditdrawer.dataModel = obj
+        vieworeditdrawer.isEditing = false
     }
 
-    Component.onCompleted: getProducts()
+    Component.onCompleted: {
+        toolsMenu.model.append({ label: "Add New Product",      icon: IconType.cubePlus })
+        toolsMenu.model.append({ label: "Add New Supplier",     icon: IconType.rowInsertTop })
+        toolsMenu.model.append({ label: "View All Suppliers",   icon: IconType.layoutList })
+        toolsMenu.model.append({ label: "Supply History",       icon: IconType.listTree })
+
+        getProducts()
+    }
+
+    // Handle menu selection in the products tab
+    Connections {
+        target: toolsMenu
+
+        function onCurrentMenuChanged(index) {
+            switch(index) {
+            case 0: {
+                vieworeditdrawer.open()
+                vieworeditdrawer.dataModel = null
+                vieworeditdrawer.isEditing = true
+                break;
+            }
+
+            case 1: {
+                newsupplierpopup.open()
+                break;
+            }
+
+            case 2: {
+                supplierviewpopup.open()
+                break;
+            }
+
+            case 3: {
+                // TODO open this popup
+                supplyhistorypopup.open()
+                break;
+            }
+            }
+        }
+    }
 }

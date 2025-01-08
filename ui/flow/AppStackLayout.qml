@@ -10,8 +10,6 @@ StackLayout {
     property alias dashboardLoader: dashboardloader
     property alias tellerLoader: tellerloader
     property alias inventoryLoader: inventoryloader
-    property alias suppliersLoader: suppliersloader
-    property alias supplyLoader: supplyloader
     property alias salesLoader: salesloader
     property alias organizationLoader: organizationloader
 
@@ -56,32 +54,6 @@ StackLayout {
             }
         }
     } // Inventory Component
-
-    DsFlowLoader {
-        id: suppliersloader
-        active: false
-        asynchronous: true
-        sourceComponent: Component {
-            id: suppliersComponent
-
-            SuppliersPage {
-                id: suppliersPage
-            }
-        }
-    } // Suppliers Component
-
-    DsFlowLoader {
-        id: supplyloader
-        active: false
-        asynchronous: true
-        sourceComponent: Component {
-            id: supplyComponent
-
-            SupplyPage {
-                id: supplyPage
-            }
-        }
-    } // Supply Component
 
     // OrganizationPage Loader
     DsFlowLoader {

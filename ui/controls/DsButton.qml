@@ -10,20 +10,33 @@ Button {
     height: implicitHeight
     width: implicitWidth
 
+    // Busy indicator within the button
     property bool busy: false
-    property string iconType
-    property alias endIcon: endicon.iconType
     property real fontSize: Theme.baseFontSize
     property real radius: bg.radius
-    property bool toolTipShown: true
-    property alias tooltipText: tooltip.text
-    property alias tooltip: tooltip
+
+    // Palette colors (text and background)
     property string textColor: Theme.baseColor
     property string bgColor: Theme.primaryColor
     property string bgHover: withOpacity(bgColor, 0.8)
     property string bgDown: withOpacity(bgColor, 0.6)
+
+    // Tooltip properties
+    property bool toolTipShown: true
+    property alias tooltipText: tooltip.text
+    property alias tooltip: tooltip
+
+    // Border parameters (width and color)
     property real borderWidth: 0
     property string borderColor: Theme.primaryColor
+
+    // Left and right icons
+    property string iconType: ""
+    property alias endIcon: endicon.iconType
+
+    // Flags to control if icons are shown
+    property bool leftIconShown: iconType!==""
+    property bool endIconShown: endIcon!==""
 
     background: Rectangle {
         id: bg
@@ -42,7 +55,7 @@ Button {
 
             DsIcon {
                 id: ico
-                visible: iconType!==""
+                visible: leftIconShown
                 iconType: busy ? IconType.loader2 : control.iconType ? control.iconType : ""
                 iconSize: control.fontSize * 1.2
                 color: control.textColor
@@ -59,7 +72,7 @@ Button {
             DsIcon {
                 id: endicon
                 iconType: ""
-                visible: iconType!==""
+                visible: endIcon
                 iconSize: control.fontSize * 1.2
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
