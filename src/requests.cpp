@@ -77,7 +77,8 @@ QVariantMap Requests::send()
     if ( !m_files.isEmpty() &&
         (m_method == "POST" ||
          m_method == "PUT" ||
-         m_method == "PATCH" )) {
+         m_method == "PATCH" )
+        ) {
         QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
         for(const auto& key : m_body.keys()) {
@@ -238,7 +239,7 @@ void Requests::logRequest(const QString &method, const QString &endpoint, const 
 {
     qDebug() << "\n["
              << m_method
-        << statusCode
+             << statusCode
              << "] '" << endpoint << "'";
 }
 

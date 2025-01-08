@@ -11,7 +11,7 @@ import "../views/auth"
 Item {
     anchors.fill: parent
 
-    property bool sidebarShown: true
+    property bool sidebarShown: true    
 
     ColumnLayout {
         id: collayout
@@ -58,7 +58,13 @@ Item {
         AppStackLayout {
             id: appStackLayout
 
-            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
+            Component.onCompleted: appStackLayout.dashboardLoader.active=true; // overrideActiveTab() //
+
+            function overrideActiveTab() {
+                sideBar.currentSideBarMenu = "inventory"
+                appStackLayout.currentIndex=2;
+                appStackLayout.inventoryLoader.active=true;
+            }
 
             Connections {
                 target: sideBar

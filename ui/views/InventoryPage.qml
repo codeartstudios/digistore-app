@@ -19,7 +19,7 @@ DsPage {
     property string sortByKey: "name"
     property bool sortAsc: true
 
-    property ListModel datamodel: ListModel{}
+   property ListModel datamodel: ListModel{}
 
     ColumnLayout {
         anchors.fill: parent
@@ -88,10 +88,11 @@ DsPage {
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getProducts(txt)
+            onAccepted: getProducts()
         }
 
         DsTable {
+            id: inventorytable
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: headermodel
@@ -231,20 +232,17 @@ DsPage {
         }
     }
 
-    // Components
-    DsNewProductPopup {
-        id: addproductpopup
-
-        // Handle product add success
-        onProductAdded: getProducts()
-    }
-
     DsNewSupplierPopup {
         id: newsupplierpopup
     }
 
     DsViewOrEditProductDrawer {
         id: vieworeditdrawer
+
+        onClosed: inventorytable.currentIndex=-1
+        onProductAdded: getProducts()
+        onProductDeleted: getProducts()
+        onProductUpdated: getProducts()
     }
 
     DsSupplierViewPopup {
@@ -260,7 +258,8 @@ DsPage {
         path: "/api/collections/product/records"
     }
 
-    function getProducts(txt='') {
+    function getProducts() {
+        var txt = dsSearchInput.text.trim()
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
@@ -281,29 +280,36 @@ DsPage {
 
             datamodel.clear()
 
+            // Workaround to get tags:['str'] extractable later
             for(var i=0; i<items.length; i++) {
-                datamodel.append(items[i])
+                var tags = []
+                var obj = items[i]
+                if(!obj.tags) obj.tags = []
+                obj.tags.forEach((tag) => {
+                                          tags.push({ data: tag })
+                                      })
+                obj.tags = tags
+                datamodel.append(obj)
             }
         }
 
         else {
-            messageBox.title = qsTr("Error fetching products")
-            messageBox.info = qsTr("There was an issue when fetching products, please try again later.")
-            messageBox.open()
+            showMessage(
+                        qsTr("Error fetching products"),
+                        qsTr("There was an issue when fetching products: ") + `[${res.status}]${res.data.message}`
+                        )
         }
     }
 
     function launchEditOrViewDrawer(index, model) {
-        console.log(model.size, model.count, model.length)
-
         var obj = {
             id: model.id,
             collectionId: model.collectionId,
-            collectionName: model.collectionName,
+            // collectionName: model.collectionName,
             created: model.created,
-            updated: model.updated,
             name: model.name,
             unit: model.unit,
+            tags: model.tags,
             barcode: model.barcode,
             buying_price: model.buying_price,
             selling_price: model.selling_price,
@@ -312,9 +318,9 @@ DsPage {
             organization: model.organization
         }
 
-        addproductpopup.isCreatingNewProduct = false
-        addproductpopup.model = obj
-        addproductpopup.open()
+        vieworeditdrawer.open()
+        vieworeditdrawer.dataModel = obj
+        vieworeditdrawer.isEditing = false
     }
 
     Component.onCompleted: {
@@ -333,7 +339,9 @@ DsPage {
         function onCurrentMenuChanged(index) {
             switch(index) {
             case 0: {
-                addproductpopup.open()
+                vieworeditdrawer.open()
+                vieworeditdrawer.dataModel = null
+                vieworeditdrawer.isEditing = true
                 break;
             }
 
