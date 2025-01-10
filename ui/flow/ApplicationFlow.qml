@@ -107,7 +107,8 @@ Item {
                     }
 
                     case "settings": {
-                        // postAuthLoader.sourceComponent = salesStackComponent;
+                        appStackLayout.currentIndex=5;
+                        appStackLayout.settingsLoader.active=true;
                         break;
                     }
 

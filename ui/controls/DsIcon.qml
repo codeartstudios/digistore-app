@@ -9,8 +9,10 @@ Item {
     property real iconSize: 18
     required property string iconType
     property string color: Theme.txtPrimaryColor
+    property alias label: lbl
 
     Label {
+        id: lbl
         color: parent.color
         text: iconType
         font.pixelSize: iconSize

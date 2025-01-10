@@ -10,6 +10,7 @@ ComboBox {
     id: control
 
     property alias popupHeight: _p.height
+    property alias radius: bg.radius
 
     delegate: DsButton {
         id: delegate
@@ -62,6 +63,7 @@ ComboBox {
     }
 
     background: Rectangle {
+        id: bg
         radius: Theme.xsSpacing
         implicitWidth: 120
         implicitHeight: Theme.btnHeight

@@ -12,6 +12,7 @@ StackLayout {
     property alias inventoryLoader: inventoryloader
     property alias salesLoader: salesloader
     property alias organizationLoader: organizationloader
+    property alias settingsLoader: settingsloader
 
     // DashboardPage
     DsFlowLoader {
@@ -82,6 +83,20 @@ StackLayout {
             }
         }
     } // Sales Component
+
+    // SettingsPage Loader
+    DsFlowLoader {
+        id: settingsloader
+        active: false // root.currentIndex===5
+        asynchronous: true
+        sourceComponent: Component {
+            id: settingsComponent
+
+            SettingsPage {
+                id: settingsPage
+            }
+        }
+    } // Settings Component
 
     Component {
         id: loadingIndicator
