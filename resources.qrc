@@ -81,6 +81,8 @@
         <file>ui/popups/DsSupplyAddProductPopup.qml</file>
         <file>ui/controls/DsInputSelector.qml</file>
         <file>ui/controls/DsInputWithPreview.qml</file>
+        <file>ui/views/auth/Onboarding.qml</file>
+        <file>ui/controls/DsCard.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

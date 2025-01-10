@@ -10,7 +10,7 @@ Window {
     id: mainApp
     width: 640
     height: 480
-    //visibility: "Maximized"
+    visibility: "Maximized"
     visible: true
     color: Theme.bodyColor
 
