@@ -20,6 +20,7 @@ Rectangle {
     property string errorString: ""
     property bool readOnly: false
     property alias secondaryActionLabel: secondaryActionLabel
+    property alias labelShown: labelrowly.visible
 
     signal clicked()
     signal textAccepted()
@@ -47,6 +48,7 @@ Rectangle {
         anchors.centerIn: parent
 
         RowLayout {
+            id: labelrowly
             width: parent.width
             spacing: Theme.xsSpacing
 

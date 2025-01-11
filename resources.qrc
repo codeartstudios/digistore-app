@@ -89,6 +89,7 @@
         <file>ui/views/settings/DsAccountSettings.qml</file>
         <file>ui/views/settings/DsOrganizationSettings.qml</file>
         <file>assets/imgs/no-profile.png</file>
+        <file>ui/controls/DsSwitch.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

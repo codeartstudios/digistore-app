@@ -11,6 +11,7 @@ ComboBox {
 
     property alias popupHeight: _p.height
     property alias radius: bg.radius
+    property alias bgColor: bg.color
 
     delegate: DsButton {
         id: delegate
