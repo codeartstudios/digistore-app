@@ -12,7 +12,122 @@ DsSettingsStackPage {
     // Organization Details
     DsSettingsCard {
         title: qsTr("Organization")
-        desc: qsTr("General app settings")
+        desc: qsTr("Organization details and subscription plan.")
+
+        actions: [
+            DsButton {
+                text: qsTr("Update Org.")
+            },
+
+            DsButton {
+                text: qsTr("Upgrade Plan")
+                bgColor: Theme.warningColor
+                textColor: Theme.baseColor
+                endIcon: IconType.arrowUpRight
+            }
+
+        ]
+
+        RowLayout {
+            width: parent.width
+            spacing: Theme.xsSpacing
+
+            DsInputWithLabel {
+                id: orgnameinput
+                label: qsTr("Org. Website")
+                color: Theme.bodyColor
+                input.placeholderText: qsTr("Some Org Inc.")
+                Layout.fillWidth: true
+            }
+
+            DsInputWithLabel {
+                id: orgdescinput
+                label: qsTr("Org. Description")
+                color: Theme.bodyColor
+                input.placeholderText: qsTr("Some Org Inc.")
+                Layout.fillWidth: true
+            }
+        }
+
+        RowLayout {
+            width: parent.width
+            spacing: Theme.xsSpacing
+
+            DsInputWithLabel {
+                id: orgemailinput
+                label: qsTr("Org. Email")
+                color: Theme.bodyColor
+                input.placeholderText: qsTr("email@org.com")
+                Layout.fillWidth: true
+            }
+
+            DsInputWithLabel {
+                id: orgmobileinput
+                label: qsTr("Org. Mobile")
+                color: Theme.bodyColor
+                input.placeholderText: qsTr("+1 234 456 789")
+                Layout.fillWidth: true
+            }
+
+            DsInputWithLabel {
+                id: orgwebsiteinput
+                label: qsTr("Org. Website")
+                color: Theme.bodyColor
+                input.placeholderText: qsTr("https://someorg.com")
+                Layout.fillWidth: true
+            }
+        }
+
+
+        Rectangle {
+            width: parent.width
+            radius: Theme.btnRadius
+            height: plancol.height + Theme.xsSpacing * 2
+            color: Theme.warningAltColor
+
+            RowLayout {
+                width: parent.width - Theme.xsSpacing * 2
+                spacing: Theme.xsSpacing
+                anchors.centerIn: parent
+
+                Column {
+                    id: plancol
+                    spacing: Theme.xsSpacing/2
+                    Layout.fillWidth: true
+
+                    DsLabel {
+                        color: Theme.txtHintColor
+                        fontSize: Theme.smFontSize
+                        text: qsTr("Current Plan")
+                    }
+
+                    DsLabel {
+                        color: Theme.txtHintColor
+                        fontSize: Theme.h3
+                        text: qsTr("STARTER")
+                        isBold: true
+                    }
+                }
+
+                Column {
+                    spacing: Theme.xsSpacing/2
+                    Layout.fillWidth: true
+
+                    DsLabel {
+                        color: Theme.txtHintColor
+                        fontSize: Theme.smFontSize
+                        text: qsTr("Expires")
+                    }
+
+                    DsLabel {
+                        color: Theme.txtHintColor
+                        fontSize: Theme.h3
+                        text: qsTr("NEVER")
+                        isBold: true
+                    }
+                }
+            }
+        }
     }
 
     // Organization Settings
