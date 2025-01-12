@@ -123,21 +123,12 @@ DsPage {
     }
 
     function switchTo(title) {
-        var foundIndex = -1
-        for(var i=0; i<settingsv.depth; i++) {
-            var stack = settingsv.get(i);
-            if( !stack ) {
-                if(stack.title === title) {
-                    foundIndex = i;
-                }
-            }
-        }
+        if(settingsv.depth===0) return
 
-        if( foundIndex !== -1 ) {
-            settingsv.index = i;
-            return;
-        }
+        // Clear all stack items
+        settingsv.pop(null, StackView.Immediate)
 
+        // Push new stack item
         switch(title) {
         case qsTr("Organization"): {
             settingsv.push("qrc:/ui/views/settings/DsOrganizationSettings.qml", StackView.Immediate)

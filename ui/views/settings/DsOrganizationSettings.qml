@@ -60,6 +60,30 @@ DsSettingsStackPage {
                 labelShown: false
                 color: Theme.bodyColor
                 input.placeholderText: qsTr("https://digisto.app")
+                // text: dsController.
+                Layout.minimumWidth: 300
+            }
+        }
+
+        // Currency
+        RowLayout {
+            width: parent.width
+            spacing: Theme.xsSpacing
+
+            DsLabel {
+                text: qsTr("Workspace default currency")
+                fontSize: Theme.baseFontSize
+                color: Theme.txtPrimaryColor
+                Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+            }
+
+            DsComboBox {
+                id: currecycb
+                height: Theme.inputHeight + Theme.xsSpacing
+                radius: Theme.btnRadius
+                bgColor: Theme.bodyColor
+                model: [qsTr("Kenyan Shilling (KSH)"), qsTr("US Dollar ($)")]
                 Layout.minimumWidth: 300
             }
         }
