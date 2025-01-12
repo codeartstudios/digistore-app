@@ -22,37 +22,45 @@ Rectangle {
         anchors.centerIn: parent
 
         // Header
-        RowLayout {
+        Item {
             width: col.width
+            height: hcol.height
 
-            DsLabel {
-                id: _title
-                fontSize: Theme.xlFontSize
-                color: Theme.txtPrimaryColor
-                Layout.fillWidth: true
+            Column {
+                id: hcol
+                spacing: Theme.btnRadius
+                anchors.left: parent.left
+                anchors.right: actionrow.left
+
+                DsLabel {
+                    id: _title
+                    width: parent.width
+                    fontSize: Theme.xlFontSize
+                    color: Theme.txtPrimaryColor
+                }
+
+                DsLabel {
+                    id: _desc
+                    fontSize: Theme.xsFontSize
+                    color: Theme.txtHintColor
+                    bottomPadding: Theme.xsSpacing
+                }
             }
 
             Row {
                 id: actionrow
                 spacing: Theme.xsSpacing
+                anchors.right: parent.right
+                anchors.top: parent.top
             }
-        }
-
-        DsLabel {
-            id: _desc
-            fontSize: Theme.xsFontSize
-            color: Theme.txtHintColor
-            bottomPadding: Theme.xsSpacing
 
             Rectangle {
                 height: 1
-                width: col.width
+                width: parent.width
                 color: Theme.baseAlt3Color
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: Theme.xsSpacing/2
             }
-        }
-        // Header
+        } // Header
 
         Column {
             id: _contentcol

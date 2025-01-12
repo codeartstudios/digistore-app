@@ -30,7 +30,7 @@ DsSettingsStackPage {
 
             Rectangle {
                 radius: height/2
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 Layout.fillHeight: true
                 Layout.preferredWidth: height
 
