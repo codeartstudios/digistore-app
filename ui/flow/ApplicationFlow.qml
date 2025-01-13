@@ -101,14 +101,15 @@ Item {
                         break;
                     }
 
-                    case "notifications": {
-                        // postAuthLoader.sourceComponent = salesStackComponent;
-                        break;
-                    }
-
                     case "settings": {
                         appStackLayout.currentIndex=5;
                         appStackLayout.settingsLoader.active=true;
+                        break;
+                    }
+
+                    case "notifications": {
+                        appStackLayout.currentIndex=6;
+                        appStackLayout.notificationLoader.active=true;
                         break;
                     }
 

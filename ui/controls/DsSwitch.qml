@@ -12,7 +12,7 @@ Rectangle {
     property bool checked: false
     property alias bgColor: root.color
     property string activeColor: Theme.successColor
-    property string inactiveColor: Theme.baseAlt2Color
+    property string inactiveColor: Theme.successAltColor // Theme.baseAlt2Color
 
     Rectangle {
         id: indicator

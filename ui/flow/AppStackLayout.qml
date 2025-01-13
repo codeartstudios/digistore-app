@@ -13,6 +13,7 @@ StackLayout {
     property alias salesLoader: salesloader
     property alias organizationLoader: organizationloader
     property alias settingsLoader: settingsloader
+    property alias notificationLoader: notificationloader
 
     // DashboardPage
     DsFlowLoader {
@@ -97,6 +98,20 @@ StackLayout {
             }
         }
     } // Settings Component
+
+    // NotificationPage Loader
+    DsFlowLoader {
+        id: notificationloader
+        active: false // root.currentIndex===6
+        asynchronous: true
+        sourceComponent: Component {
+            id: notificationComponent
+
+            NotificationPage {
+                id: notificationPage
+            }
+        }
+    } // Notification Component
 
     Component {
         id: loadingIndicator
