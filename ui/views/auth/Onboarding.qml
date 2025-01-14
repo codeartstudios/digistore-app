@@ -122,7 +122,7 @@ DsPage {
 
         } else {
             // User creation failed
-            warningdialog.text = "Login Failed"
+            warningdialog.text = "Workspace Fetch Failed"
             warningdialog.informativeText = res.error
             warningdialog.open()
         }
