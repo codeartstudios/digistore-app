@@ -10,7 +10,7 @@ DsPage {
     title: qsTr("Onboarding Page")
     headerShown: false
 
-    Item {
+    DsCard {
         width: 400
         height: col.height + 2*Theme.baseSpacing
         anchors.centerIn: parent
@@ -31,46 +31,35 @@ DsPage {
             DsLabel {
                 topPadding: Theme.baseSpacing
                 bottomPadding: Theme.smSpacing
-                text: qsTr("User Sign in")
+                text: qsTr("Onboarding Page")
                 fontSize: Theme.h2
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            DsInputWithLabel {
-                id: emailinput
-                width: parent.width
-                label: qsTr("Email/Username")
-                errorString: qsTr("Invalid Email or User ID")
-                input.placeholderText: qsTr("user@example.com")
-            }
-
-            DsInputWithLabel {
-                id: passwordinput
-                width: parent.width
-                isPasswordInput: true
-                label: qsTr("Password")
-                input.placeholderText: qsTr("********")
-                errorString: qsTr("Empty or short password")
-            }
-
             DsLabel {
+                topPadding: Theme.baseSpacing
+                bottomPadding: Theme.smSpacing
+                text: qsTr("Welcome back! Let's get your organization details.")
                 fontSize: Theme.smFontSize
-                text: qsTr("Forgot password?")
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/PasswordReset.qml")
-                }
+            DsInputWithLabel {
+                id: workspaceinput
+                width: parent.width
+                label: qsTr("Workspace")
+                errorString: qsTr("Workspace URL is doesn't exist!")
+                input.placeholderText: qsTr("org.digisto.app")
             }
 
             Item { height: 1; width: 1}
 
             DsButton {
-                busy: signinRequest.running
+                busy: workspacerequest.running
                 height: Theme.lgBtnHeight
                 fontSize: Theme.xlFontSize
                 width: parent.width
-                text: qsTr("Login")
+                text: qsTr("Next")
                 onClicked: signIn()
             }
 
@@ -93,10 +82,9 @@ DsPage {
     }
 
     Requests {
-        id: signinRequest
-        baseUrl: "https://pbs.digisto.app"
-        path: "/api/collections/tellers/auth-with-password"
-        method: "POST"
+        id: workspacerequest
+        path: "/api/collections/organization_view/records"
+        method: "GET"
     }
 
     MessageDialog {
@@ -105,24 +93,23 @@ DsPage {
     }
 
     function signIn() {
-        var identity = emailinput.input.text.trim()
-        var password = passwordinput.input.text.trim()
+        var workspace = workspaceinput.input.text.trim()
 
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length > 4 ) {
-            emailinput.hasError = true;
+        if(workspace.length < 4) {
+            workspaceinput.hasError = true;
+            workspaceinput.errorString = qsTr("Workspace ID is invalid!")
             return;
         }
 
-        if(password.length < 4) {
-            passwordinput.hasError = true;
-            passwordinput.errorString = qsTr("Password is too short!")
-            return;
+        // Create a search query
+        var query = {
+            page: 1,
+            perPage: 1,
+            skipTotal: true,
+            filter: `workspace='${dsController.organizationID}'`
         }
 
-        var body = {
-            identity,
-            password
-        }
+        console.log(JSON.stringify(query))
 
         request.clear()
         request.body = body;
@@ -130,7 +117,7 @@ DsPage {
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            console.log("User logged in")
+            console.log("Organization fetch successful")
             // Confirm email
 
         } else {

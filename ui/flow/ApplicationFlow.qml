@@ -46,8 +46,8 @@ Item {
         DsNavigationStack {
             id: preAuthStack
 
-            Login {
-                id: loginPage
+            Onboarding {
+                id: onboardingPage
             }
         }
     }
