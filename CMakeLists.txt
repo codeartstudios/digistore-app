@@ -4,7 +4,7 @@ project(digistoapp VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Widgets WebView)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Quick Widgets WebView)
 
 qt_standard_project_setup()
 
@@ -15,6 +15,7 @@ qt_add_executable(digisto
     src/dscontroller.cpp src/dscontroller.h
     src/requests.cpp src/requests.h
     resources.qrc
+    src/qaesencryption.h src/qaesencryption.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -29,7 +30,7 @@ set_target_properties(digisto PROPERTIES
 )
 
 target_link_libraries(digisto
-    PRIVATE Qt6::Quick Qt6::Widgets Qt6::WebView
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Widgets Qt6::WebView
 )
 
 include(GNUInstallDirs)

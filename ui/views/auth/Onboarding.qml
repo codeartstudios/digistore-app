@@ -1,9 +1,11 @@
 import QtQuick
 import QtQuick.Dialogs
 import Qt.labs.platform
+import QtQuick.Controls.Basic
 import app.digisto.modules
 
 import "../../controls"
+import "../../popups"
 
 DsPage {
     id: loginPage
@@ -60,7 +62,7 @@ DsPage {
                 fontSize: Theme.xlFontSize
                 width: parent.width
                 text: qsTr("Next")
-                onClicked: signIn()
+                onClicked: checkWorkspaceRequest()
             }
 
             // Pop this page to go back to login page
@@ -84,15 +86,9 @@ DsPage {
     Requests {
         id: workspacerequest
         path: "/api/collections/organization_view/records"
-        method: "GET"
     }
 
-    MessageDialog {
-        id: warningdialog
-        buttons: MessageDialog.Ok
-    }
-
-    function signIn() {
+    function checkWorkspaceRequest() {
         var workspace = workspaceinput.input.text.trim()
 
         if(workspace.length < 4) {
@@ -106,25 +102,44 @@ DsPage {
             page: 1,
             perPage: 1,
             skipTotal: true,
-            filter: `workspace='${dsController.organizationID}'`
+            filter: `workspace='${workspace}'`
         }
 
-        console.log(JSON.stringify(query))
-
-        request.clear()
-        request.body = body;
-        var res = request.send();
-        console.log(JSON.stringify(res))
+        // Prepare and send request
+        workspacerequest.clear()
+        workspacerequest.query = query;
+        var res = workspacerequest.send();
 
         if(res.status===200) {
-            console.log("Organization fetch successful")
-            // Confirm email
-
-        } else {
-            // User creation failed
-            warningdialog.text = "Workspace Fetch Failed"
-            warningdialog.informativeText = res.error
-            warningdialog.open()
+            var orgs = res.data.items
+            if(orgs.length===0) {
+                messageBox.showMessage(qsTr("Org Workspace Error"),
+                                       qsTr("We didn't find a workspace matching your input!"))
+            } else {
+                var org = orgs[0]
+                clearInputs()
+                navigationStack.push("qrc:/ui/views/auth/Login.qml",
+                                     { organization: org },
+                                     StackView.Immediate)
+            }
         }
+
+        else {
+            messageBox.showMessage(qsTr("Org Workspace Error"), res.data.message)
+        }
+    }
+
+    DsMessageBox {
+        id: messageBox
+
+        function showMessage(title="", info="") {
+            messageBox.title = title
+            messageBox.info = info
+            messageBox.open()
+        }
+    }
+
+    function clearInputs() {
+        workspaceinput.text = "";
     }
 }
