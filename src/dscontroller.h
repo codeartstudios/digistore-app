@@ -19,6 +19,11 @@ public:
     explicit DsController(QObject *parent = nullptr);
     ~DsController();
 
+    // Application Theme
+    Q_PROPERTY(bool isDarkTheme MEMBER m_isDarkTheme NOTIFY isDarkThemeChanged FINAL)
+    Q_PROPERTY(bool startWindowMaximized MEMBER m_startWindowMaximized NOTIFY startWindowMaximizedChanged FINAL)
+
+    // Platform properties
     Q_PROPERTY(QString encryptionKey MEMBER m_encryptionKey NOTIFY encryptionKeyChanged FINAL)
     Q_PROPERTY(QString encryptionSalt MEMBER m_encryptionSalt NOTIFY encryptionSaltChanged FINAL)
     Q_PROPERTY(QString platform MEMBER m_platform NOTIFY platformChanged FINAL)
@@ -71,6 +76,10 @@ signals:
 
     void organizationChanged();
 
+    void isDarkThemeChanged();
+
+    void startWindowMaximizedChanged();
+
 private:
     // -------------------------------- |
     //  METHODS
@@ -81,6 +90,8 @@ private:
     // -------------------------------- |
     //  Class Member Variables
     // -------------------------------- |
+    bool m_isDarkTheme;
+    bool m_startWindowMaximized;
     std::shared_ptr<QSettings> settings;
     QString m_encryptionKey;
     QString m_encryptionSalt;

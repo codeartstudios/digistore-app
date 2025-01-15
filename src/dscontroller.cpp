@@ -3,7 +3,10 @@
 #include "qaesencryption.h"
 
 DsController::DsController(QObject *parent)
-    : QObject{parent}, m_platform(QSysInfo::productType())
+    : QObject{parent},
+    m_isDarkTheme(false),
+    m_startWindowMaximized(false),
+    m_platform(QSysInfo::productType())
 {
     QFile file(QStringLiteral(":/ui/config.json"));
     Q_ASSERT(file.open(QIODevice::ReadOnly));
@@ -30,13 +33,18 @@ DsController::DsController(QObject *parent)
     // Restore any saved settings  |
     // -----------------------------
 
-
     // Get/Restore last log off time
     QVariant logOffTimeStr=getValue("logOffAt","string");
     QDateTime logOffTime = logOffTimeStr.isNull() ?
         QDateTime::currentDateTimeUtc() : QDateTime::fromString(logOffTimeStr.toString(), "yyyy-MM-ddThh:mm:ss.zzzZ");
 
-    qDebug() << logOffTime;
+    // Get/Restore application theme
+    QVariant isDarkTheme=getValue("isDarkTheme","bool");
+    m_isDarkTheme = isDarkTheme.isNull() ? false : isDarkTheme.toBool();
+
+    // Get/Restore window start size
+    QVariant startWindowMaximized=getValue("startWindowMaximized","bool");
+    m_startWindowMaximized = startWindowMaximized.isNull() ? false : startWindowMaximized.toBool();
 
     // Get/Restore login token
     QVariant token=getValue("token","string");

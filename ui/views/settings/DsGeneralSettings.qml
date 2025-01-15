@@ -20,19 +20,48 @@ DsSettingsStackPage {
             width: parent.width
 
             DsLabel {
-                text: qsTr("Application theme")
+                text: qsTr("Enable Dark Theme")
                 fontSize: Theme.baseFontSize
                 color: Theme.txtPrimaryColor
                 Layout.fillWidth: true
             }
 
-            DsComboBox {
-                Layout.minimumWidth: 300
-                currentIndex: 0
-                radius: Theme.btnRadius
-                model: [qsTr("Light Theme"), qsTr("Dark Theme"), qsTr("Same as system")]
+            DsSwitch {
+                bgColor: Theme.bodyColor
+                checked: dsController.isDarkTheme
+                Layout.alignment: Qt.AlignVCenter
+
+                onCheckedChanged: {
+                    dsController.isDarkTheme = checked
+                    dsController.setValue("isDarkTheme", "bool", checked)
+                }
             }
         }
+
+        RowLayout {
+            width: parent.width
+
+            DsLabel {
+                text: qsTr("Start the window maximized")
+                fontSize: Theme.baseFontSize
+                color: Theme.txtPrimaryColor
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsSwitch {
+                bgColor: Theme.bodyColor
+                checked: dsController.startWindowMaximized
+                Layout.alignment: Qt.AlignVCenter
+
+                onCheckedChanged: {
+                    dsController.startWindowMaximized = checked
+                    dsController.setValue("startWindowMaximized", "bool", checked)
+                }
+            }
+        }
+
+        /// Language ... // TODO
     }
 
     DsSettingsCard {

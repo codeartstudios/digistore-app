@@ -8,9 +8,8 @@ import "popups"
 
 Window {
     id: mainApp
-    width: 640
-    height: 480
-    visibility: "Maximized"
+    width: 1080
+    height: 720
     visible: true
     color: Theme.bodyColor
 
@@ -32,8 +31,15 @@ Window {
         id: appFlow
     }
 
-    Component.onCompleted: {
-        // TODO set these from API response
-        dsController.organizationID = "main";
+    Connections {
+        target: dsController
+
+        function onStartWindowMaximizedChanged() {
+            if(dsController.startWindowMaximized) {
+                mainApp.showMaximized();
+            } else {
+                mainApp.showNormal();
+            }
+        }
     }
 }
