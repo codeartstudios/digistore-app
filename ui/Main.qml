@@ -38,7 +38,7 @@ Window {
             if(dsController.startWindowMaximized) {
                 mainApp.showMaximized();    // Maximize the window
             } else {
-                mainApp.showNormal();       // Show the default size window
+                mainApp.showNormal();       // Show the default size window (1080x720px)
             }
         }
     }
