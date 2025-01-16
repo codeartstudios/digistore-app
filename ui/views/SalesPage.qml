@@ -277,7 +277,7 @@ DsPage {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.organizationID}'`
+            filter: `organization='${dsController.workspaceId}'`
                     + (txt==='' ? '' : ` && (total ~ '${txt}' || payments ~ '${txt}' || created ~ '${txt}')`)
                     + ` && ${dateQuery}`
         }

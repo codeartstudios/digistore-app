@@ -14,7 +14,7 @@ DsPage {
 
     required property var organization
 
-    Component.onCompleted: console.log(organization, JSON.stringify(organization))
+    // Component.onCompleted: console.log(organization, JSON.stringify(organization))
 
     Item {
         width: 400
@@ -119,6 +119,7 @@ DsPage {
         var identity = emailinput.input.text.trim()
         var password = passwordinput.input.text.trim()
 
+        // TODO Accepted username chars?
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length < 4 ) {
             emailinput.hasError = true;
             return;
@@ -144,10 +145,10 @@ DsPage {
         loginrequest.query = query;
         loginrequest.body = body;
         var res = loginrequest.send();
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            console.log("User logged in")
+            // console.log("User logged in")
             // Confirm email
             console.log(JSON.stringify(res))
             var token = res.data.token
@@ -155,16 +156,17 @@ DsPage {
             var org = res.data.record.expand.organization
             user.organization = org.id;
 
-            dsController.organization = org
+            // dsController.organization = org
             dsController.token = token
             dsController.loggedUser = user
 
-
-            console.log("Token: ", dsController.token)
-            console.log("User: ", JSON.stringify(dsController.loggedUser))
-            console.log("Org: ", JSON.stringify(dsController.organization))
+            // console.log("Token: ", dsController.token)
+            // console.log("User: ", JSON.stringify(dsController.loggedUser))
+            // console.log("Org: ", JSON.stringify(dsController.organization))
 
             clearInputs()
+            store.userLoggedIn = checkIfLoggedIn()
+
         } else {
             // User creation failed
             messageBox.showMessage(

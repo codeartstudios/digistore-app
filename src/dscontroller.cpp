@@ -52,10 +52,20 @@ DsController::DsController(QObject *parent)
                   "" : validateToken(token.toString()) ?
                                     token.toString() : "";
 
+    // Get/Restore loggedUser JSON
+    auto user = getValue("loggedUser", "json");
+    m_loggedUser = user.isNull() ? QVariantMap() : user.toMap();
+
+    // Get/User Organization JSON
+    auto org = getValue("organization", "json");
+    m_organization = org.isNull() ? QVariantMap() : org.toMap();
+    qDebug() << m_organization;
+
     // -----------------------------
     // Late Connections            |
     // -----------------------------
     connect(this, &DsController::tokenChanged, this, &DsController::onTokenChanged);
+    connect(this, &DsController::organizationChanged, this, &DsController::onOrganizationChanged);
 }
 
 DsController::~DsController()
@@ -70,6 +80,13 @@ void DsController::emitOpenCashDrawer() {
 void DsController::setValue(QString key,QString category, QVariant value)
 {
     settings->setValue(encrypt(key+"/"+category),encrypt(value.toString()));
+}
+
+void DsController::setValue(QString key, QString category, QVariantMap value)
+{
+    QJsonDocument doc(QJsonObject::fromVariantMap(value));
+    auto mp = toBase64(doc.toJson());
+    settings->setValue(encrypt(key+"/"+category),encrypt(mp));
 }
 
 QVariant DsController::getValue(QString key,QString category)
@@ -99,6 +116,13 @@ QVariant DsController::getValue(QString key,QString category)
             else if(category == "double")
             {
                 return QVariant(value.toDouble());
+            }
+            else if(category == "json")
+            {
+                QByteArray jsonb = value.toString().toUtf8();
+                QByteArray jsonData = QByteArray::fromBase64(jsonb);
+                QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+                return QVariant(doc.object().toVariantMap());
             }
             else
             {
@@ -131,8 +155,6 @@ QString DsController::decrypt(QString data)
 
 bool DsController::validateToken(const QString &token) const
 {
-    qDebug() << "Token: " << token;
-
     auto parts = token.split(".");
 
     if (parts.size() != 3) {
@@ -158,8 +180,17 @@ bool DsController::validateToken() const
 
 void DsController::onTokenChanged()
 {
-    // qDebug() << "Setting & Saving new token: " << m_token;
     setValue("token", "string", m_token);
+}
+
+void DsController::onOrganizationChanged()
+{
+    // qDebug() << m_organization;
+    setValue("organization", "json", m_organization);
+
+    // Update Workspace ID as well, emitting changed signal
+    m_workspaceId = m_organization.isEmpty() ? "" : m_organization["id"].toString();
+    emit workspaceIdChanged();
 }
 
 QByteArray DsController::base64UrlDecode(const QString &base64Url) const {
@@ -171,4 +202,15 @@ QByteArray DsController::base64UrlDecode(const QString &base64Url) const {
     }
 
     return QByteArray::fromBase64(base64.toUtf8());
+}
+
+QString DsController::toBase64(const QString &data)
+{
+    return data.toUtf8().toBase64();
+}
+
+QString DsController::fromBase64(const QString &base64Data)
+{
+    QByteArray data = QByteArray::fromBase64(base64Data.toUtf8());
+    return QString(data);
 }

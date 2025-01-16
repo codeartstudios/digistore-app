@@ -145,7 +145,7 @@ Popup {
             name,
             email,
             mobile,
-            organization: dsController.organizationID
+            organization: dsController.workspaceId
         }
 
         addproductrequest.clear()

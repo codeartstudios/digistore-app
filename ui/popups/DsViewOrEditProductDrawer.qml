@@ -394,7 +394,7 @@ DsDrawer {
             selling_price: sp,
             stock: stock,
             tags,
-            organization: dsController.organizationID
+            organization: dsController.workspaceId
         }
 
         var files = {
@@ -474,7 +474,7 @@ DsDrawer {
             name,
             unit: units,
             selling_price: sp,
-            organization: dsController.organizationID
+            organization: dsController.workspaceId
         }
 
         if(dataModel.barcode !== barcode)

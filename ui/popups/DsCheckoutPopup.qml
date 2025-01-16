@@ -398,7 +398,7 @@ Popup {
         var body = {
             totals: root.totals,
             payments,
-            organization: dsController.organizationID,
+            organization: dsController.workspaceId,
             products
         }
 

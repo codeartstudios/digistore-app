@@ -241,7 +241,7 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.organizationID}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || supplier ~ '${txt}')`),
+            filter: `organization='${dsController.workspaceId}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || supplier ~ '${txt}')`),
             expand: "supplier",
             fields: "*,expand.supplier.name"
         }

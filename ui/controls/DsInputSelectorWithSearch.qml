@@ -332,7 +332,7 @@ Rectangle {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization = '${dsController.organizationID}'` + (txt==='' ? '' : ` && (${buidQuery(txt)})`)
+            filter: `organization = '${dsController.workspaceId}'` + (txt==='' ? '' : ` && (${buidQuery(txt)})`)
         }
 
         searchRequest.clear()

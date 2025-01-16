@@ -22,6 +22,13 @@ Rectangle {
     property alias secondaryActionLabel: secondaryActionLabel
     property alias labelShown: labelrowly.visible
 
+    // Before & After items
+    property alias before: before
+    property alias beforeItem: before.children
+    property alias afterItem: after.children
+    property alias after: after
+    property alias inputRL: inputrow
+
     signal clicked()
     signal textAccepted()
     signal secondaryAction()
@@ -43,7 +50,7 @@ Rectangle {
 
     Column {
         id: col
-        spacing: 0
+        spacing: Theme.xsSpacing/2
         width: parent.width - 2*Theme.xsSpacing
         anchors.centerIn: parent
 
@@ -77,7 +84,7 @@ Rectangle {
 
             DsLabel {
                 id: secondaryActionLabel
-                visible: text !== ""
+                visible: text !== "" && input.text.trim() !== ""
                 color: Theme.txtPrimaryColor
                 fontSize: Theme.xsFontSize
 
@@ -88,28 +95,44 @@ Rectangle {
             }
         }
 
-        TextField {
-            id: input
-            padding: 0
-            height: Theme.inputHeight
+        RowLayout {
+            id: inputrow
             width: parent.width
-            color: Theme.txtPrimaryColor
-            placeholderTextColor: Theme.txtDisabledColor
-            font.pixelSize: Theme.lgFontSize
-            echoMode: isPasswordInput ? TextField.Password : TextField.Normal
-            background: Item{}
-            readOnly: control.readOnly
+            spacing: Theme.btnRadius
 
-            onAccepted: control.textAccepted()
+            Row {
+                id: before
+                Layout.fillHeight: true
+            }
 
-            DsToolTip {
-                id: tt
-                text: errorString
-                delay: 0
-                width: parent.width
-                side: DsToolTip.Bottom
-                bgRect.color: Theme.warningColor
-                onClosed: hasError=false
+            TextField {
+                id: input
+                padding: 0
+                height: Theme.inputHeight
+                color: Theme.txtPrimaryColor
+                placeholderTextColor: Theme.txtDisabledColor
+                font.pixelSize: Theme.lgFontSize
+                echoMode: isPasswordInput ? TextField.Password : TextField.Normal
+                background: Item{}
+                readOnly: control.readOnly
+                Layout.fillWidth: true
+
+                onAccepted: control.textAccepted()
+
+                DsToolTip {
+                    id: tt
+                    text: errorString
+                    delay: 0
+                    width: parent.width
+                    side: DsToolTip.Bottom
+                    bgRect.color: Theme.warningColor
+                    onClosed: hasError=false
+                }
+            }
+
+            Row {
+                id: after
+                Layout.fillHeight: true
             }
         }
     }

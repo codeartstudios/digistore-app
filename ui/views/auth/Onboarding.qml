@@ -41,7 +41,11 @@ DsPage {
             DsLabel {
                 topPadding: Theme.baseSpacing
                 bottomPadding: Theme.smSpacing
-                text: qsTr("Welcome back! Let's get your organization details.")
+                text: (dsController.organization &&
+                       dsController.organization.name &&
+                       workspaceinput.text===dsController.organization.name) ?
+                          qsTr("Welcome back to") + ` ${dsController.organization.name}` :
+                          qsTr("Let's get your organization details.")
                 fontSize: Theme.smFontSize
                 anchors.horizontalCenter: parent.horizontalCenter
             }
@@ -49,9 +53,29 @@ DsPage {
             DsInputWithLabel {
                 id: workspaceinput
                 width: parent.width
+                text: (dsController.organization &&
+                       dsController.organization.workspace) ?
+                          dsController.organization.workspace : ""
                 label: qsTr("Workspace")
                 errorString: qsTr("Workspace URL is doesn't exist!")
-                input.placeholderText: qsTr("org.digisto.app")
+                input.placeholderText: qsTr("workspace")
+                secondaryActionLabel.text: qsTr("change")
+                secondaryActionLabel.color: Theme.dangerColor
+                onSecondaryAction: workspaceinput.text = ""
+                readOnly: (dsController.organization &&
+                           dsController.organization.workspace)
+
+                beforeItem: DsLabel {
+                    text: qsTr("https://")
+                    fontSize: Theme.lgFontSize
+                    color: Theme.txtHintColor
+                }
+
+                afterItem: DsLabel {
+                    text: qsTr(".digisto.app")
+                    fontSize: Theme.lgFontSize
+                    color: Theme.txtHintColor
+                }
             }
 
             Item { height: 1; width: 1}
@@ -77,7 +101,10 @@ DsPage {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/CreateAccount.qml")
+                    onClicked: navigationStack.push(
+                                   "qrc:/ui/views/auth/CreateAccount.qml",
+                                   StackView.Immediate
+                                   )
                 }
             }
         }
@@ -89,43 +116,65 @@ DsPage {
     }
 
     function checkWorkspaceRequest() {
-        var workspace = workspaceinput.input.text.trim()
+        var workspace = workspaceinput.input.text.trim();
 
-        if(workspace.length < 4) {
-            workspaceinput.hasError = true;
-            workspaceinput.errorString = qsTr("Workspace ID is invalid!")
-            return;
-        }
+        // We have cached org login information, no need anymore.
+        if(dsController.organization &&
+                dsController.organization.workspace &&
+                dsController.organization.workspace===workspace) {
 
-        // Create a search query
-        var query = {
-            page: 1,
-            perPage: 1,
-            skipTotal: true,
-            filter: `workspace='${workspace}'`
-        }
+            // console.log("Using cached organization details: ",
+            // JSON.stringify(dsController.organization))
 
-        // Prepare and send request
-        workspacerequest.clear()
-        workspacerequest.query = query;
-        var res = workspacerequest.send();
-
-        if(res.status===200) {
-            var orgs = res.data.items
-            if(orgs.length===0) {
-                messageBox.showMessage(qsTr("Org Workspace Error"),
-                                       qsTr("We didn't find a workspace matching your input!"))
-            } else {
-                var org = orgs[0]
-                clearInputs()
-                navigationStack.push("qrc:/ui/views/auth/Login.qml",
-                                     { organization: org },
-                                     StackView.Immediate)
-            }
+            clearInputs();
+            navigationStack.push("qrc:/ui/views/auth/Login.qml",
+                                 {
+                                     organization: dsController.organization
+                                 }, StackView.Immediate)
         }
 
         else {
-            messageBox.showMessage(qsTr("Org Workspace Error"), res.data.message)
+            if(workspace.length < 4) {
+                workspaceinput.hasError = true;
+                workspaceinput.errorString = qsTr("Workspace ID is invalid!")
+                return;
+            }
+
+            // Create a search query
+            var query = {
+                page: 1,
+                perPage: 1,
+                skipTotal: true,
+                filter: `workspace='${workspace}'`
+            }
+
+            // Prepare and send request
+            workspacerequest.clear()
+            workspacerequest.query = query;
+            var res = workspacerequest.send();
+
+            if(res.status===200) {
+                var orgs = res.data.items
+                if(orgs.length===0) {
+                    messageBox.showMessage(qsTr("Org Workspace Error"),
+                                           qsTr("We didn't find a workspace matching your input!"))
+                } else {
+                    var org = orgs[0]
+                    clearInputs()
+                    dsController.organization = org;
+                    navigationStack.push("qrc:/ui/views/auth/Login.qml",
+                                         {
+                                             organization: org
+                                         }, StackView.Immediate)
+                }
+            }
+
+            else {
+                messageBox.showMessage(
+                            qsTr("Org Workspace Error"),
+                            res.data.message
+                            )
+            }
         }
     }
 

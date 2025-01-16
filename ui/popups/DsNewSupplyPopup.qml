@@ -346,7 +346,7 @@ Popup {
         var body = {
             amount,
             products,
-            organization: dsController.organizationID
+            organization: dsController.workspaceId
         }
 
         if(supplierselector.dataModel.count!==0) {

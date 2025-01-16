@@ -128,7 +128,7 @@ Item {
     }
 
     function fetchOrganizationDetails() {
-        var orgid = dsController.organizationID
+        var orgid = dsController.workspaceId
         requests.clear()
         requests.path = `/api/collections/organization/records/${orgid}`
         var res = requests.send();

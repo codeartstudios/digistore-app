@@ -52,6 +52,16 @@ DsPage {
                 errorString: qsTr("Invalid user full name")
             }
 
+            DsInputMobileNumber {
+                id: mobileinput
+                width: parent.width
+                label: qsTr("Fullname")
+                mandatory: true
+                validator: IntValidator{bottom: 1000000}
+                input.placeholderText: qsTr("7xx xxx xxx")
+                errorString: qsTr("Invalid mobile number")
+            }
+
             DsInputWithLabel {
                 id: passwordinput
                 width: parent.width

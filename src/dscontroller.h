@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include <QDateTime>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QFile>
 #include <memory>
 #include <QSysInfo>
@@ -29,7 +30,7 @@ public:
     Q_PROPERTY(QString platform MEMBER m_platform NOTIFY platformChanged FINAL)
 
     // Application specific global apps
-    Q_PROPERTY(QString organizationID MEMBER m_organizationID NOTIFY organizationIDChanged FINAL)
+    Q_PROPERTY(QString workspaceId MEMBER m_workspaceId NOTIFY workspaceIdChanged FINAL)
     Q_PROPERTY(QVariantMap loggedUser MEMBER m_loggedUser NOTIFY loggedUserChanged FINAL)
     Q_PROPERTY(QString token MEMBER m_token NOTIFY tokenChanged FINAL)
     Q_PROPERTY(QVariantMap organization MEMBER m_organization NOTIFY organizationChanged FINAL)
@@ -45,6 +46,7 @@ public:
 
     // Set new value to be stored
     Q_INVOKABLE void setValue(QString key, QString category, QVariant value);
+    Q_INVOKABLE void setValue(QString key, QString category, QVariantMap value);
 
     // Fetches a saved value
     Q_INVOKABLE QVariant getValue(QString key, QString category);
@@ -58,15 +60,20 @@ public:
     Q_INVOKABLE bool validateToken(const QString& token) const;
     Q_INVOKABLE bool validateToken() const;
 
+    // Base64 Operations (to/fro)
+    Q_INVOKABLE QString toBase64(const QString &data);
+    Q_INVOKABLE QString fromBase64(const QString &base64Data);
+
 public slots:
     void onTokenChanged();
+    void onOrganizationChanged();
 
 signals:
     void encryptionKeyChanged();
     void encryptionSaltChanged();
     void platformChanged();
 
-    void organizationIDChanged();
+    void workspaceIdChanged();
 
     void openCashDrawer();
 
@@ -96,7 +103,7 @@ private:
     QString m_encryptionKey;
     QString m_encryptionSalt;
     QString m_platform;
-    QString m_organizationID;
+    QString m_workspaceId;
     QVariantMap m_loggedUser;
     QString m_token;
     QVariantMap m_organization;
