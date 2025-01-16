@@ -27,18 +27,18 @@ Window {
         source: "qrc:/assets/fonts/tabler-icons.ttf"
     }
 
-    ApplicationFlow {
-        id: appFlow
-    }
+    ApplicationFlow { id: appFlow }
 
     Connections {
         target: dsController
 
+        // Signal handler for window size state change saved in the
+        // application settings.
         function onStartWindowMaximizedChanged() {
             if(dsController.startWindowMaximized) {
-                mainApp.showMaximized();
+                mainApp.showMaximized();    // Maximize the window
             } else {
-                mainApp.showNormal();
+                mainApp.showNormal();       // Show the default size window
             }
         }
     }
