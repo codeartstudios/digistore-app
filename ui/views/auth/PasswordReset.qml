@@ -15,7 +15,7 @@ import "../../controls"
 */
 
 DsPage {
-    id: loginPage
+    id: root
     title: qsTr("Password Reset")
     headerShown: false
 

@@ -82,7 +82,7 @@ void DsController::setValue(QString key,QString category, QVariant value)
     settings->setValue(encrypt(key+"/"+category),encrypt(value.toString()));
 }
 
-void DsController::setValue(QString key, QString category, QVariantMap value)
+void DsController::setValueJSON(QString key, QString category, QVariantMap value)
 {
     QJsonDocument doc(QJsonObject::fromVariantMap(value));
     auto mp = toBase64(doc.toJson());
@@ -186,7 +186,7 @@ void DsController::onTokenChanged()
 void DsController::onOrganizationChanged()
 {
     // qDebug() << m_organization;
-    setValue("organization", "json", m_organization);
+    setValueJSON("organization", "json", m_organization);
 
     // Update Workspace ID as well, emitting changed signal
     m_workspaceId = m_organization.isEmpty() ? "" : m_organization["id"].toString();

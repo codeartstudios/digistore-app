@@ -5,6 +5,7 @@ import app.digisto.modules
 import "controls" // Settings
 import "../../controls"
 
+// TODO must confirm email/mobile number
 DsSettingsStackPage {
     id: root
     title: qsTr("Organization")

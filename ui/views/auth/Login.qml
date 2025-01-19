@@ -106,6 +106,8 @@ DsPage {
 
     DsMessageBox {
         id: messageBox
+        x: (loginPage.width-width)/2
+        y: (loginPage.height-height)/2
 
         function showMessage(title="", info="") {
             messageBox.title = title
@@ -168,10 +170,13 @@ DsPage {
             store.userLoggedIn = checkIfLoggedIn()
 
         } else {
+            console.log(JSON.stringify(res))
             // User creation failed
             messageBox.showMessage(
                         qsTr("Login Failed"),
-                        res.data.message
+                        res.data.message ?
+                            res.data.message : res.error ?
+                                res.error : qsTr("We couldn't complete this request, please try again later.")
                         )
         }
     }

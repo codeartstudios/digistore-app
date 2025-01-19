@@ -38,6 +38,9 @@ Button {
     property bool leftIconShown: iconType!==""
     property bool endIconShown: endIcon!==""
 
+    // Expose delegate row
+    property alias contentRow: row
+
     background: Rectangle {
         id: bg
         color: control.enabled ? (down ? bgDown : hovered ? bgHover : bgColor) : bgColor

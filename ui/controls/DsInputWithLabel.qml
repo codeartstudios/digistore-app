@@ -102,7 +102,8 @@ Rectangle {
 
             Row {
                 id: before
-                Layout.fillHeight: true
+                height: input.height
+                Layout.alignment: Qt.AlignVCenter
             }
 
             TextField {
@@ -132,7 +133,8 @@ Rectangle {
 
             Row {
                 id: after
-                Layout.fillHeight: true
+                height: input.height
+                Layout.alignment: Qt.AlignVCenter
             }
         }
     }

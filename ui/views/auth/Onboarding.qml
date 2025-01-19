@@ -8,7 +8,7 @@ import "../../controls"
 import "../../popups"
 
 DsPage {
-    id: loginPage
+    id: root
     title: qsTr("Onboarding Page")
     headerShown: false
 
@@ -180,6 +180,8 @@ DsPage {
 
     DsMessageBox {
         id: messageBox
+        x: (root.width-width)/2
+        y: (root.height-height)/2
 
         function showMessage(title="", info="") {
             messageBox.title = title

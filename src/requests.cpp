@@ -30,12 +30,15 @@ QVariantMap Requests::send()
 {
     if(m_method.isEmpty())
     {
-        QVariantMap e;
+        QVariantMap e, d;
         e["status"] = 0;
         e["message"] = QString("Request method is not defined");
-        emit error(e);
+        d["data"] = e;
+        d["status"] = 0;
+        d["message"] = QString("Request method is not defined");
+        emit error(d);
 
-        return e;
+        return d;
     }
 
     m_running=true;
@@ -99,25 +102,31 @@ QVariantMap Requests::send()
             QString fileName = QFileInfo(file->fileName()).fileName();
 
             if(!file->exists()) {
-                QVariantMap e;
+                QVariantMap e, d;
                 e["status"] = 0;
                 e["message"] = QString("File '%1' does not exist").arg(fileName);
+                d["data"] = e;
+                d["status"] = 0;
+                d["message"] = QString("File '%1' does not exist").arg(fileName);
 
                 m_running=false;
                 emit runningChanged();
-                emit error(e);
-                return e;
+                emit error(d);
+                return d;
             }
 
             if (!file->open(QIODevice::ReadOnly)) {
-                QVariantMap e;
+                QVariantMap d, e;
                 e["status"] = 0;
                 e["message"] = QString("Could not open '%1' for reading").arg(fileName);
+                d["data"] = e;
+                d["status"] = 0;
+                d["message"] = QString("Could not open '%1' for reading").arg(fileName);
 
                 m_running=false;
                 emit runningChanged();
-                emit error(e);
-                return e;
+                emit error(d);
+                return d;
             }
 
             QMimeDatabase mimeDatabase;
@@ -172,14 +181,17 @@ QVariantMap Requests::send()
         }
 
         else {
-            QVariantMap e;
+            QVariantMap d, e;
             e["status"] = 0;
             e["message"] = QString("Unhandled method '%1'").arg(m_method);
+            d["data"] = e;
+            d["status"] = 0;
+            d["message"] = QString("Unhandled method '%1'").arg(m_method);
 
             m_running=false;
             emit runningChanged();
-            emit error(e);
-            return e;
+            emit error(d);
+            return d;
         }
     }
 

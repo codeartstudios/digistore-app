@@ -44,9 +44,14 @@ public:
     // if any is connected/confirgured.
     Q_INVOKABLE void emitOpenCashDrawer();
 
+    Q_INVOKABLE QVariant something(const QVariant val) {
+        qDebug() << "Val: " << val;
+        return val;
+    }
+
     // Set new value to be stored
     Q_INVOKABLE void setValue(QString key, QString category, QVariant value);
-    Q_INVOKABLE void setValue(QString key, QString category, QVariantMap value);
+    Q_INVOKABLE void setValueJSON(QString key, QString category, QVariantMap value);
 
     // Fetches a saved value
     Q_INVOKABLE QVariant getValue(QString key, QString category);
