@@ -51,17 +51,19 @@ DsSettingsStackPage {
 
                     DsInputWithLabel {
                         mandatory: true
-                        color: Theme.baseAlt2Color
+                        color: Theme.bodyColor
                         label: qsTr("Fullname")
+                        text: dsController.loggedUser ? dsController.loggedUser.name : ""
                         input.placeholderText: qsTr("John Doe")
                         Layout.fillWidth: true
                     }
 
-                    DsInputWithLabel {
+                    DsInputMobileNumber {
                         mandatory: true
-                        color: Theme.baseAlt2Color
+                        color: Theme.bodyColor
+                        text: dsController.mobile ? dsController.loggedUser.mobile.number : ""
                         label: qsTr("Mobile Number")
-                        input.placeholderText: qsTr("user@email.com")
+                        input.placeholderText: qsTr("700000xxxx")
                         Layout.fillWidth: true
                     }
                 }
@@ -72,7 +74,8 @@ DsSettingsStackPage {
 
                     DsInputWithLabel {
                         mandatory: true
-                        color: Theme.baseAlt2Color
+                        color: Theme.bodyColor
+                        text: dsController.organization ? dsController.organization.name : ""
                         label: qsTr("Organization")
                         input.placeholderText: "Some Org."
                         Layout.fillWidth: true
@@ -80,9 +83,10 @@ DsSettingsStackPage {
 
                     DsInputWithLabel {
                         mandatory: true
-                        color: Theme.baseAlt2Color
+                        color: Theme.bodyColor
                         isPasswordInput: true
-                        label: qsTr("Date Created")
+                        text: dsController.loggedUser ? dsController.loggedUser.created : ""
+                        label: qsTr("Date Joined")
                         input.placeholderText: "2020-12-11"
                         Layout.fillWidth: true
                     }
@@ -115,7 +119,7 @@ DsSettingsStackPage {
             DsInputWithLabel {
                 id: newemailinput
                 mandatory: true
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 label: qsTr("New Email")
                 input.placeholderText: qsTr("user@email.com")
                 Layout.fillWidth: true
@@ -124,7 +128,7 @@ DsSettingsStackPage {
             DsInputWithLabel {
                 id: newemailinputconf
                 mandatory: true
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 label: qsTr("Confirm Email")
                 input.placeholderText: qsTr("user@email.com")
                 Layout.fillWidth: true
@@ -133,7 +137,7 @@ DsSettingsStackPage {
             DsInputWithLabel {
                 id: passwordinputemailupdate
                 mandatory: true
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 isPasswordInput: true
                 label: qsTr("Account Password")
                 input.placeholderText: "********"
@@ -167,7 +171,7 @@ DsSettingsStackPage {
                 mandatory: true
                 input.placeholderText: qsTr("********")
                 label: qsTr("Old Password")
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 Layout.fillWidth: true
             }
 
@@ -176,7 +180,7 @@ DsSettingsStackPage {
                 mandatory: true
                 label: qsTr("New Password")
                 input.placeholderText: qsTr("********")
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 Layout.fillWidth: true
             }
 
@@ -185,7 +189,7 @@ DsSettingsStackPage {
                 mandatory: true
                 isPasswordInput: true
                 label: qsTr("Confirm New Password")
-                color: Theme.baseAlt2Color
+                color: Theme.bodyColor
                 input.placeholderText: qsTr("********")
                 Layout.fillWidth: true
             }
