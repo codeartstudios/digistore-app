@@ -58,7 +58,7 @@ DsPage {
 
             DsIconButton {
                 visible: durationSelector.currentIndex === durationSelector.model.length - 1
-                enabled: !getsalesrequest.running
+                enabled: !getaccountsrequest.running
                 iconType: IconType.edit
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -72,7 +72,7 @@ DsPage {
             }
 
             DsIconButton {
-                enabled: !getsalesrequest.running
+                enabled: !getaccountsrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -81,7 +81,7 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: getSales()
+                onClicked: getTellers()
             }
 
             Item {
@@ -91,21 +91,21 @@ DsPage {
 
             DsDateRangeSelector {
                 id: durationSelector
-                enabled: !getsalesrequest.running
+                enabled: !getaccountsrequest.running
                 model: ["Today", "This Week", "Last Week", "This Month", "This Year", "Custom"]
             }
         }
 
         DsSearchInputNoPopup {
             id: dsSearchInput
-            busy: getsalesrequest.running
+            busy: getaccountsrequest.running
             placeHolderText: qsTr("Who are you looking for?")
             Layout.preferredHeight: Theme.lgBtnHeight
             Layout.fillWidth: true
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getSales(txt)
+            onAccepted: (txt) => getTellers()
         }
 
         DsTable {
@@ -114,7 +114,7 @@ DsPage {
             Layout.fillHeight: true
             headerModel: headermodel
             dataModel: datamodel
-            busy: getsalesrequest.running
+            busy: getaccountsrequest.running
             pageNo: root.pageNo - 1
             itemsPerPage: root.itemsPerPage
 
@@ -127,7 +127,7 @@ DsPage {
 
                 sortByKey = key;
 
-                getSales()
+                getTellers()
             }
 
             // When current selected index changes, get the sales data
@@ -152,7 +152,7 @@ DsPage {
             DsBusyIndicator {
                 width: Theme.btnHeight
                 height: Theme.btnHeight
-                running: getsalesrequest.running
+                running: getaccountsrequest.running
                 visible: running
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
@@ -171,7 +171,7 @@ DsPage {
                 }
 
                 DsIconButton {
-                    enabled: pageNo>1 && !getsalesrequest.running
+                    enabled: pageNo>1 && !getaccountsrequest.running
                     iconType: IconType.arrowLeft
                     textColor: Theme.txtPrimaryColor
                     bgColor: "transparent"
@@ -180,7 +180,7 @@ DsPage {
 
                     onClicked: {
                         pageNo -= 1
-                        getSales()
+                        getTellers()
                     }
                 }
 
@@ -192,7 +192,7 @@ DsPage {
                 }
 
                 DsIconButton {
-                    enabled: pageNo<totalPages && !getsalesrequest.running
+                    enabled: pageNo<totalPages && !getaccountsrequest.running
                     iconType: IconType.arrowRight
                     textColor: Theme.txtPrimaryColor
                     bgColor: "transparent"
@@ -201,7 +201,7 @@ DsPage {
 
                     onClicked: {
                         pageNo += 1
-                        getSales()
+                        getTellers()
                     }
                 }
             }
@@ -212,27 +212,45 @@ DsPage {
         id: headermodel
 
         ListElement {
-            title: qsTr("Total Cost")
+            title: qsTr("Name")
             sortable: true
             width: 200
             flex: 2
-            value: "totals"
+            value: "name"
         }
 
         ListElement {
-            title: qsTr("Payments")
+            title: qsTr("Username")
             sortable: true
             width: 300
             flex: 1
-            value: "payments_label"
+            value: "username"
         }
 
         ListElement {
-            title: qsTr("Date")
+            title: qsTr("Email")
             sortable: true
             width: 200
             flex: 1
-            value: "created"
+            value: "email"
+        }
+
+        ListElement {
+            title: qsTr("Mobile")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "mobile"
+            formatBy: (data) => data ? `(${data.dial_code})${data.number}` : "N/A"
+        }
+
+        ListElement {
+            title: qsTr("Approved")
+            sortable: true
+            width: 100
+            flex: 1
+            value: "mobile"
+            formatBy: (isApproved) => isApproved ? "true" : "false"
         }
     }
 
@@ -254,7 +272,7 @@ DsPage {
 
             // Close popup before fetching the sales data
             daterangeselectorpopup.close()
-            getSales()
+            getTellers()
         }
     }
 
@@ -267,28 +285,30 @@ DsPage {
     }
 
     Requests {
-        id: getsalesrequest
-        path: "/api/collections/sales_view/records"
+        id: getaccountsrequest
+        path: "/api/collections/tellers/records"
     }
 
-    function getSales(txt='') {
-        var dateQuery = `created >= '${internal.startDateTimeUTC}' && created <= '${internal.endDateTimeUTC}'`
+    function getTellers() {
+        console.log('Organization: ', dsController.workspaceId)
+
+        var txt = dsSearchInput.text.trim()
+
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
             filter: `organization='${dsController.workspaceId}'`
-                    + (txt==='' ? '' : ` && (total ~ '${txt}' || payments ~ '${txt}' || created ~ '${txt}')`)
-                    + ` && ${dateQuery}`
+                    + (txt==='' ? '' : ` && (name ~ '${txt}' || email ~ '${txt}' || username ~ '${txt}')`)
         }
 
         // console.log(JSON.stringify(query))
 
-        getsalesrequest.clear()
-        getsalesrequest.query = query;
-        var res = getsalesrequest.send();
+        getaccountsrequest.clear()
+        getaccountsrequest.query = query;
+        var res = getaccountsrequest.send();
 
-        // console.log(res, JSON.stringify(res))
+        console.log(res, JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -296,33 +316,6 @@ DsPage {
             totalPages=data.totalPages
             totalItems=data.totalItems
             var items = data.items;
-
-            try {
-                items.forEach(
-                            function(p, index) {
-                                p.created =  new Date(p.created).toLocaleString('en-US', {
-                                                                                    year: 'numeric',
-                                                                                    month: '2-digit',
-                                                                                    day: '2-digit',
-                                                                                    hour: '2-digit',
-                                                                                    minute: '2-digit'
-                                                                                });
-                                var payments_methods = []
-                                const keys = Object.keys(p.payments)
-                                for(var i=0; i<keys.length; i++) {
-                                    if(p.payments[keys[i]].amount > 0) {
-                                        payments_methods.push(p.payments[keys[i]].label.toString())
-                                    }
-                                }
-
-                                var payment_lbl = payments_methods.length === 0 ? "--" : payments_methods.join(', ')
-                                p["payments_label"] = payment_lbl
-                                items[index] = p
-                            });
-            }
-            catch(err) {
-                console.log("Sales Page: ", err)
-            }
 
             datamodel.clear()
 
@@ -353,6 +346,6 @@ DsPage {
         }
     }
 
-    Component.onCompleted: {}
+    Component.onCompleted: getTellers()
 }
 

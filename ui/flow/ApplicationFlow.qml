@@ -113,6 +113,12 @@ Item {
                         break;
                     }
 
+                    case "accounts": {
+                        appStackLayout.currentIndex=7;
+                        appStackLayout.accountsLoader.active=true;
+                        break;
+                    }
+
                     case "profile": {
                         // postAuthLoader.sourceComponent = salesStackComponent;
                         break;

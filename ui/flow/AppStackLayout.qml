@@ -14,6 +14,7 @@ StackLayout {
     property alias organizationLoader: organizationloader
     property alias settingsLoader: settingsloader
     property alias notificationLoader: notificationloader
+    property alias accountsLoader: accountsloader
 
     // DashboardPage
     DsFlowLoader {
@@ -112,6 +113,20 @@ StackLayout {
             }
         }
     } // Notification Component
+
+    // AccountsPage Loader
+    DsFlowLoader {
+        id: accountsloader
+        active: false // root.currentIndex===7
+        asynchronous: true
+        sourceComponent: Component {
+            id: accountsComponent
+
+            AccountsPage {
+                id: accountsPage
+            }
+        }
+    } // Accounts Component
 
     Component {
         id: loadingIndicator
