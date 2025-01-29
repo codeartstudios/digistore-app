@@ -92,6 +92,7 @@
         <file>ui/controls/DsSwitch.qml</file>
         <file>ui/views/NotificationPage.qml</file>
         <file>ui/controls/DsInputMobileNumber.qml</file>
+        <file>ui/popups/DsUserAccountDetailsDrawer.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

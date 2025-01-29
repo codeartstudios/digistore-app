@@ -100,6 +100,7 @@ DsPage {
 
     Requests {
         id: loginrequest
+        baseUrl: dsController.baseUrl
         path: "/api/collections/tellers/auth-with-password"
         method: "POST"
     }
@@ -159,12 +160,14 @@ DsPage {
             user.organization = org.id;
 
             // dsController.organization = org
-            dsController.token = token
-            dsController.loggedUser = user
+            dsController.token = token;
+            dsController.loggedUser = user;
+            dsController.organization = org;
+            dsController.workspaceId = org.id;
 
-            // console.log("Token: ", dsController.token)
-            // console.log("User: ", JSON.stringify(dsController.loggedUser))
-            // console.log("Org: ", JSON.stringify(dsController.organization))
+            console.log("\nToken: ", dsController.token)
+            console.log("User: ", JSON.stringify(dsController.loggedUser))
+            console.log("Org: ", JSON.stringify(dsController.organization))
 
             clearInputs()
             store.userLoggedIn = checkIfLoggedIn()

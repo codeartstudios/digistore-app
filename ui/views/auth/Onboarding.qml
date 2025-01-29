@@ -112,6 +112,7 @@ DsPage {
 
     Requests {
         id: workspacerequest
+        baseUrl: dsController.baseUrl
         path: "/api/collections/organization_view/records"
     }
 

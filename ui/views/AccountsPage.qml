@@ -16,7 +16,7 @@ DsPage {
     property real totalItems: 0
     property real itemsPerPage: 200
 
-    property string sortByKey: "created"
+    property string sortByKey: "name"
     property bool sortAsc: false
 
     // Page properties
@@ -38,7 +38,7 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
-                text: qsTr("Sales")
+                text: qsTr("Organization")
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -52,23 +52,8 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h2
                 color: Theme.txtPrimaryColor
-                text: salesDateRange
+                text: qsTr("Users")
                 Layout.alignment: Qt.AlignVCenter
-            }
-
-            DsIconButton {
-                visible: durationSelector.currentIndex === durationSelector.model.length - 1
-                enabled: !getaccountsrequest.running
-                iconType: IconType.edit
-                textColor: Theme.txtPrimaryColor
-                bgColor: "transparent"
-                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-                radius: height/2
-                Layout.alignment: Qt.AlignVCenter
-
-                // TODO pass current date as input to the popup
-                onClicked: daterangeselectorpopup.open()
             }
 
             DsIconButton {
@@ -109,7 +94,7 @@ DsPage {
         }
 
         DsTable {
-            id: salestable
+            id: accountstable
             Layout.fillWidth: true
             Layout.fillHeight: true
             headerModel: headermodel
@@ -135,11 +120,11 @@ DsPage {
             onCurrentIndexChanged: {
                 // Open drawer only if current index is valid
                 if( currentIndex >= 0 ) {
-                    saleDrawer.dataModel = dataModel.get(currentIndex);
-                    saleDrawer.open();
+                    accountDrawer.userData = dataModel.get(currentIndex);
+                    accountDrawer.open();
                 } else {
                     // Close Drawer if already opened
-                    if( saleDrawer.opened ) saleDrawer.close()
+                    if( accountDrawer.opened ) accountDrawer.close()
                 }
             }
         }
@@ -222,7 +207,7 @@ DsPage {
         ListElement {
             title: qsTr("Username")
             sortable: true
-            width: 300
+            width: 200
             flex: 1
             value: "username"
         }
@@ -247,58 +232,36 @@ DsPage {
         ListElement {
             title: qsTr("Approved")
             sortable: true
-            width: 100
+            width: 200
             flex: 1
             value: "mobile"
             formatBy: (isApproved) => isApproved ? "true" : "false"
         }
     }
 
-    // Popup to show date selection for custom
-    // date range selection
-    DsSalesCustomDateSelectorPopup {
-        id: daterangeselectorpopup
-
-        onClosed: datamodel.clear() // Clear current items
-
-        onRangeSelected: {
-            // Update internal dates for filters
-            internal.startDateTimeUTC = Utils.dateToUTC(filterStartDate, "zero")
-            internal.endDateTimeUTC = Utils.dateToUTC(filterEndDate, "max")
-
-            // Update the top label string
-            salesDateRange = qsTr("Custom") +
-                    `: (${Qt.formatDateTime(filterStartDate, "yyyy-MM-dd hh:mm ap")}) to (${Qt.formatDateTime(filterEndDate, "yyyy-MM-dd hh:mm ap")})`
-
-            // Close popup before fetching the sales data
-            daterangeselectorpopup.close()
-            getTellers()
-        }
-    }
-
-    // Drawer to display selected sales item from the table
-    DsSelectedSaleProductsDrawer {
-        id: saleDrawer
+    // Drawer to display selected user account details from the table
+    DsUserAccountDetailsDrawer {
+        id: accountDrawer
 
         // Reset table current index when the drawer closes
-        onClosed: salestable.currentIndex = -1
+        onClosed: accountstable.currentIndex = -1
     }
 
     Requests {
         id: getaccountsrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/tellers/records"
     }
 
     function getTellers() {
-        console.log('Organization: ', dsController.workspaceId)
-
         var txt = dsSearchInput.text.trim()
 
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.workspaceId}'`
+            filter: `organization='${dsController.organization.id}'`
                     + (txt==='' ? '' : ` && (name ~ '${txt}' || email ~ '${txt}' || username ~ '${txt}')`)
         }
 
@@ -320,6 +283,7 @@ DsPage {
             datamodel.clear()
 
             for(var i=0; i<items.length; i++) {
+                console.log("- ", JSON.stringify(items[i]))
                 datamodel.append(items[i])
             }
         }

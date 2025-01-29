@@ -20,6 +20,9 @@ public:
     explicit DsController(QObject *parent = nullptr);
     ~DsController();
 
+    // Domains
+    Q_PROPERTY(QString baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged FINAL)
+
     // Application Theme
     Q_PROPERTY(bool isDarkTheme MEMBER m_isDarkTheme NOTIFY isDarkThemeChanged FINAL)
     Q_PROPERTY(bool startWindowMaximized MEMBER m_startWindowMaximized NOTIFY startWindowMaximizedChanged FINAL)
@@ -44,11 +47,6 @@ public:
     // if any is connected/confirgured.
     Q_INVOKABLE void emitOpenCashDrawer();
 
-    Q_INVOKABLE QVariant something(const QVariant val) {
-        qDebug() << "Val: " << val;
-        return val;
-    }
-
     // Set new value to be stored
     Q_INVOKABLE void setValue(QString key, QString category, QVariant value);
     Q_INVOKABLE void setValueJSON(QString key, QString category, QVariantMap value);
@@ -68,6 +66,9 @@ public:
     // Base64 Operations (to/fro)
     Q_INVOKABLE QString toBase64(const QString &data);
     Q_INVOKABLE QString fromBase64(const QString &base64Data);
+
+    QString baseUrl() const;
+    void setBaseUrl(const QString &newBaseUrl);
 
 public slots:
     void onTokenChanged();
@@ -92,6 +93,8 @@ signals:
 
     void startWindowMaximizedChanged();
 
+    void baseUrlChanged();
+
 private:
     // -------------------------------- |
     //  METHODS
@@ -112,6 +115,7 @@ private:
     QVariantMap m_loggedUser;
     QString m_token;
     QVariantMap m_organization;
+    QString m_baseUrl;
 };
 
 #endif // DSCONTROLLER_H

@@ -43,9 +43,7 @@ Window {
         }
     }
 
-    Component.onCompleted: {
-        console.log("Var QML: ", dsController.something(true))
-    }
+    Component.onCompleted: {}
 
     // Logic to check if the user is actually logged in or not
     // Checks for token validity, organization validity and

@@ -3,9 +3,10 @@
 Requests::Requests(QObject *parent)
     : QObject{parent},
     netman(std::make_unique<QNetworkAccessManager>(this)),
-    m_baseUrl("http://127.0.0.1:8090"), // "https://pbs.digisto.app"),
+    m_baseUrl(""),
     m_path(""),
     m_method("GET"),
+    m_token(""),
     m_headers(QVariantMap()),
     m_body(QVariantMap()),
     m_query(QVariantMap()),
@@ -73,6 +74,9 @@ QVariantMap Requests::send()
         }
     }
 
+    // Add authorization header, assuming by default Bearer tokens
+    request.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
+
     QNetworkReply* reply;
     QJsonDocument doc = QJsonDocument::fromVariant(m_body);
 
@@ -95,7 +99,7 @@ QVariantMap Requests::send()
         }
 
         // Add files to multipart
-        for ( const auto& key : m_files.keys() ) {
+        foreach ( const auto& key, m_files.keys() ) {
             // TODO check on multiple file issue
 
             QFile* file = new QFile(m_files.value(key).toString());

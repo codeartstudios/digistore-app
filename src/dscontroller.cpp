@@ -4,6 +4,7 @@
 
 DsController::DsController(QObject *parent)
     : QObject{parent},
+    m_baseUrl(""),
     m_isDarkTheme(false),
     m_startWindowMaximized(false),
     m_platform(QSysInfo::productType())
@@ -213,4 +214,17 @@ QString DsController::fromBase64(const QString &base64Data)
 {
     QByteArray data = QByteArray::fromBase64(base64Data.toUtf8());
     return QString(data);
+}
+
+QString DsController::baseUrl() const
+{
+    return m_baseUrl;
+}
+
+void DsController::setBaseUrl(const QString &newBaseUrl)
+{
+    if (m_baseUrl == newBaseUrl)
+        return;
+    m_baseUrl = newBaseUrl;
+    emit baseUrlChanged();
 }

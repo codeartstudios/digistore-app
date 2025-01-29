@@ -27,6 +27,7 @@ public:
     Q_PROPERTY(QString baseUrl MEMBER m_baseUrl NOTIFY baseUrlChanged FINAL)
     Q_PROPERTY(QString path MEMBER m_path NOTIFY pathChanged FINAL)
     Q_PROPERTY(QString method MEMBER m_method NOTIFY methodChanged FINAL)
+    Q_PROPERTY(QString token MEMBER m_token NOTIFY tokenChanged FINAL)
     Q_PROPERTY(QVariantMap headers MEMBER m_headers NOTIFY headersChanged FINAL)
     Q_PROPERTY(QVariantMap body MEMBER m_body NOTIFY bodyChanged FINAL)
     Q_PROPERTY(QVariantMap files MEMBER m_files NOTIFY filesChanged FINAL)
@@ -66,6 +67,8 @@ signals:
     // Signal to be emitted once the request completes, no error
     void success(const QVariantMap& response);
 
+    void tokenChanged();
+
 private:
     // Functions
     QByteArray convertJsonValueToByteArray(const QJsonValue &value);
@@ -86,6 +89,7 @@ private:
     QVariantMap m_files;
     QVariantMap m_query;
     bool m_running;
+    QString m_token;
 };
 
 #endif // REQUESTS_H
