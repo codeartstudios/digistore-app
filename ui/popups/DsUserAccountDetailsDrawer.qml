@@ -19,18 +19,9 @@ DsDrawer {
     QtObject {
         id: internal
 
+        property bool canEditPermissions: userData!==null && userData.permissions &&  userData.permissions.can_manage_users===true
         property ListModel fieldsModel: ListModel {}
-    }
-
-    Component.onCompleted: {
-        internal.fieldsModel.clear()
-        internal.fieldsModel.append({ key: "name", label: "Name", type: "label" })
-        internal.fieldsModel.append({ key: "username", label: "Username", type: "label" })
-        internal.fieldsModel.append({ key: "email", label: "Email", type: "label" })
-        internal.fieldsModel.append({ key: "verified", label: "Is Verfied?", type: "switch" })
-        internal.fieldsModel.append({ key: "approved", label: "Is Approved?", type: "switch" })
-        internal.fieldsModel.append({ key: "is_admin", label: "Is Admin?", type: "switch" })
-        internal.fieldsModel.append({ key: "mobile", label: "Mobile", type: "label", fn: function(val) { return val ? `(${val.dial_code})${val.number}` : 'None'}  })
+        property ListModel permissionModel: ListModel {}
     }
 
     contentItem: Item {
@@ -53,6 +44,16 @@ DsDrawer {
                     color: Theme.txtHintColor
                     text: qsTr("User Account")
                     Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsButton {
+                    text: qsTr("Close")
+                    bgColor: Theme.primaryColor
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    onClicked: root.close()
                 }
             }
 
@@ -76,7 +77,17 @@ DsDrawer {
 
                 clip: true
 
-                ScrollBar.vertical: ScrollBar{ }
+                Keys.onUpPressed: scrollBar.decrease()
+                Keys.onDownPressed: scrollBar.increase()
+
+                ScrollBar.vertical: ScrollBar{
+                    id: scrollBar
+                    hoverEnabled: true
+                    active: hovered || pressed
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                }
 
                 Column {
                     width: scrollview.width
@@ -179,70 +190,20 @@ DsDrawer {
                         fontSize: Theme.h3
                         text: qsTr("User Permissions")
                         topPadding: Theme.xsSpacing
-
-                        Layout.fillWidth: true
-                        Layout.leftMargin: Theme.baseSpacing
-                        Layout.rightMargin: Theme.baseSpacing
+                        width: scrollview.width
                     }
 
                     Repeater {
                         id: productslv
                         width: scrollview.width
-                        // Layout.leftMargin: Theme.baseSpacing
-                        // Layout.rightMargin: Theme.baseSpacing
-                        // Layout.bottomMargin: Theme.baseSpacing
-
-                        // clip: true
-                        // spacing: Theme.xsSpacing
-                        model: (userData && userData.permissions) ? userData.permissions : []
-
-                        // ScrollBar.vertical: ScrollBar{ id: psb }
-
-                        delegate: Rectangle {
-                            width: psb.visible ? productslv.width - psb.width : productslv.width
-                            height: pcol.height + Theme.smSpacing
-
-                            Column {
-                                id: pcol
-                                spacing: Theme.xsSpacing/2
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.leftMargin: Theme.xsSpacing
-                                anchors.rightMargin: Theme.xsSpacing
-                                anchors.verticalCenter: parent.verticalCenter
-
-                                DsLabel {
-                                    color: Theme.txtPrimaryColor
-                                    fontSize: Theme.xlFontSize
-                                    text: `${model.unit} ${model.name}`
-                                }
-
-                                RowLayout {
-                                    width: parent.width
-                                    height: Theme.xsBtnHeight
-
-                                    DsLabel {
-                                        color: Theme.txtHintColor
-                                        fontSize: Theme.xsFontSize
-                                        text: `${model.quantity} x KES ${model.selling_price}`
-                                        Layout.fillWidth: true
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-
-                                    DsLabel {
-                                        color: Theme.txtHintColor
-                                        fontSize: Theme.xsFontSize
-                                        text: `KES ${model.quantity * model.selling_price}`
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-                                }
-                            }
-                        }
+                        model: internal.permissionModel
+                        delegate: switchDelegate
                     }
                 }
             }
 
-            Row {
+            RowLayout {
+                spacing: Theme.xsSpacing/2
                 Layout.preferredHeight: Theme.btnHeight
                 Layout.alignment: Qt.AlignRight
                 Layout.leftMargin: Theme.baseSpacing
@@ -250,12 +211,35 @@ DsDrawer {
                 Layout.bottomMargin: Theme.xsSpacing
 
                 DsButton {
-                    text: qsTr("Close")
+                    text: qsTr("Delete Account")
+                    bgColor: Theme.dangerColor
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    // onClicked: root.close()
+                }
+
+                DsButton {
+                    text: qsTr("Reset Password")
                     bgColor: Theme.primaryColor
                     textColor: Theme.baseColor
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
 
-                    onClicked: root.close()
+                    // onClicked: root.close()
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    height: 1
+                }
+
+                DsButton {
+                    text: qsTr("Update User")
+                    bgColor: Theme.successColor
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    // onClicked: root.close()
                 }
             }
         }
@@ -288,25 +272,64 @@ DsDrawer {
                 }
 
                 DsSwitch {
-                    checked: root.userData ? root.userData[model.key] : ""
-                    enabled: false
+                    checked: model.value
+                    enabled: internal.canEditPermissions
                     Layout.alignment: Qt.AlignVCenter
                 }
             }
         }
     }
 
-    function defaultSettings() {
-        var data = {
-            can_add_stock: false,
-            can_remove_stock: false,
-            can_add_products: false,
-            can_update_products: false,
-            can_remove_products: false,
-            can_sell_product: false,
-            can_edit_org: false,
-            can_add_org_users: false,
-            can_edit_org_users: false,
+    function getLabel(lbl) {
+        return lbl.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+    }
+
+    function populateModel(perm) {
+        let keys = Object.keys(perm)
+        keys.forEach((key) => {
+                         var p = {
+                             key,
+                             value: perm[key],
+                             label: getLabel(key)
+                         }
+                         internal.permissionModel.append(p)
+                     })
+    }
+
+    onOpened: {
+        internal.permissionModel.clear()
+
+        if(userData) {
+            if(userData["permissions"]) {
+                var perm = userData["permissions"]
+                populateModel(perm)
+            } else {
+                let perm = {
+                    can_add_stock: false,
+                    can_manage_stock: false,
+                    can_sell_products: false,
+                    can_add_products: false,
+                    can_manage_products: false,
+                    can_add_suppliers: false,
+                    can_manage_suppliers: false,
+                    can_manage_sales: false,
+                    can_manage_inventory: false,
+                    can_manage_org: false,
+                    can_manage_users: false,
+                }
+                populateModel(perm)
+            }
         }
+    }
+
+    Component.onCompleted: {
+        internal.fieldsModel.clear()
+        internal.fieldsModel.append({ key: "name", label: "Name", type: "label" })
+        internal.fieldsModel.append({ key: "username", label: "Username", type: "label" })
+        internal.fieldsModel.append({ key: "email", label: "Email", type: "label" })
+        internal.fieldsModel.append({ key: "verified", label: "Is Verfied?", type: "switch" })
+        internal.fieldsModel.append({ key: "approved", label: "Is Approved?", type: "switch" })
+        internal.fieldsModel.append({ key: "is_admin", label: "Is Admin?", type: "switch" })
+        internal.fieldsModel.append({ key: "mobile", label: "Mobile", type: "label", fn: function(val) { return val ? `(${val.dial_code})${val.number}` : 'None'}  })
     }
 }
