@@ -14,8 +14,6 @@ DsPage {
 
     required property var organization
 
-    // Component.onCompleted: console.log(organization, JSON.stringify(organization))
-
     Item {
         width: 400
         height: col.height + 2*Theme.baseSpacing
@@ -117,7 +115,6 @@ DsPage {
         }
     }
 
-
     function signIn() {
         var identity = emailinput.input.text.trim()
         var password = passwordinput.input.text.trim()
@@ -148,7 +145,6 @@ DsPage {
         loginrequest.query = query;
         loginrequest.body = body;
         var res = loginrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             // console.log("User logged in")
@@ -165,15 +161,11 @@ DsPage {
             dsController.organization = org;
             dsController.workspaceId = org.id;
 
-            console.log("\nToken: ", dsController.token)
-            console.log("User: ", JSON.stringify(dsController.loggedUser))
-            console.log("Org: ", JSON.stringify(dsController.organization))
-
             clearInputs()
             store.userLoggedIn = checkIfLoggedIn()
 
         } else {
-            console.log(JSON.stringify(res))
+            // console.log(JSON.stringify(res))
             // User creation failed
             messageBox.showMessage(
                         qsTr("Login Failed"),
@@ -185,6 +177,12 @@ DsPage {
     }
 
     function clearInputs() {
+    }
 
+    Component.onCompleted: {
+        // TODO remove after done with testing ...
+        emailinput.input.text = "john@doe.com"
+        passwordinput.input.text = "123456789"
+        signIn()
     }
 }

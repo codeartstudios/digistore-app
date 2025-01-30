@@ -122,6 +122,7 @@ DsPage {
     Requests {
         id: emailVerificationRequest
         path: "/api/collections/tellers/request-verification"
+        baseUrl: dsController.baseUrl
         method: "POST"
     }
 
@@ -186,7 +187,7 @@ DsPage {
             name,
             mobile: {
                 dial_code: mobileinput.selectedCountry.dial_code,
-                number: `{mobileno}`
+                number: `${mobileno}`
             }
         }
 

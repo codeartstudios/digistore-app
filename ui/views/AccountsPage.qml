@@ -74,10 +74,16 @@ DsPage {
                 height: 1
             }
 
-            DsDateRangeSelector {
-                id: durationSelector
-                enabled: !getaccountsrequest.running
-                model: ["Today", "This Week", "Last Week", "This Month", "This Year", "Custom"]
+            DsMenu {
+                id: accountsMenu
+                iconType: IconType.pencilCog
+                text: qsTr("Account Options")
+
+                Component.onCompleted: {
+                    menuModel.append({type: "", icon: IconType.usersPlus, label: qsTr("New User")})
+                    menuModel.append({type: "spacer" })
+                    menuModel.append({type: "", icon: IconType.userCog, label: qsTr("Account Settings")})
+                }
             }
         }
 
@@ -218,6 +224,7 @@ DsPage {
             width: 200
             flex: 1
             value: "email"
+            formatBy: (email) => email ? email : "<redacted>"
         }
 
         ListElement {
@@ -271,7 +278,7 @@ DsPage {
         getaccountsrequest.query = query;
         var res = getaccountsrequest.send();
 
-        console.log(res, JSON.stringify(res))
+        // console.log(res, JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -283,7 +290,7 @@ DsPage {
             datamodel.clear()
 
             for(var i=0; i<items.length; i++) {
-                console.log("- ", JSON.stringify(items[i]))
+                // console.log("- ", JSON.stringify(items[i]))
                 datamodel.append(items[i])
             }
         }

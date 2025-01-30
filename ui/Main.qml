@@ -1,4 +1,6 @@
 import QtQuick
+// import QtQuick.Controls.Basic
+// import Qt.labs.qmlmodels
 import app.digisto.modules
 
 import "controls"

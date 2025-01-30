@@ -60,7 +60,7 @@ DsController::DsController(QObject *parent)
     // Get/User Organization JSON
     auto org = getValue("organization", "json");
     m_organization = org.isNull() ? QVariantMap() : org.toMap();
-    qDebug() << m_organization;
+    // qDebug() << m_organization;
 
     // -----------------------------
     // Late Connections            |

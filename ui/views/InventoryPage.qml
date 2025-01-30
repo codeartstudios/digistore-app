@@ -324,10 +324,11 @@ DsPage {
     }
 
     Component.onCompleted: {
-        toolsMenu.model.append({ label: "Add New Product",      icon: IconType.cubePlus })
-        toolsMenu.model.append({ label: "Add New Supplier",     icon: IconType.rowInsertTop })
-        toolsMenu.model.append({ label: "View All Suppliers",   icon: IconType.layoutList })
-        toolsMenu.model.append({ label: "Supply History",       icon: IconType.listTree })
+        toolsMenu.menuModel.append({ label: "Add New Product",      icon: IconType.cubePlus })
+        toolsMenu.menuModel.append({ label: "Add New Supplier",    icon: IconType.cubePlus })
+        toolsMenu.menuModel.append({ type: "spacer" })
+        toolsMenu.menuModel.append({ label: "View All Suppliers",   icon: IconType.layoutList })
+        toolsMenu.menuModel.append({ label: "Supply History",       icon: IconType.listTree })
 
         getProducts()
     }

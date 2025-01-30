@@ -49,7 +49,7 @@ public:
     // Clear all parameters except baseUrl
     Q_INVOKABLE void clear();
 
-    void logRequest(const QString& method, const QString& endpoint, const int& statusCode=-1);
+    void logRequest(const QString& method, const QString& endpoint, const int& statusCode=-1, const QString& msg="");
 
 signals:
     void baseUrlChanged();      // Server base URL

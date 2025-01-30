@@ -39,6 +39,8 @@ QVariantMap Requests::send()
         d["message"] = QString("Request method is not defined");
         emit error(d);
 
+        logRequest("?", m_path, 0, d["message"].toString());
+
         return d;
     }
 
@@ -63,9 +65,6 @@ QVariantMap Requests::send()
     // Create request object
     QNetworkRequest request;
     request.setUrl(url);
-    qDebug() << "\n["
-             << m_method
-             << "] '" << request.url().toString() << "'";
 
     // Add user headers to the request
     if(!m_headers.isEmpty()) {
@@ -116,6 +115,7 @@ QVariantMap Requests::send()
                 m_running=false;
                 emit runningChanged();
                 emit error(d);
+                logRequest(m_method, request.url().toString(), 0, d["message"].toString());
                 return d;
             }
 
@@ -130,6 +130,7 @@ QVariantMap Requests::send()
                 m_running=false;
                 emit runningChanged();
                 emit error(d);
+                logRequest(m_method, request.url().toString(), 0, d["message"].toString());
                 return d;
             }
 
@@ -195,6 +196,7 @@ QVariantMap Requests::send()
             m_running=false;
             emit runningChanged();
             emit error(d);
+            logRequest(m_method, request.url().toString(), 0, d["message"].toString());
             return d;
         }
     }
@@ -217,9 +219,16 @@ QVariantMap Requests::send()
     responseObject.insert("data", resJsonDoc.object());
 
     if( statusCode >= 400 || statusCode < 200 ) {
-        emit error(responseObject.toVariantMap());
+        auto err = responseObject.toVariantMap();
+        emit error(err);
+        qDebug() << responseObject;
+        QString msg = err["message"].toString() != "" ? err["message"].toString() :
+                          err["error"].toString() != "" ? err["error"].toString() :
+                          "Something went wrong!";
+        logRequest(m_method, request.url().toString(), statusCode, msg);
     } else {
         emit success(responseObject.toVariantMap());
+        logRequest(m_method, request.url().toString(), statusCode);
     }
 
     m_running=false;
@@ -251,12 +260,26 @@ void Requests::clear()
     emit queryChanged();
 }
 
-void Requests::logRequest(const QString &method, const QString &endpoint, const int &statusCode)
+void Requests::logRequest(const QString &method, const QString &endpoint, const int &statusCode, const QString& msg)
 {
-    qDebug() << "\n["
-             << m_method
-             << statusCode
-             << "] '" << endpoint << "'";
+    auto pad = [&](QString val, int width=-1) -> QString {
+        if(width == -1 || val.size() >= width) return val;
+
+        for(int i=0; i<(width - val.size()); i++) {
+            val += " ";
+        }
+
+        return val;
+    };
+
+    qDebug() << "\n" << QString("/%1 %2 %3")
+                    .arg(pad(method, 6),
+                         pad(QString::number(statusCode), 4),
+                         endpoint);
+
+    if(msg!="")
+        qDebug() << "            > " << msg;
+    qDebug() << "\n";
 }
 
 QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {
