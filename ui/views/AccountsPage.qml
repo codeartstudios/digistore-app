@@ -233,7 +233,8 @@ DsPage {
             width: 200
             flex: 1
             value: "mobile"
-            formatBy: (data) => data ? `(${data.dial_code})${data.number}` : "N/A"
+            formatBy: (data) => data ?
+                          `(${data.dial_code})${data.number}` : "N/A"
         }
 
         ListElement {
@@ -269,16 +270,14 @@ DsPage {
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
             filter: `organization='${dsController.organization.id}'`
-                    + (txt==='' ? '' : ` && (name ~ '${txt}' || email ~ '${txt}' || username ~ '${txt}')`)
+                    + (txt==='' ? '' : ` && (name ~ '${txt}' || email ~ '${txt}'
+                       || username ~ '${txt}' || mobile.dial_code ~ '${txt}'
+                       || mobile.number ~ '${txt}')`)
         }
-
-        // console.log(JSON.stringify(query))
 
         getaccountsrequest.clear()
         getaccountsrequest.query = query;
         var res = getaccountsrequest.send();
-
-        // console.log(res, JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -290,7 +289,6 @@ DsPage {
             datamodel.clear()
 
             for(var i=0; i<items.length; i++) {
-                // console.log("- ", JSON.stringify(items[i]))
                 datamodel.append(items[i])
             }
         }
