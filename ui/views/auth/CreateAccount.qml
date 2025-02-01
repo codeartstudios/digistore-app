@@ -115,15 +115,16 @@ DsPage {
 
     Requests {
         id: createAccountRequest
-        path: "/api/collections/tellers/records"
         method: "POST"
+        baseUrl: dsController.baseUrl
+        path: "/api/collections/tellers/records"
     }
 
     Requests {
         id: emailVerificationRequest
+        method: "POST"
         path: "/api/collections/tellers/request-verification"
         baseUrl: dsController.baseUrl
-        method: "POST"
     }
 
     DsMessageBox {
@@ -180,11 +181,26 @@ DsPage {
             return;
         }
 
+        var permissions = {
+            can_add_stock: false,
+            can_manage_stock: false,
+            can_sell_products: false,
+            can_add_products: false,
+            can_manage_products: false,
+            can_add_suppliers: false,
+            can_manage_suppliers: false,
+            can_manage_sales: false,
+            can_manage_inventory: false,
+            can_manage_org: false,
+            can_manage_users: false,
+        }
+
         var body = {
             email,
             password,
             passwordConfirm,
             name,
+            permissions,
             mobile: {
                 dial_code: mobileinput.selectedCountry.dial_code,
                 number: `${mobileno}`
@@ -198,7 +214,7 @@ DsPage {
         createAccountRequest.clear()
         createAccountRequest.body = body;
         var res = createAccountRequest.send();
-        // console.log(JSON.stringify(res))
+        console.log(JSON.stringify(res))
 
         if(res.status===200) {
             // clearInputs()

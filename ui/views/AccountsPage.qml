@@ -253,6 +253,9 @@ DsPage {
 
         // Reset table current index when the drawer closes
         onClosed: accountstable.currentIndex = -1
+
+        // When Account is deleted or updated, reload the info ...
+        onReloadTellers: getTellers()
     }
 
     Requests {
