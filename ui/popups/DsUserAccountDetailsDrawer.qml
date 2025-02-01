@@ -14,20 +14,20 @@ DsDrawer {
     // Hold selected user data
     property var userData: null
 
-    signal reloadTellers()
-
-    onClosed: {
-        internal.requestType = ""
-        userData = null
-    }
+    signal userDeleted()
+    signal userUpdated()
 
     QtObject {
         id: internal
 
+        property var accountPermissions: null
+        property var accountSwitches: ({})
+        property bool loaded: false
         property string requestType: ""
+        property bool isAdminAccount: userData!==null && userData.is_admin
         property bool isMyAccount: userData!==null && userData.id===dsController.loggedUser.id
-        property bool isAdmin: userData!==null &&  userData.is_admin===true
-        property bool canEditPermissions: userData!==null && userData.permissions &&  userData.permissions.can_manage_users===true
+        property bool loggedAsAdmin: dsController.loggedUser!==null &&  dsController.loggedUser.is_admin===true
+        property bool canEditPermissions: dsController.loggedUser!==null && dsController.loggedUser.permissions &&  dsController.loggedUser.permissions.can_manage_users===true
         property ListModel fieldsModel: ListModel {}
         property ListModel permissionModel: ListModel {}
     }
@@ -65,6 +65,24 @@ DsDrawer {
                 }
             }
 
+            Rectangle {
+                width: scrollview.width
+                color: Theme.dangerAltColor
+                visible: internal.isMyAccount
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: visible ? Theme.btnHeight : 0
+                Layout.leftMargin: Theme.baseSpacing
+                Layout.rightMargin: Theme.baseSpacing
+
+                DsLabel {
+                    color: Theme.dangerColor
+                    fontSize: Theme.lgFontSize
+                    text: qsTr("This is your account, you can't edit it.")
+                    anchors.centerIn: parent
+                }
+            }
+
             DsLabel {
                 color: Theme.txtPrimaryColor
                 fontSize: Theme.h3
@@ -81,6 +99,7 @@ DsDrawer {
                 Layout.fillWidth: true
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
+                Layout.bottomMargin: bottomRowLayout.visible ? 0 : Theme.baseSpacing
                 Layout.fillHeight: true
 
                 clip: true
@@ -185,10 +204,14 @@ DsDrawer {
                                         DsSwitch {
                                             bgColor: Theme.bodyColor
                                             checked: root.userData ? root.userData[model.key] : ""
-                                            enabled: !internal.isMyAccount &&
+                                            enabled: !internal.isMyAccount && model.key!=="verified" &&
                                                      ((root.userData && root.userData.is_admin) ||
                                                       internal.canEditPermissions)
                                             Layout.alignment: Qt.AlignVCenter
+
+                                            onCheckedChanged: if(internal.loaded && root.userData)
+                                                                  internal.accountSwitches[model.key] = checked
+
                                         }
                                     }
                                 }
@@ -196,24 +219,63 @@ DsDrawer {
                         }
                     }
 
-                    DsLabel {
-                        color: Theme.txtPrimaryColor
-                        fontSize: Theme.h3
-                        text: qsTr("User Permissions")
-                        topPadding: Theme.xsSpacing
+                    Column {
                         width: scrollview.width
-                    }
+                        spacing: Theme.xsSpacing
+                        visible: !internal.isAdminAccount
 
-                    Repeater {
-                        id: productslv
-                        width: scrollview.width
-                        model: internal.permissionModel
-                        delegate: switchDelegate
+                        DsLabel {
+                            color: Theme.txtPrimaryColor
+                            fontSize: Theme.h3
+                            text: qsTr("User Permissions")
+                            topPadding: Theme.xsSpacing
+                            width: scrollview.width
+                        }
+
+                        Repeater {
+                            id: productslv
+                            width: scrollview.width
+                            model: internal.permissionModel
+                            delegate: Rectangle {
+                                width: scrollview.width
+                                height: Theme.btnHeight
+
+                                RowLayout {
+                                    width: parent.width
+                                    height: Theme.btnHeight
+                                    spacing: Theme.xsSpacing/2
+
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.leftMargin: Theme.xsSpacing
+                                    anchors.rightMargin: Theme.xsSpacing
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    DsLabel {
+                                        color: Theme.txtPrimaryColor
+                                        fontSize: Theme.xlFontSize
+                                        text: model.label
+                                        Layout.fillWidth: true
+                                        Layout.alignment: Qt.AlignVCenter
+                                    }
+
+                                    DsSwitch {
+                                        checked: model.value
+                                        enabled: internal.canEditPermissions && !internal.isMyAccount
+                                        Layout.alignment: Qt.AlignVCenter
+
+                                        onCheckedChanged: if(internal.loaded)
+                                                              internal.accountPermissions[model.key] = checked
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             RowLayout {
+                id: bottomRowLayout
                 visible: !internal.isMyAccount
                 spacing: Theme.xsSpacing/2
                 Layout.preferredHeight: visible ? Theme.btnHeight : 0
@@ -236,6 +298,7 @@ DsDrawer {
                 DsButton {
                     busy: request.running && internal.requestType==="resetPassword"
                     enabled: !request.running
+                    visible: false // !internal.isMyAccount && (internal.loggedAsAdmin || internal.canEditPermissions)
                     text: qsTr("Reset Password")
                     bgColor: Theme.primaryColor
                     textColor: Theme.baseColor
@@ -252,47 +315,13 @@ DsDrawer {
                 DsButton {
                     busy: request.running && internal.requestType==="updateUser"
                     enabled: !request.running
+                    visible: !internal.isMyAccount && (internal.loggedAsAdmin || internal.canEditPermissions)
                     text: qsTr("Update User")
                     bgColor: Theme.successColor
                     textColor: Theme.baseColor
                     Layout.alignment: Qt.AlignVCenter
 
                     onClicked: updateUser()
-                }
-            }
-        }
-    }
-
-    Component {
-        id: switchDelegate
-
-        Rectangle {
-            width: scrollview.width
-            height: Theme.btnHeight
-
-            RowLayout {
-                width: parent.width
-                height: Theme.btnHeight
-                spacing: Theme.xsSpacing/2
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: Theme.xsSpacing
-                anchors.rightMargin: Theme.xsSpacing
-                anchors.verticalCenter: parent.verticalCenter
-
-                DsLabel {
-                    color: Theme.txtPrimaryColor
-                    fontSize: Theme.xlFontSize
-                    text: model.label
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                DsSwitch {
-                    checked: model.value
-                    enabled: internal.canEditPermissions && !internal.isMyAccount
-                    Layout.alignment: Qt.AlignVCenter
                 }
             }
         }
@@ -338,6 +367,7 @@ DsDrawer {
         if(userData) {
             if(userData["permissions"]) {
                 var perm = userData["permissions"]
+                internal.accountPermissions = perm
                 populateModel(perm)
             } else {
                 let perm = {
@@ -353,9 +383,19 @@ DsDrawer {
                     can_manage_org: false,
                     can_manage_users: false,
                 }
+                internal.accountPermissions = perm
                 populateModel(perm)
             }
         }
+
+        internal.loaded = true
+        internal.accountSwitches = {}
+    }
+
+    onClosed: {
+        internal.requestType    = ""
+        root.userData           = null
+        internal.loaded         = false
     }
 
     function deleteAccount() {
@@ -374,12 +414,12 @@ DsDrawer {
         if(res.status===204) {
             // Show delete message and close drawer ...
             root.close()
-            console.log("Account Deleted ...")
+            // console.log("Account Deleted ...")
             showMessage(
                         qsTr("Account Delete Success!"),
                         qsTr("Selected Account Deleted Successfully!")
                         )
-            root.reloadTellers()
+            root.userDeleted()
         }
 
         else if(res.status === 0) {
@@ -415,5 +455,55 @@ DsDrawer {
     }
 
     function updateUser() {
+        // Set request type
+        internal.requestType = "updateUser"
+
+        // User ID
+        var id = root.userData.id;
+
+        var body = {
+            name: root.userData.name,
+            mobile: root.userData.mobile,
+            permissions: internal.accountPermissions
+        }
+
+        var accSwitchKeys = Object.keys(internal.accountSwitches)
+        accSwitchKeys.forEach((key) => {
+                                  body[key] = internal.accountSwitches[key]
+                              })
+
+        // Reset Request Data
+        request.clear()
+        request.body = body
+        request.path = `/api/collections/tellers/records/${id}`
+        request.method = "PATCH"
+        var res = request.send();
+
+        if(res.status===200) {
+            // root.close()
+            root.userUpdated()
+            // console.log('> ', JSON.stringify(res))
+        }
+
+        else if(res.status === 0) {
+            showMessage(
+                        qsTr("Connection Refused"),
+                        qsTr("Could not connect to the server, something is'nt right!")
+                        )
+        }
+
+        else if(res.status === 403) {
+            showMessage(
+                        qsTr("Authentication Error"),
+                        qsTr("You don't seem to have access rights to perform this action.")
+                        )
+        }
+
+        else {
+            showMessage(
+                        qsTr("Error Occured"),
+                        res.message ? res.message : qsTr("Yuck! Something not right here!")
+                        )
+        }
     }
 }

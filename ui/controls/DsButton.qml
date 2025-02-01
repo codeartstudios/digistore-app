@@ -9,6 +9,7 @@ Button {
     implicitWidth: row.width + 2*Theme.smSpacing
     height: implicitHeight
     width: implicitWidth
+    opacity: enabled ? 1 : 0.7
 
     // Busy indicator within the button
     property bool busy: false

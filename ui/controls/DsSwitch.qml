@@ -8,6 +8,7 @@ Rectangle {
     width: height * 2
     radius: height/2
     color: Theme.baseAlt1Color
+    opacity: enabled ? 1 : 0.7
 
     property bool checked: false
     property alias bgColor: root.color

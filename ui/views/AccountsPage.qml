@@ -255,7 +255,11 @@ DsPage {
         onClosed: accountstable.currentIndex = -1
 
         // When Account is deleted or updated, reload the info ...
-        onReloadTellers: getTellers()
+        onUserDeleted: getTellers()
+        onUserUpdated: {
+            accountstable.currentIndex = -1
+            getTellers()
+        }
     }
 
     Requests {
