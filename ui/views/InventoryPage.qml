@@ -255,6 +255,8 @@ DsPage {
 
     Requests {
         id: getproductrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/product/records"
     }
 
@@ -305,7 +307,6 @@ DsPage {
         var obj = {
             id: model.id,
             collectionId: model.collectionId,
-            // collectionName: model.collectionName,
             created: model.created,
             name: model.name,
             unit: model.unit,

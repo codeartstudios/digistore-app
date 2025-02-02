@@ -24,6 +24,9 @@ DsDrawer {
     signal productDeleted
 
     onOpened: {
+        // Reset input fields to defaults
+        clearInputs()
+
         // Only if the model is valid
         if(!root.isEditing && dataModel) {
             internal.barcode.text   = dataModel['barcode']
@@ -42,7 +45,14 @@ DsDrawer {
             }
             internal.tags = tags;
         }
+
+        // Force Active focus to the barcode input
+        if(root.isEditing) {
+            barcodeinput.input.forceActiveFocus()
+        }
     }
+
+    onClosed: resetInputs()
 
     QtObject {
         id: internal
@@ -100,15 +110,45 @@ DsDrawer {
                         height: 1
                     }
 
-                    DsButton {
-                        text: qsTr("Edit Product")
-                        iconType: IconType.pencil
-                        textColor: Theme.txtPrimaryColor
-                        radius: height/2
-                        bgColor: Theme.baseAlt1Color
-                        visible: !internal.toEdit && root.dataModel
+                    // Product Action Options
+                    DsMenu {
+                        iconType: IconType.pencilCog
+                        text: qsTr("Options")
+                        visible: root.dataModel
 
-                        onClicked: root.isEditing=true
+                        Component.onCompleted: {
+                            menuModel.clear()
+
+                            menuModel.append({
+                                                 label: qsTr("Edit Product"),
+                                                 icon: IconType.databaseEdit
+                                             })
+
+                            menuModel.append({
+                                                 type: "spacer"
+                                             })
+
+                            menuModel.append({
+                                                 label: qsTr("Delete Product"),
+                                                 icon: IconType.databaseX
+                                             })
+                        }
+
+                        onCurrentMenuChanged: (index) => {
+                                                  switch(index) {
+                                                      case 0: {
+                                                          root.isEditing=true
+                                                          break
+                                                      }
+
+                                                      // case 1: is a separator
+
+                                                      case 2: {
+                                                          deleteItem()
+                                                          break
+                                                      }
+                                                  }
+                                              }
                     }
 
                     DsIconButton {
@@ -271,17 +311,6 @@ DsDrawer {
 
             property bool isVisible: (root.isEditing && !root.dataModel) || (internal.toEdit && root.dataModel)
 
-            // Delete item button, visible when updating item
-            DsButton {
-                busy: deleteproductrequest.running
-                text: qsTr("Delete Item")
-                iconType: IconType.x
-                visible: internal.toEdit && root.dataModel
-                bgColor: Theme.dangerAltColor
-                textColor: Theme.dangerColor
-                onClicked: dialog.open()
-            }
-
             Item {
                 Layout.fillWidth: true
                 height: 1
@@ -338,18 +367,24 @@ DsDrawer {
 
     Requests {
         id: addproductrequest
-        path: "/api/collections/product/records"
         method: "POST"
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+        path: "/api/collections/product/records"
     }
 
     Requests {
         id: updateproductrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         method: "PATCH"
     }
 
     Requests {
         id: deleteproductrequest
         method: "DELETE"
+        token: dsController.token
+        baseUrl: dsController.baseUrl
     }
 
     MessageDialog {
@@ -428,12 +463,16 @@ DsDrawer {
         deleteproductrequest.clear()
         deleteproductrequest.path = `/api/collections/product/records/${dataModel.id}`
         var res = deleteproductrequest.send();
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===204) {
+            var item = `"${dataModel.unit} ${dataModel.name}" `
+
             // Emit product delete success
             root.productDeleted();
             root.close()
+            showMessage(qsTr("Product Deleted"),
+                        item + qsTr("deleted successfully!"))
         } else {
             showMessage(qsTr("Delete Product Failed"),
                         qsTr("We encountered an error: ") + `[${res.status}] ${res.data.message}`)
@@ -516,8 +555,8 @@ DsDrawer {
     }
 
     function getOnlineUrl(file) {
-    // console.log("FILE: ", file)
-        if(file==="") return ""
+        // console.log("FILE: ", file)
+        if(file==="" || !root.dataModel) return ""
         return `${addproductrequest.baseUrl}/api/files/${root.dataModel.collectionId}/${root.dataModel.id}/${file}`
     }
 
@@ -537,6 +576,10 @@ DsDrawer {
         selectthumbnaildialog.file=""
         categoryinput.dataModel = []
         thumbnailinput.clear()
+    }
+
+    function resetInputs() {
+        clearInputs()
 
         // Reset model and flags
         root.isEditing = true
