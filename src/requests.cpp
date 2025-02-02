@@ -279,7 +279,6 @@ void Requests::logRequest(const QString &method, const QString &endpoint, const 
 
     if(msg!="")
         qDebug() << "            > " << msg;
-    qDebug() << "\n";
 }
 
 QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {

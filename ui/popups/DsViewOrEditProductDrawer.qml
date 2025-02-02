@@ -17,13 +17,15 @@ DsDrawer {
     // Flag to hold when we are editing the data
     property bool isEditing: false
 
-
     // Product add signals
     signal productAdded
     signal productUpdated
     signal productDeleted
 
     onOpened: {
+        // Ensure scrollview scrolls back to the top
+        sv.scrollToTop()
+
         // Reset input fields to defaults
         clearInputs()
 
@@ -74,6 +76,14 @@ DsDrawer {
         property alias stock: stockinput.input
         property alias thumbnail: thumbnailinput.file
         property alias tags: categoryinput.dataModel
+
+        // Permissions
+        property bool canAddProducts: dsController.loggedUser.is_admin ||
+                                       dsController.loggedUser.permissions.can_add_products ||
+                                      dsController.loggedUser.permissions.can_manage_products
+        property bool canEditProducts: dsController.loggedUser.is_admin ||
+                                    dsController.loggedUser.permissions.can_manage_products
+
     }
 
     contentItem: Item {
@@ -86,6 +96,10 @@ DsDrawer {
             anchors.right: parent.right
             anchors.bottom: btnsitem.top
             anchors.bottomMargin: Theme.xsSpacing
+
+            function scrollToTop() {
+                sv.contentItem.contentY = 0
+            }
 
             Column {
                 id: col
@@ -144,7 +158,7 @@ DsDrawer {
                                                       // case 1: is a separator
 
                                                       case 2: {
-                                                          deleteItem()
+                                                          dialog.open()
                                                           break
                                                       }
                                                   }
@@ -154,7 +168,7 @@ DsDrawer {
                     DsIconButton {
                         iconType: IconType.x
                         textColor: Theme.dangerColor
-                        bgColor: "transparent"
+                        bgColor: Theme.dangerAltColor
                         bgHover: withOpacity(Theme.dangerAltColor, 0.8)
                         bgDown: withOpacity(Theme.dangerAltColor, 0.6)
                         radius: height/2
@@ -321,8 +335,10 @@ DsDrawer {
                 busy: updateproductrequest.running
                 text: qsTr("Update Item")
                 iconType: IconType.plus
-                onClicked: updateItem()
+                enabled: internal.canEditProducts
                 visible: internal.toEdit && root.dataModel
+
+                onClicked: updateItem()
             }
 
             // Add item button, visible when only creating item
@@ -330,8 +346,10 @@ DsDrawer {
                 busy: addproductrequest.running
                 text: qsTr("Add Item")
                 iconType: IconType.plus
-                onClicked: addItem()
+                enabled: internal.canAddProducts
                 visible: root.isEditing && !root.dataModel
+
+                onClicked: addItem()
             }
         }
     }
@@ -396,6 +414,13 @@ DsDrawer {
     }
 
     function addItem() {
+        // Check for permissions before proceeding ...
+        if(!internal.canAddProducts) {
+            showMessage(qsTr("Yuck!"),
+                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            return;
+        }
+
         var barcode     = barcodeinput.input.text.trim()
         var units       = unitinput.input.text.trim()
         var name        = nameinput.input.text.trim()
@@ -454,6 +479,13 @@ DsDrawer {
     }
 
     function deleteItem() {
+        // Check for permissions before proceeding ...
+        if(!internal.canEditProducts) {
+            showMessage(qsTr("Yuck!"),
+                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            return;
+        }
+
         if(!dataModel.id) {
             showMessage(qsTr("Delete Product"),
                         qsTr("Unique product id seems to be missing, something is not right here!"))
@@ -480,6 +512,13 @@ DsDrawer {
     }
 
     function updateItem() {
+        // Check for permissions before proceeding ...
+        if(!internal.canEditProducts) {
+            showMessage(qsTr("Yuck!"),
+                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            return;
+        }
+
         var barcode     = barcodeinput.input.text.trim()
         var units       = unitinput.input.text.trim()
         var name        = nameinput.input.text.trim()
