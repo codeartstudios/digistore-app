@@ -147,9 +147,7 @@ DsPage {
         var res = loginrequest.send();
 
         if(res.status===200) {
-            // console.log("User logged in")
             // Confirm email
-            console.log(JSON.stringify(res))
             var token = res.data.token
             var user = res.data.record
             var org = res.data.record.expand.organization
@@ -164,6 +162,8 @@ DsPage {
             clearInputs()
             store.userLoggedIn = checkIfLoggedIn()
 
+            // Show toast message
+            toast.success(qsTr("Login Success!"))
         } else {
             // console.log(JSON.stringify(res))
             // User creation failed

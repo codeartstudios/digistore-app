@@ -23,6 +23,9 @@ Popup {
     property bool sortAsc: true
 
     property ListModel datamodel: ListModel{}
+    property real xOffset: mapToGlobal(0,0).x
+
+    onXOffsetChanged: console.log("> ", xOffset)
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -207,16 +210,16 @@ Popup {
         ListElement {
             title: qsTr("Supplier")
             sortable: true
-            width: 100
+            width: 200
             flex: 2
-            value: "expand.supplier.name"
+            value: "expand.suppliers.name"
         }
 
         ListElement {
             title: qsTr("Amount")
             sortable: true
-            width: 300
-            flex: 0
+            width: 150
+            flex: 1
             value: "amount"
             formatBy: (amount) => `KES. ${amount}`
         }
@@ -224,7 +227,7 @@ Popup {
         ListElement {
             title: qsTr("Date Added")
             sortable: true
-            width: 150
+            width: 200
             flex: 2
             value: "created"
             formatBy: (dt) => Qt.formatDateTime(new Date(dt), 'ddd MMM dd, yyyy hh:mm ap')
@@ -243,18 +246,18 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.workspaceId}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || supplier ~ '${txt}')`),
-            expand: "supplier",
-            fields: "*,expand.supplier.name"
+            filter: `organization='${dsController.workspaceId}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || suppliers ~ '${txt}')`),
+            expand: "suppliers",
+            fields: "*,expand.suppliers.name"
         }
 
         getsupplysrequest.clear()
         getsupplysrequest.query = query;
         var res = getsupplysrequest.send();
-        // console.log(JSON.stringify(res))
+
+        root.datamodel.clear()
 
         if(res.status===200) {
-            // console.log("200")
             var data = res.data;
             pageNo=data.page
             totalPages=data.totalPages
@@ -269,11 +272,13 @@ Popup {
         }
 
         else if(res.status===403) {
-            showMessage(qsTr("Supply Fetch Error!"), qsTr("Only admins can perform this task!"))
+            showMessage(qsTr("Supply Fetch Error!"),
+                        qsTr("Only admins can perform this task!"))
         }
 
         else {
-            showMessage(qsTr("Supply Fetch Error!"), `${res.status.toString()} - ${res.data.message}`)
+            showMessage(qsTr("Supply Fetch Error!"),
+                        `${res.status.toString()} - ${res.data.message}`)
         }
     }
 
