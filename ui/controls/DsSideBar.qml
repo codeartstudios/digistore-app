@@ -87,7 +87,7 @@ Item {
                             label: "inventory",
                             tooltip: "Org. Inventory",
                             isBusy: false,
-                            iconType: IconType.stack2
+                            iconType: IconType.database
                         })
 
         sideMenu.append({

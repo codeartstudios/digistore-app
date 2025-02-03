@@ -16,7 +16,17 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    onOpened: clearInputs()
+    QtObject {
+        id: internal
+        property bool canAddSuppliers: dsController.loggedUser.is_admin ||
+                                       dsController.loggedUser.permissions.can_add_suppliers ||
+                                       dsController.loggedUser.permissions.can_manage_suppliers
+    }
+
+    onOpened: {
+        clearInputs()
+        nameinput.input.forceActiveFocus()
+    }
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -90,7 +100,7 @@ Popup {
                             width: (parent.width-parent.spacing)/2
                         }
 
-                        DsInputWithLabel {
+                        DsInputMobileNumber {
                             id: mobileinput
                             label: qsTr("Mobile")
                             input.placeholderText: qsTr("i.e. 07xx xxx xxx")
@@ -113,9 +123,10 @@ Popup {
                     anchors.right: parent.right
 
                     DsButton {
+                        enabled: internal.canAddSuppliers
                         busy: addproductrequest.running
-                        text: qsTr("Add")
-                        iconType: IconType.plus
+                        text: qsTr("Submit")
+                        iconType: IconType.playlistAdd
                         onClicked: addSupplier()
                     }
                 }
@@ -126,13 +137,22 @@ Popup {
     Requests {
         id: addproductrequest
         path: "/api/collections/suppliers/records"
+        baseUrl: dsController.baseUrl
+        token: dsController.token
         method: "POST"
     }
 
     function addSupplier() {
+        // Check for permissions before proceeding ...
+        if(!internal.canAddSuppliers) {
+            showMessage(qsTr("Yuck!"),
+                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            return;
+        }
+
         var name = nameinput.input.text.trim()
         var email = emailinput.input.text.trim()
-        var mobile = mobileinput.input.text.trim()
+        var mobile = null
 
         if(name.length <= 2) {
             showMessage(qsTr("Supplier Error!"), qsTr("Supplier name is required, must be more than 4 characters long!"))
@@ -140,21 +160,49 @@ Popup {
         }
 
         // TODO parse correct mobile number & email
+        if(!mobileinput.selectedCountry && mobileinput.text.trim() !== "") {
+
+            showMessage(qsTr("Supplier Error!"),
+                        qsTr("Select country code for the mobile number."))
+            return;
+        }
+
+        if(mobileinput.selectedCountry && parseInt(mobileinput.input.text.trim()) < 10000000) {
+            showMessage(qsTr("Supplier Error!"),
+                        qsTr("Mobile number is not valid!"))
+            return;
+        }
+
+        if(mobileinput.selectedCountry && parseInt(mobileinput.input.text.trim()) >= 10000000) {
+            console.log("Yaay!")
+            mobile = {
+                dial_code: mobileinput.selectedCountry.dial_code,
+                number: parseInt(mobileinput.input.text.trim())
+            }
+        }
+
+        if(email !== "" && !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            showMessage(qsTr("Supplier Error!"),
+                        qsTr("The format of the email provided is not right."))
+            return;
+        }
 
         var body = {
             name,
             email,
-            mobile,
             organization: dsController.workspaceId
         }
+
+        if(mobile) body["mobile"] = mobile
 
         addproductrequest.clear()
         addproductrequest.body = body
         var res = addproductrequest.send();
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             root.close()
+            // TODO add message toast ...
         } else {
             showMessage(qsTr("Supplier Error!"), qsTr("Error creating new supplier, error ")+res.status.toString())
         }
@@ -164,5 +212,6 @@ Popup {
         nameinput.input.text=""
         emailinput.input.text=""
         mobileinput.input.text=""
+        mobileinput.clear()
     }
 }

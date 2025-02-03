@@ -26,6 +26,16 @@ Popup {
 
     property ListModel datamodel: ListModel{}
 
+    QtObject {
+        id: internal
+        property bool canAddSuppliers: dsController.loggedUser.is_admin ||
+                                       dsController.loggedUser.permissions.can_add_suppliers ||
+                                       dsController.loggedUser.permissions.can_manage_suppliers
+
+        property bool canViewSuppliers: dsController.loggedUser.is_admin ||
+                                        dsController.loggedUser.permissions.can_manage_suppliers
+    }
+
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -85,7 +95,8 @@ Popup {
                 }
 
                 DsButton {
-                    iconType: IconType.tablePlus
+                    enabled: internal.canAddSuppliers
+                    iconType: IconType.playlistAdd
                     text: qsTr("New Supplier")
                     onClicked: newsupplierpopup.open()
                 }
@@ -230,10 +241,19 @@ Popup {
 
     Requests {
         id: getsuppliersrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/suppliers/records"
     }
 
     function getSuppliers(txt='') {
+        // Check for permissions before proceeding ...
+        if(!internal.canViewSuppliers) {
+            showMessage(qsTr("Yuck!"),
+                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            return;
+        }
+
         var query = {
             page: pageNo,
             perPage: itemsPerPage,
@@ -258,6 +278,11 @@ Popup {
             for(var i=0; i<items.length; i++) {
                 datamodel.append(items[i])
             }
+        }
+
+        else if(res.status >= 400 || res.status < 200) {
+            showMessage(qsTr("Supplier Error!"),
+                        res.data.message)
         }
 
         else {

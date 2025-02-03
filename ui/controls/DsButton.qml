@@ -14,7 +14,7 @@ Button {
     // Busy indicator within the button
     property bool busy: false
     property real fontSize: Theme.baseFontSize
-    property real radius: bg.radius
+    property alias radius: bg.radius
 
     // Palette colors (text and background)
     property string textColor: Theme.baseColor

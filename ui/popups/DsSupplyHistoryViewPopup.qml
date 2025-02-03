@@ -233,6 +233,8 @@ Popup {
 
     Requests {
         id: getsupplysrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/supply/records"
     }
 
@@ -252,7 +254,7 @@ Popup {
         // console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            console.log("200")
+            // console.log("200")
             var data = res.data;
             pageNo=data.page
             totalPages=data.totalPages

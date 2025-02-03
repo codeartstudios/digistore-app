@@ -188,6 +188,11 @@ DsInputWithLabel {
         }
     }
 
+    function clear() {
+        selectedCountry = null
+        input.clear()
+    }
+
     property string displayField: "dial_code"
     property var selectedCountry: null
     property ListModel searchModel: ListModel{}

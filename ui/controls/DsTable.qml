@@ -268,7 +268,7 @@ Rectangle {
                                 property var val: value.split('.').reduce((acc, key) => acc && acc[key], tabledelegate.rowModel)
                                 elide: DsLabel.ElideRight
                                 fontSize: Theme.smFontSize
-                                text: val==="" ? "N/A" : getDisplayString(val)
+                                text: !val || val==="" ? "N/A" : getDisplayString(val)
                                 verticalAlignment: DsLabel.AlignVCenter
                                 leftPadding: Theme.smSpacing
                                 rightPadding: Theme.smSpacing

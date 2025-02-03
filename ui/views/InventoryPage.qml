@@ -82,12 +82,12 @@ DsPage {
 
                     menuModel.append({
                                          label: "Add New Product",
-                                         icon: IconType.cubePlus
+                                         icon: IconType.databasePlus
                                      })
 
                     menuModel.append({
                                          label: "Add New Supplier",
-                                         icon: IconType.cubePlus
+                                         icon: IconType.playlistAdd
                                      })
 
                     menuModel.append({ type: "spacer" })
@@ -99,7 +99,7 @@ DsPage {
 
                     menuModel.append({
                                          label: "Supply History",
-                                         icon: IconType.listTree
+                                         icon: IconType.databaseImport
                                      })
                 }
             }

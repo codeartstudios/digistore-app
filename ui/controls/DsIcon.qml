@@ -6,7 +6,7 @@ Item {
     implicitHeight: iconSize
     implicitWidth: iconSize
 
-    property real iconSize: 18
+    property real iconSize: Theme.xlFontSize
     required property string iconType
     property string color: Theme.txtPrimaryColor
     property alias label: lbl

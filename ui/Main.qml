@@ -23,6 +23,7 @@ Window {
 
     // Application Flow
     property alias appFlow: appFlow
+    property alias toast: toast
 
     FontLoader {
         id: tablerIconsFontLoader
@@ -30,6 +31,8 @@ Window {
     }
 
     ApplicationFlow { id: appFlow }
+
+    DsToast { id: toast }
 
     Connections {
         target: dsController
@@ -45,7 +48,9 @@ Window {
         }
     }
 
-    Component.onCompleted: {}
+    function withOpacity(color, opacity) {
+        return Utils.withOpacity(color, opacity)
+    }
 
     // Logic to check if the user is actually logged in or not
     // Checks for token validity, organization validity and
