@@ -105,7 +105,7 @@ DsPage {
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getSales(txt)
+            onAccepted: getSales()
         }
 
         DsTable {
@@ -268,10 +268,14 @@ DsPage {
 
     Requests {
         id: getsalesrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/sales_view/records"
     }
 
-    function getSales(txt='') {
+    function getSales() {
+        var txt = dsSearchInput.text.trim()
+
         var dateQuery = `created >= '${internal.startDateTimeUTC}' && created <= '${internal.endDateTimeUTC}'`
         var query = {
             page: pageNo,
@@ -322,6 +326,7 @@ DsPage {
             }
             catch(err) {
                 console.log("Sales Page: ", err)
+                toast.warning("Failed to parse response data!");
             }
 
             datamodel.clear()
