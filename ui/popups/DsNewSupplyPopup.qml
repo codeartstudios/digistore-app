@@ -73,33 +73,33 @@ Popup {
                     anchors.fill: parent
                     spacing: Theme.xsSpacing
 
-                    DsInputSelectorWithSearch {
-                        id: supplierselector
-                        label: qsTr("Select Supplier")
-                        allowMultipleSelection: false
-                        displayFields: ["name"]
-                        collection: "suppliers"
-                        searchInput.placeholderText: qsTr("Search the supplier by name ...")
-                        Layout.fillWidth: true
-                    }
-
                     Row {
                         spacing: Theme.smSpacing
                         Layout.fillWidth: true
+
+                        DsInputSelectorWithSearch {
+                            id: supplierselector
+                            label: qsTr("Select Supplier")
+                            allowMultipleSelection: false
+                            displayFields: ["name"]
+                            collection: "suppliers"
+                            searchInput.placeholderText: qsTr("Search the supplier by name ...")
+                            width: (parent.width-parent.spacing*2)/3
+                        }
 
                         DsInputWithLabel {
                             id: amountinput
                             mandatory: true
                             label: qsTr("Total Cost")
                             input.placeholderText: qsTr("0.0")
-                            width: (parent.width-parent.spacing)/2
+                            width: (parent.width-parent.spacing*2)/3
                         }
 
                         DsInputWithLabel {
                             id: fileinput
                             label: qsTr("Supporting Docs")
                             input.placeholderText: qsTr(".pdf, .png, .jpg, .jpeg")
-                            width: (parent.width-parent.spacing)/2
+                            width: (parent.width-parent.spacing*2)/3
                         }
                     }
 
@@ -122,7 +122,7 @@ Popup {
                                 allowMultipleSelection: false
                                 mandatory: true
                                 color: withOpacity(Theme.baseAlt2Color, 0.6)
-                                Layout.preferredHeight: qtyiwl.height
+                                Layout.preferredHeight: qtyiwl.implicitHeight
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                             }
@@ -157,17 +157,20 @@ Popup {
 
                                 onClicked: {
                                     if(productselector.dataModel.count===0) {
-                                        showMessage(qsTr("Supply Error"), qsTr("No product selected yet!"))
+                                        showMessage(qsTr("Supply Error"),
+                                                    qsTr("No product selected yet!"))
                                         return
                                     }
 
                                     if(qtyiwl.input.text <= 0) {
-                                        showMessage(qsTr("Supply Error"), qsTr("Stock quantity is required!"))
+                                        showMessage(qsTr("Supply Error"),
+                                                    qsTr("Stock quantity is required!"))
                                         return
                                     }
 
                                     if(bpiwl.input.text <= 0) {
-                                        showMessage(qsTr("Supply Error"), qsTr("Buying price is required!"))
+                                        showMessage(qsTr("Supply Error"),
+                                                    qsTr("Buying price is required!"))
                                         return
                                     }
 
@@ -311,8 +314,10 @@ Popup {
 
     Requests {
         id: addproductrequest
-        path: "/fn/create-supply"
         method: "POST"
+        path: "/fn/create-supply"
+        token: dsController.token
+        baseUrl: dsController.baseUrl
     }
 
     function addSupply() {
@@ -321,12 +326,14 @@ Popup {
         console.log(amount)
 
         if(amount <= 0) {
-            messageBox.showMessage(qsTr("Supply Error!"), qsTr("Supply total cost is required!"))
+            messageBox.showMessage(qsTr("Supply Error!"),
+                                   qsTr("Supply total cost is required!"))
             return;
         }
 
         if(root.supplyProductsModel.count === 0) {
-            messageBox.showMessage(qsTr("Supply Error!"), qsTr("Products for the supply is required!"))
+            messageBox.showMessage(qsTr("Supply Error!"),
+                                   qsTr("Products for the supply is required!"))
             return;
         }
 
@@ -362,9 +369,10 @@ Popup {
 
         if(res.status===200) {
             clearInputs()
-            // root.close()
+            toast.success(qsTr("New supply added successfully!"))
         } else {
-            messageBox.showMessage(qsTr("Create supply error!"), `${res.status}: ${res.data.message}`)
+            messageBox.showMessage(qsTr("Create supply error!"),
+                                   `${res.status}: ${res.data.message}`)
         }
     }
 

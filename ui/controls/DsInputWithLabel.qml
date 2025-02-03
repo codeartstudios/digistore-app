@@ -7,7 +7,7 @@ Rectangle {
     id: control
     radius: Theme.btnRadius
     implicitWidth: 200
-    height: col.height + Theme.xsSpacing
+    implicitHeight: col.height + Theme.xsSpacing
     color: Theme.baseAlt1Color
 
     property string label: qsTr("Input")

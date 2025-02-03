@@ -117,7 +117,9 @@ Rectangle {
                     Row {
                         id: _drow
                         spacing: Theme.btnRadius
-                        padding: Theme.btnRadius
+                        leftPadding: Theme.btnRadius
+                        rightPadding: Theme.btnRadius
+                        height: Theme.inputHeight
 
                         // Label for the selected item
                         DsLabel {
@@ -385,6 +387,8 @@ Rectangle {
 
     Requests {
         id: searchRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: `/api/collections/${control.collection}/records`
     }
 }
