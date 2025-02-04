@@ -19,7 +19,7 @@ DsPage {
     property string sortByKey: "name"
     property bool sortAsc: true
 
-   property ListModel datamodel: ListModel{}
+    property ListModel datamodel: ListModel{}
 
     ColumnLayout {
         anchors.fill: parent
@@ -74,8 +74,34 @@ DsPage {
 
             DsMenu {
                 id: toolsMenu
-                iconType: IconType.pencilCog
+                iconType: IconType.databaseCog
                 text: qsTr("Options")
+
+                Component.onCompleted: {
+                    menuModel.clear()
+
+                    menuModel.append({
+                                         label: "Add New Product",
+                                         icon: IconType.databasePlus
+                                     })
+
+                    menuModel.append({
+                                         label: "Add New Supplier",
+                                         icon: IconType.playlistAdd
+                                     })
+
+                    menuModel.append({ type: "spacer" })
+
+                    menuModel.append({
+                                         label: "View All Suppliers",
+                                         icon: IconType.layoutList
+                                     })
+
+                    menuModel.append({
+                                         label: "Supply History",
+                                         icon: IconType.databaseImport
+                                     })
+                }
             }
         }
 
@@ -255,6 +281,8 @@ DsPage {
 
     Requests {
         id: getproductrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/product/records"
     }
 
@@ -264,7 +292,7 @@ DsPage {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization = '${dsController.organizationID}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
+            filter: `organization = '${dsController.workspaceId}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
         }
 
         getproductrequest.clear()
@@ -286,8 +314,8 @@ DsPage {
                 var obj = items[i]
                 if(!obj.tags) obj.tags = []
                 obj.tags.forEach((tag) => {
-                                          tags.push({ data: tag })
-                                      })
+                                     tags.push({ data: tag })
+                                 })
                 obj.tags = tags
                 datamodel.append(obj)
             }
@@ -305,7 +333,6 @@ DsPage {
         var obj = {
             id: model.id,
             collectionId: model.collectionId,
-            // collectionName: model.collectionName,
             created: model.created,
             name: model.name,
             unit: model.unit,
@@ -323,14 +350,7 @@ DsPage {
         vieworeditdrawer.isEditing = false
     }
 
-    Component.onCompleted: {
-        toolsMenu.model.append({ label: "Add New Product",      icon: IconType.cubePlus })
-        toolsMenu.model.append({ label: "Add New Supplier",     icon: IconType.rowInsertTop })
-        toolsMenu.model.append({ label: "View All Suppliers",   icon: IconType.layoutList })
-        toolsMenu.model.append({ label: "Supply History",       icon: IconType.listTree })
-
-        getProducts()
-    }
+    Component.onCompleted: getProducts()
 
     // Handle menu selection in the products tab
     Connections {
@@ -350,12 +370,15 @@ DsPage {
                 break;
             }
 
-            case 2: {
+            // This is a spacer item
+            case 2: break;
+
+            case 3: {
                 supplierviewpopup.open()
                 break;
             }
 
-            case 3: {
+            case 4: {
                 // TODO open this popup
                 supplyhistorypopup.open()
                 break;

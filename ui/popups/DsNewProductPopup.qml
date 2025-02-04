@@ -274,7 +274,7 @@ Popup {
             buying_price: bp,
             selling_price: sp,
             stock: stock,
-            organization: dsController.organizationID
+            organization: dsController.workspaceId
         }
 
         var files = {

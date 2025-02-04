@@ -4,13 +4,14 @@ import Qt.labs.platform
 import app.digisto.modules
 
 import "../../controls"
+import "../../popups"
 
 DsPage {
-    id: loginPage
+    id: root
     title: qsTr("Sign Up Page")
     headerShown: false
 
-    Item {
+    DsCard {
         width: 400
         height: col.height + 2*Theme.baseSpacing
         anchors.centerIn: parent
@@ -20,13 +21,6 @@ DsPage {
             width: parent.width - 2*Theme.baseSpacing
             spacing: Theme.xsSpacing
             anchors.centerIn: parent
-
-            Image {
-                height: 50
-                source: "qrc:/assets/imgs/logo-nobg.png"
-                fillMode: Image.PreserveAspectFit
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
 
             DsLabel {
                 topPadding: Theme.baseSpacing
@@ -40,6 +34,7 @@ DsPage {
                 id: emailinput
                 width: parent.width
                 label: qsTr("Email")
+                mandatory: true
                 errorString: qsTr("Invalid Email Address")
                 input.placeholderText: qsTr("user@example.com")
             }
@@ -48,26 +43,44 @@ DsPage {
                 id: fullnameinput
                 width: parent.width
                 label: qsTr("Fullname")
+                mandatory: true
                 input.placeholderText: qsTr("John Doe")
                 errorString: qsTr("Invalid user full name")
             }
 
-            DsInputWithLabel {
-                id: passwordinput
+            DsInputMobileNumber {
+                id: mobileinput
                 width: parent.width
-                isPasswordInput: true
-                label: qsTr("Password")
-                input.placeholderText: qsTr("********")
-                errorString: qsTr("Empty or short password")
+                label: qsTr("Mobile Number")
+                mandatory: true
+                validator: IntValidator{bottom: 1000000}
+                input.placeholderText: qsTr("7xx xxx xxx")
+                errorString: qsTr("Invalid mobile number")
             }
 
-            DsInputWithLabel {
-                id: passwordconfirminput
+            Row {
+                spacing: Theme.xsSpacing
                 width: parent.width
-                isPasswordInput: true
-                label: qsTr("Confirm Password")
-                input.placeholderText: qsTr("********")
-                errorString: qsTr("Empty or short password")
+
+                DsInputWithLabel {
+                    id: passwordinput
+                    width: (parent.width-Theme.xsSpacing)/2
+                    mandatory: true
+                    isPasswordInput: true
+                    label: qsTr("Password")
+                    input.placeholderText: qsTr("********")
+                    errorString: qsTr("Empty or short password")
+                }
+
+                DsInputWithLabel {
+                    id: passwordconfirminput
+                    width: (parent.width-Theme.xsSpacing)/2
+                    mandatory: true
+                    isPasswordInput: true
+                    label: qsTr("Confirm Password")
+                    input.placeholderText: qsTr("********")
+                    errorString: qsTr("Empty or short password")
+                }
             }
 
             Item { height: 1; width: 1}
@@ -102,26 +115,34 @@ DsPage {
 
     Requests {
         id: createAccountRequest
-        baseUrl: "https://pb.digisto.app"
-        path: "/api/collections/tellers/records"
         method: "POST"
+        baseUrl: dsController.baseUrl
+        path: "/api/collections/tellers/records"
     }
 
     Requests {
         id: emailVerificationRequest
-        baseUrl: "https://pb.digisto.app"
-        path: "/api/collections/tellers/request-verification"
         method: "POST"
+        path: "/api/collections/tellers/request-verification"
+        baseUrl: dsController.baseUrl
     }
 
-    MessageDialog {
-        id: warningdialog
-        buttons: MessageDialog.Ok
+    DsMessageBox {
+        id: messageBox
+        x: (root.width-width)/2
+        y: (root.height-height)/2
+
+        function showMessage(title="", info="") {
+            messageBox.title = title
+            messageBox.info = info
+            messageBox.open()
+        }
     }
 
     function createUserAccount() {
         var email = emailinput.input.text.trim()
         var name = fullnameinput.input.text.trim()
+        var mobileno = parseInt(mobileinput.input.text.trim()) ? parseInt(mobileinput.input.text.trim()) : 0
         var password = passwordinput.input.text.trim()
         var passwordConfirm = passwordconfirminput.input.text.trim()
 
@@ -130,9 +151,21 @@ DsPage {
             return;
         }
 
-        if(name.split(" ").length === 0) {
+        if(name.length < 3) {
             fullnameinput.hasError=true;
             fullnameinput.errorString = qsTr("At least two names expected")
+            return;
+        }
+
+        if(!mobileinput.selectedCountry) {
+            messageBox.showMessage(qsTr("Create Account Error"),
+                                   qsTr("Country code for your mobile number not selected!"))
+            return;
+        }
+
+        if(mobileno < 10000000) {
+            messageBox.showMessage(qsTr("Create Account Error"),
+                                   qsTr("Mobile number is not valid!"))
             return;
         }
 
@@ -148,11 +181,34 @@ DsPage {
             return;
         }
 
+        var permissions = {
+            can_add_stock: false,
+            can_manage_stock: false,
+            can_sell_products: false,
+            can_add_products: false,
+            can_manage_products: false,
+            can_add_suppliers: false,
+            can_manage_suppliers: false,
+            can_manage_sales: false,
+            can_manage_inventory: false,
+            can_manage_org: false,
+            can_manage_users: false,
+        }
+
         var body = {
             email,
             password,
             passwordConfirm,
-            name
+            name,
+            permissions,
+            mobile: {
+                dial_code: mobileinput.selectedCountry.dial_code,
+                number: `${mobileno}`
+            }
+        }
+
+        if(dsController.organization) {
+            body['organization'] = dsController.organization.id
         }
 
         createAccountRequest.clear()
@@ -161,12 +217,16 @@ DsPage {
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            switchToEmailConfirmation(email)
+            // clearInputs()
+            // switchToEmailConfirmation(email)
+            // console.log("Account Created")
+            navigationStack.pop()
         } else {
             // User creation failed
-            warningdialog.text = "Account Creation Failed"
-            warningdialog.informativeText = res.error
-            warningdialog.open()
+            messageBox.showMessage(qsTr("Create Account Error"),
+                                   res.data.message
+                                   )
+
         }
     }
 
@@ -182,5 +242,14 @@ DsPage {
 
         navigationStack.pop(null)
         navigationStack.push("qrc:/ui/views/auth/ConfirmEmail.qml")
+    }
+
+    function clearInputs() {
+        emailinput.text = ""
+        fullnameinput.text = ""
+        mobileinput.selectedCountry = null
+        mobileinput.text = ""
+        passwordinput.text = ""
+        passwordconfirminput.text = ""
     }
 }

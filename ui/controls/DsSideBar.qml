@@ -87,7 +87,7 @@ Item {
                             label: "inventory",
                             tooltip: "Org. Inventory",
                             isBusy: false,
-                            iconType: IconType.stack2
+                            iconType: IconType.database
                         })
 
         sideMenu.append({
@@ -111,6 +111,13 @@ Item {
                             tooltip: "Pocketbase Admin",
                             isBusy: false,
                             iconType: IconType.databaseCog
+                        })
+        sideMenu.append({
+                            checkable: true,
+                            label: "accounts",
+                            tooltip: "Accounts & Permissions",
+                            isBusy: false,
+                            iconType: IconType.users
                         })
 
         sideMenuExtras.append({

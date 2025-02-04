@@ -11,7 +11,7 @@ import "../views/auth"
 Item {
     anchors.fill: parent
 
-    property bool sidebarShown: true    
+    property bool sidebarShown: true
 
     ColumnLayout {
         id: collayout
@@ -46,8 +46,8 @@ Item {
         DsNavigationStack {
             id: preAuthStack
 
-            Login {
-                id: loginPage
+            Onboarding {
+                id: onboardingPage
             }
         }
     }
@@ -101,13 +101,21 @@ Item {
                         break;
                     }
 
-                    case "notifications": {
-                        // postAuthLoader.sourceComponent = salesStackComponent;
+                    case "settings": {
+                        appStackLayout.currentIndex=5;
+                        appStackLayout.settingsLoader.active=true;
                         break;
                     }
 
-                    case "settings": {
-                        // postAuthLoader.sourceComponent = salesStackComponent;
+                    case "notifications": {
+                        appStackLayout.currentIndex=6;
+                        appStackLayout.notificationLoader.active=true;
+                        break;
+                    }
+
+                    case "accounts": {
+                        appStackLayout.currentIndex=7;
+                        appStackLayout.accountsLoader.active=true;
                         break;
                     }
 
@@ -116,7 +124,7 @@ Item {
                         break;
                     }
 
-                    case "pocketbaseadmin": {                        
+                    case "pocketbaseadmin": {
                         Qt.openUrlExternally('http://127.0.0.1:8090/_/')
                         // pocketbaseAdminPage.show()
                         break;
@@ -125,35 +133,5 @@ Item {
                 }
             }
         }
-    }
-
-    function withOpacity(color, opacity) {
-        var r, g, b;
-
-        // Named color
-        if (color.startsWith("#")) {
-            if (color.length === 7) { // #RRGGBB
-                r = parseInt(color.substr(1, 2), 16) / 255.0;
-                g = parseInt(color.substr(3, 2), 16) / 255.0;
-                b = parseInt(color.substr(5, 2), 16) / 255.0;
-            } else if (color.length === 4) { // #RGB
-                r = parseInt(color.substr(1, 1) + color.substr(1, 1), 16) / 255.0;
-                g = parseInt(color.substr(2, 1) + color.substr(2, 1), 16) / 255.0;
-                b = parseInt(color.substr(3, 1) + color.substr(3, 1), 16) / 255.0;
-            }
-        } else if (color.startsWith("rgb")) {
-            var rgbValues = color.match(/\d+/g);
-            r = rgbValues[0] / 255.0;
-            g = rgbValues[1] / 255.0;
-            b = rgbValues[2] / 255.0;
-        } else {
-            // If it's a named color
-            var tmpColor = Qt.color(color);
-            r = tmpColor.r;
-            g = tmpColor.g;
-            b = tmpColor.b;
-        }
-
-        return Qt.rgba(r, g, b, opacity);
     }
 }

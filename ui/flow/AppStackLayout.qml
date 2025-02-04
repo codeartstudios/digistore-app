@@ -12,6 +12,9 @@ StackLayout {
     property alias inventoryLoader: inventoryloader
     property alias salesLoader: salesloader
     property alias organizationLoader: organizationloader
+    property alias settingsLoader: settingsloader
+    property alias notificationLoader: notificationloader
+    property alias accountsLoader: accountsloader
 
     // DashboardPage
     DsFlowLoader {
@@ -82,6 +85,48 @@ StackLayout {
             }
         }
     } // Sales Component
+
+    // SettingsPage Loader
+    DsFlowLoader {
+        id: settingsloader
+        active: false // root.currentIndex===5
+        asynchronous: true
+        sourceComponent: Component {
+            id: settingsComponent
+
+            SettingsPage {
+                id: settingsPage
+            }
+        }
+    } // Settings Component
+
+    // NotificationPage Loader
+    DsFlowLoader {
+        id: notificationloader
+        active: false // root.currentIndex===6
+        asynchronous: true
+        sourceComponent: Component {
+            id: notificationComponent
+
+            NotificationPage {
+                id: notificationPage
+            }
+        }
+    } // Notification Component
+
+    // AccountsPage Loader
+    DsFlowLoader {
+        id: accountsloader
+        active: false // root.currentIndex===7
+        asynchronous: true
+        sourceComponent: Component {
+            id: accountsComponent
+
+            AccountsPage {
+                id: accountsPage
+            }
+        }
+    } // Accounts Component
 
     Component {
         id: loadingIndicator

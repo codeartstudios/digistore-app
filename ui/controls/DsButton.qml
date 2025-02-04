@@ -9,11 +9,12 @@ Button {
     implicitWidth: row.width + 2*Theme.smSpacing
     height: implicitHeight
     width: implicitWidth
+    opacity: enabled ? 1 : 0.7
 
     // Busy indicator within the button
     property bool busy: false
     property real fontSize: Theme.baseFontSize
-    property real radius: bg.radius
+    property alias radius: bg.radius
 
     // Palette colors (text and background)
     property string textColor: Theme.baseColor
@@ -37,6 +38,9 @@ Button {
     // Flags to control if icons are shown
     property bool leftIconShown: iconType!==""
     property bool endIconShown: endIcon!==""
+
+    // Expose delegate row
+    property alias contentRow: row
 
     background: Rectangle {
         id: bg

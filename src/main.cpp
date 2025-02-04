@@ -13,6 +13,9 @@ int main(int argc, char *argv[])
     // Create the dscontroller instance
     DsController dsController;
 
+    // Set default server URL, override where applicable
+    dsController.setBaseUrl("http://127.0.0.1:8090");
+
     QQmlApplicationEngine engine;
 
     // Register dscontroller to QML

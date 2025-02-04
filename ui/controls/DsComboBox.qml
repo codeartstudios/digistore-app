@@ -10,9 +10,12 @@ ComboBox {
     id: control
 
     property alias popupHeight: _p.height
+    property alias radius: bg.radius
+    property alias bgColor: bg.color
+    property bool alignLeft: true
 
     delegate: DsButton {
-        id: delegate
+        id: btndlgt
 
         required property var model
         required property int index
@@ -23,7 +26,21 @@ ComboBox {
         textColor: Theme.txtPrimaryColor
         width: control.width
         fontSize: Theme.smFontSize
-        text: delegate.model[control.textRole]
+        text: btndlgt.model[control.textRole]
+
+        contentItem: Item {
+            DsLabel {
+                fontSize: btndlgt.fontSize
+                color: btndlgt.textColor
+                text: btndlgt.text
+                width: parent.width
+                elide: DsLabel.ElideRight
+                leftPadding: Theme.xsSpacing/2
+                rightPadding: Theme.xsSpacing/2
+                anchors.verticalCenter: parent.verticalCenter
+                horizontalAlignment: control.alignLeft ? DsLabel.AlignLeft : DsLabel.AlignHCenter
+            }
+        }
     }
 
     indicator: Canvas {
@@ -62,6 +79,7 @@ ComboBox {
     }
 
     background: Rectangle {
+        id: bg
         radius: Theme.xsSpacing
         implicitWidth: 120
         implicitHeight: Theme.btnHeight

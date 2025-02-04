@@ -1,14 +1,18 @@
 import QtQuick
 import QtQuick.Dialogs
 import Qt.labs.platform
+import QtQuick.Controls.Basic
 import app.digisto.modules
 
 import "../../controls"
+import "../../popups"
 
 DsPage {
     id: loginPage
     title: qsTr("Login Page")
     headerShown: false
+
+    required property var organization
 
     Item {
         width: 400
@@ -40,7 +44,7 @@ DsPage {
                 id: emailinput
                 width: parent.width
                 label: qsTr("Email/Username")
-                errorString: qsTr("Invalid Email or User ID")
+                errorString: qsTr("Invalid email or username")
                 input.placeholderText: qsTr("user@example.com")
             }
 
@@ -66,7 +70,7 @@ DsPage {
             Item { height: 1; width: 1}
 
             DsButton {
-                busy: signinRequest.running
+                busy: loginrequest.running
                 height: Theme.lgBtnHeight
                 fontSize: Theme.xlFontSize
                 width: parent.width
@@ -93,22 +97,30 @@ DsPage {
     }
 
     Requests {
-        id: signinRequest
-        baseUrl: "https://pbs.digisto.app"
+        id: loginrequest
+        baseUrl: dsController.baseUrl
         path: "/api/collections/tellers/auth-with-password"
         method: "POST"
     }
 
-    MessageDialog {
-        id: warningdialog
-        buttons: MessageDialog.Ok
+    DsMessageBox {
+        id: messageBox
+        x: (loginPage.width-width)/2
+        y: (loginPage.height-height)/2
+
+        function showMessage(title="", info="") {
+            messageBox.title = title
+            messageBox.info = info
+            messageBox.open()
+        }
     }
 
     function signIn() {
         var identity = emailinput.input.text.trim()
         var password = passwordinput.input.text.trim()
 
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length > 4 ) {
+        // TODO Accepted username chars?
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length < 4 ) {
             emailinput.hasError = true;
             return;
         }
@@ -119,25 +131,58 @@ DsPage {
             return;
         }
 
+        // Create a search query
+        var query = {
+            expand: "organization"
+        }
+
         var body = {
             identity,
             password
         }
 
-        request.clear()
-        request.body = body;
-        var res = request.send();
-        console.log(JSON.stringify(res))
+        loginrequest.clear()
+        loginrequest.query = query;
+        loginrequest.body = body;
+        var res = loginrequest.send();
 
         if(res.status===200) {
-            console.log("User logged in")
             // Confirm email
+            var token = res.data.token
+            var user = res.data.record
+            var org = res.data.record.expand.organization
+            user.organization = org.id;
 
+            // dsController.organization = org
+            dsController.token = token;
+            dsController.loggedUser = user;
+            dsController.organization = org;
+            dsController.workspaceId = org.id;
+
+            clearInputs()
+            store.userLoggedIn = checkIfLoggedIn()
+
+            // Show toast message
+            toast.success(qsTr("Login Success!"))
         } else {
+            // console.log(JSON.stringify(res))
             // User creation failed
-            warningdialog.text = "Login Failed"
-            warningdialog.informativeText = res.error
-            warningdialog.open()
+            messageBox.showMessage(
+                        qsTr("Login Failed"),
+                        res.data.message ?
+                            res.data.message : res.error ?
+                                res.error : qsTr("We couldn't complete this request, please try again later.")
+                        )
         }
+    }
+
+    function clearInputs() {
+    }
+
+    Component.onCompleted: {
+        // TODO remove after done with testing ...
+        emailinput.input.text = "john@doe.com"
+        passwordinput.input.text = "123456789"
+        signIn()
     }
 }

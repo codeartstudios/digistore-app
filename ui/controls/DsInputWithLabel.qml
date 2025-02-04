@@ -7,11 +7,12 @@ Rectangle {
     id: control
     radius: Theme.btnRadius
     implicitWidth: 200
-    height: col.height + Theme.xsSpacing
+    implicitHeight: col.height + Theme.xsSpacing
     color: Theme.baseAlt1Color
 
     property string label: qsTr("Input")
     property alias input: input
+    property alias text: input.text
     property bool isPasswordInput: false
     property alias validator: input.validator
     property bool hasError: false
@@ -19,6 +20,14 @@ Rectangle {
     property string errorString: ""
     property bool readOnly: false
     property alias secondaryActionLabel: secondaryActionLabel
+    property alias labelShown: labelrowly.visible
+
+    // Before & After items
+    property alias before: before
+    property alias beforeItem: before.children
+    property alias afterItem: after.children
+    property alias after: after
+    property alias inputRL: inputrow
 
     signal clicked()
     signal textAccepted()
@@ -41,11 +50,12 @@ Rectangle {
 
     Column {
         id: col
-        spacing: 0
+        spacing: Theme.xsSpacing/2
         width: parent.width - 2*Theme.xsSpacing
         anchors.centerIn: parent
 
         RowLayout {
+            id: labelrowly
             width: parent.width
             spacing: Theme.xsSpacing
 
@@ -74,7 +84,7 @@ Rectangle {
 
             DsLabel {
                 id: secondaryActionLabel
-                visible: text !== ""
+                visible: text !== "" && input.text.trim() !== ""
                 color: Theme.txtPrimaryColor
                 fontSize: Theme.xsFontSize
 
@@ -85,28 +95,46 @@ Rectangle {
             }
         }
 
-        TextField {
-            id: input
-            padding: 0
-            height: Theme.inputHeight
+        RowLayout {
+            id: inputrow
             width: parent.width
-            color: Theme.txtPrimaryColor
-            placeholderTextColor: Theme.txtDisabledColor
-            font.pixelSize: Theme.lgFontSize
-            echoMode: isPasswordInput ? TextField.Password : TextField.Normal
-            background: Item{}
-            readOnly: control.readOnly
+            spacing: Theme.btnRadius
 
-            onAccepted: control.textAccepted()
+            Row {
+                id: before
+                height: input.height
+                Layout.alignment: Qt.AlignVCenter
+            }
 
-            DsToolTip {
-                id: tt
-                text: errorString
-                delay: 0
-                width: parent.width
-                side: DsToolTip.Bottom
-                bgRect.color: Theme.warningColor
-                onClosed: hasError=false
+            TextField {
+                id: input
+                padding: 0
+                height: Theme.inputHeight
+                color: Theme.txtPrimaryColor
+                placeholderTextColor: Theme.txtDisabledColor
+                font.pixelSize: Theme.lgFontSize
+                echoMode: isPasswordInput ? TextField.Password : TextField.Normal
+                background: Item{}
+                readOnly: control.readOnly
+                Layout.fillWidth: true
+
+                onAccepted: control.textAccepted()
+
+                DsToolTip {
+                    id: tt
+                    text: errorString
+                    delay: 0
+                    width: parent.width
+                    side: DsToolTip.Bottom
+                    bgRect.color: Theme.warningColor
+                    onClosed: hasError=false
+                }
+            }
+
+            Row {
+                id: after
+                height: input.height
+                Layout.alignment: Qt.AlignVCenter
             }
         }
     }

@@ -3,9 +3,10 @@
 Requests::Requests(QObject *parent)
     : QObject{parent},
     netman(std::make_unique<QNetworkAccessManager>(this)),
-    m_baseUrl("http://127.0.0.1:8090"), // "https://pbs.digisto.app"),
+    m_baseUrl(""),
     m_path(""),
     m_method("GET"),
+    m_token(""),
     m_headers(QVariantMap()),
     m_body(QVariantMap()),
     m_query(QVariantMap()),
@@ -30,12 +31,17 @@ QVariantMap Requests::send()
 {
     if(m_method.isEmpty())
     {
-        QVariantMap e;
+        QVariantMap e, d;
         e["status"] = 0;
         e["message"] = QString("Request method is not defined");
-        emit error(e);
+        d["data"] = e;
+        d["status"] = 0;
+        d["message"] = QString("Request method is not defined");
+        emit error(d);
 
-        return e;
+        logRequest("?", m_path, 0, d["message"].toString());
+
+        return d;
     }
 
     m_running=true;
@@ -59,9 +65,6 @@ QVariantMap Requests::send()
     // Create request object
     QNetworkRequest request;
     request.setUrl(url);
-    qDebug() << "\n["
-             << m_method
-             << "] '" << request.url().toString() << "'";
 
     // Add user headers to the request
     if(!m_headers.isEmpty()) {
@@ -69,6 +72,9 @@ QVariantMap Requests::send()
             request.setRawHeader(key.toUtf8(), m_headers.value(key).toByteArray());
         }
     }
+
+    // Add authorization header, assuming by default Bearer tokens
+    request.setRawHeader("Authorization", QString("Bearer %1").arg(m_token).toUtf8());
 
     QNetworkReply* reply;
     QJsonDocument doc = QJsonDocument::fromVariant(m_body);
@@ -92,32 +98,40 @@ QVariantMap Requests::send()
         }
 
         // Add files to multipart
-        for ( const auto& key : m_files.keys() ) {
+        foreach ( const auto& key, m_files.keys() ) {
             // TODO check on multiple file issue
 
             QFile* file = new QFile(m_files.value(key).toString());
             QString fileName = QFileInfo(file->fileName()).fileName();
 
             if(!file->exists()) {
-                QVariantMap e;
+                QVariantMap e, d;
                 e["status"] = 0;
                 e["message"] = QString("File '%1' does not exist").arg(fileName);
+                d["data"] = e;
+                d["status"] = 0;
+                d["message"] = QString("File '%1' does not exist").arg(fileName);
 
                 m_running=false;
                 emit runningChanged();
-                emit error(e);
-                return e;
+                emit error(d);
+                logRequest(m_method, request.url().toString(), 0, d["message"].toString());
+                return d;
             }
 
             if (!file->open(QIODevice::ReadOnly)) {
-                QVariantMap e;
+                QVariantMap d, e;
                 e["status"] = 0;
                 e["message"] = QString("Could not open '%1' for reading").arg(fileName);
+                d["data"] = e;
+                d["status"] = 0;
+                d["message"] = QString("Could not open '%1' for reading").arg(fileName);
 
                 m_running=false;
                 emit runningChanged();
-                emit error(e);
-                return e;
+                emit error(d);
+                logRequest(m_method, request.url().toString(), 0, d["message"].toString());
+                return d;
             }
 
             QMimeDatabase mimeDatabase;
@@ -172,14 +186,18 @@ QVariantMap Requests::send()
         }
 
         else {
-            QVariantMap e;
+            QVariantMap d, e;
             e["status"] = 0;
             e["message"] = QString("Unhandled method '%1'").arg(m_method);
+            d["data"] = e;
+            d["status"] = 0;
+            d["message"] = QString("Unhandled method '%1'").arg(m_method);
 
             m_running=false;
             emit runningChanged();
-            emit error(e);
-            return e;
+            emit error(d);
+            logRequest(m_method, request.url().toString(), 0, d["message"].toString());
+            return d;
         }
     }
 
@@ -201,9 +219,16 @@ QVariantMap Requests::send()
     responseObject.insert("data", resJsonDoc.object());
 
     if( statusCode >= 400 || statusCode < 200 ) {
-        emit error(responseObject.toVariantMap());
+        auto err = responseObject.toVariantMap();
+        emit error(err);
+        qDebug() << responseObject;
+        QString msg = err["message"].toString() != "" ? err["message"].toString() :
+                          err["error"].toString() != "" ? err["error"].toString() :
+                          "Something went wrong!";
+        logRequest(m_method, request.url().toString(), statusCode, msg);
     } else {
         emit success(responseObject.toVariantMap());
+        logRequest(m_method, request.url().toString(), statusCode);
     }
 
     m_running=false;
@@ -235,12 +260,25 @@ void Requests::clear()
     emit queryChanged();
 }
 
-void Requests::logRequest(const QString &method, const QString &endpoint, const int &statusCode)
+void Requests::logRequest(const QString &method, const QString &endpoint, const int &statusCode, const QString& msg)
 {
-    qDebug() << "\n["
-             << m_method
-             << statusCode
-             << "] '" << endpoint << "'";
+    auto pad = [&](QString val, int width=-1) -> QString {
+        if(width == -1 || val.size() >= width) return val;
+
+        for(int i=0; i<(width - val.size()); i++) {
+            val += " ";
+        }
+
+        return val;
+    };
+
+    qDebug() << "\n" << QString("/%1 %2 %3")
+                    .arg(pad(method, 6),
+                         pad(QString::number(statusCode), 4),
+                         endpoint);
+
+    if(msg!="")
+        qDebug() << "            > " << msg;
 }
 
 QByteArray Requests::convertJsonValueToByteArray(const QJsonValue &value) {
