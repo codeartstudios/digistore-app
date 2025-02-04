@@ -94,6 +94,7 @@
         <file>ui/controls/DsInputMobileNumber.qml</file>
         <file>ui/popups/DsUserAccountDetailsDrawer.qml</file>
         <file>ui/controls/DsToast.qml</file>
+        <file>ui/flow/UserPermissions.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

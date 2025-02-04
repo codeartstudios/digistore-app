@@ -23,6 +23,9 @@ Window {
     property alias appFlow: appFlow
     property alias toast: toast
 
+    // Create UserPermission object: Manage all user permissions centrally
+    property UserPermissions loggedUserPermissions: UserPermissions{}
+
     FontLoader {
         id: tablerIconsFontLoader
         source: "qrc:/assets/fonts/tabler-icons.ttf"

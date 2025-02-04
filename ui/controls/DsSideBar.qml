@@ -77,9 +77,9 @@ Item {
         sideMenu.append({
                             checkable: true,
                             label: "teller",
-                            tooltip: "Cart Checkout",
+                            tooltip: "Teller Page",
                             isBusy: false,
-                            iconType: IconType.shoppingCartCheck
+                            iconType: IconType.shoppingCartBolt
                         })
 
         sideMenu.append({

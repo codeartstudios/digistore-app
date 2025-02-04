@@ -48,21 +48,6 @@ DsPage {
                 Layout.alignment: Qt.AlignVCenter
             }
 
-            DsIconButton {
-                visible: false
-                enabled: !searchitemrequest.running
-                iconType: IconType.plus
-                textColor: Theme.txtPrimaryColor
-                bgColor: "transparent"
-                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-                radius: height/2
-                Layout.alignment: Qt.AlignVCenter
-
-                // Add new tab
-                // onClicked: getProducts()
-            }
-
             Item {
                 Layout.fillWidth: true
                 height: 1
@@ -107,25 +92,27 @@ DsPage {
                 }
             }
 
-            DsButton { // TODO
-                enabled: cartModel.count>0
+            DsButton {
+                enabled: cartModel.count > 0 &&
+                         loggedUserPermissions.canSellProducts // TODO &&
+                         // !loggedUserPermissions.isAdmin
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
 
                 onClicked: {
-                    checkoutpopup.open()
-                    checkoutpopup.totals = checkoutTotals
-                    checkoutpopup.model = cartModel
-                }
-            }
+                    if(loggedUserPermissions.canSellProducts) {
+                        checkoutpopup.open()
+                        checkoutpopup.totals = checkoutTotals
+                        checkoutpopup.model = cartModel
+                    } else {
+                        if(loggedUserPermissions.isAdmin)
+                            toast.warning("Account Admins can't do this action!")
 
-            DsButton {
-                visible: false
-                enabled: cartModel.count>0
-                iconType: IconType.handStop
-                text: qsTr("Freeze")
-                Layout.preferredHeight: Theme.lgBtnHeight
+                        else
+                            toast.warning("You don't have permissions to do this action!")
+                    }
+                }
             }
         }
 
@@ -197,7 +184,8 @@ DsPage {
                 selectionChanged(index, model);
             }
 
-            onCurrentIndexChanged: if(table.currentIndex===-1) selectedObjectItem.selectedObject=null
+            onCurrentIndexChanged: if(table.currentIndex===-1)
+                                       selectedObjectItem.selectedObject=null
 
             onSelectionChanged: function(_, obj) {
                 selectedObjectItem.selectedObject={
@@ -353,6 +341,8 @@ DsPage {
 
     Requests {
         id: searchitemrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/product/records"
     }
 
@@ -364,15 +354,12 @@ DsPage {
             perPage: 50,
             skipTotal: true,
             sort: '+name',
-            filter: `name ~ '${input}' || unit ~ '${input}'`
+            filter: `organization = '${dsController.workspaceId}' && (barcode ~ '${input}' || name ~ '${input}' || unit ~ '${input}')`
         }
-        // organization: "clhyn7tolbhy98k"
 
         searchitemrequest.clear()
         searchitemrequest.query = query;
         var res = searchitemrequest.send();
-
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
