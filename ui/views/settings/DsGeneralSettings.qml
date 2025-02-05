@@ -13,6 +13,7 @@ DsSettingsStackPage {
     property var appReleaseDate: new Date()
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("Theme")
         desc: qsTr("Tweak the app look and feel.")
 
@@ -65,6 +66,7 @@ DsSettingsStackPage {
     }
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("App Updates")
         desc: qsTr("Keeping up with the latest version released.")
 

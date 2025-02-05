@@ -87,7 +87,6 @@
         <file>ui/views/settings/DsGeneralSettings.qml</file>
         <file>ui/views/settings/controls/DsSettingsCard.qml</file>
         <file>ui/views/settings/DsAccountSettings.qml</file>
-        <file>ui/views/settings/DsOrganizationSettings.qml</file>
         <file>assets/imgs/no-profile.png</file>
         <file>ui/controls/DsSwitch.qml</file>
         <file>ui/views/NotificationPage.qml</file>

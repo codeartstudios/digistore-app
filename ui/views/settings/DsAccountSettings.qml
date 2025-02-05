@@ -11,6 +11,7 @@ DsSettingsStackPage {
 
     DsSettingsCard {
         id: accountdetailscard
+        width: root.width
         title: qsTr("Account Details")
         desc: qsTr("User account information.")
 
@@ -97,6 +98,7 @@ DsSettingsStackPage {
 
     DsSettingsCard {
         id: accountemailcard
+        width: root.width
         title: qsTr("Account Email")
         desc: qsTr("Update user email.")
 
@@ -148,6 +150,7 @@ DsSettingsStackPage {
 
     DsSettingsCard {
         id: accountpasswordcard
+        width: root.width
         title: qsTr("Account Password")
         desc: qsTr("Update user password.")
 
@@ -198,6 +201,7 @@ DsSettingsStackPage {
 
     DsSettingsCard {
         id: passwordresetcard
+        width: root.width
         title: qsTr("Password Reset")
         desc: qsTr("A temporary password will be sent to your associated email.")
 
@@ -223,6 +227,7 @@ DsSettingsStackPage {
     }
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("Sign Out")
         desc: qsTr("End the current logged in session.")
 
@@ -261,6 +266,7 @@ DsSettingsStackPage {
     }
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("Delete Account")
         desc: qsTr("This removes user account data and some associated actions. This can't be undone.")
 

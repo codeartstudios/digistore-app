@@ -14,7 +14,6 @@ DsPage {
     property string currentSettingsLabel: qsTr("General")
     property var settingsModel: [
         { label: qsTr("General"), icon: IconType.alignCenter },
-        { label: qsTr("Organization"), icon: IconType.briefcase },
         { label: qsTr("Account"), icon: IconType.userCircle }
     ]
 
@@ -130,11 +129,6 @@ DsPage {
 
         // Push new stack item
         switch(title) {
-        case qsTr("Organization"): {
-            settingsv.push("qrc:/ui/views/settings/DsOrganizationSettings.qml", StackView.Immediate)
-            return
-        }
-
         case qsTr("Account"): {
             settingsv.push("qrc:/ui/views/settings/DsAccountSettings.qml", StackView.Immediate)
             return
