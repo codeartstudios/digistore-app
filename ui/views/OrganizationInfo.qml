@@ -3,11 +3,28 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import app.digisto.modules
 
+import "settings/controls"
 import "../controls"
 import "../popups"
 
-Item {
-    id: root
+ScrollView {
+    id: scrollview
+
+    ScrollBar.horizontal: ScrollBar{
+        policy: ScrollBar.AlwaysOff
+    }
+
+    Keys.onUpPressed: scrollBar.decrease()
+    Keys.onDownPressed: scrollBar.increase()
+
+    ScrollBar.vertical: ScrollBar{
+        id: scrollBar
+        policy: ScrollBar.AsNeeded
+        parent: scrollview
+        anchors.top: scrollview.top
+        anchors.bottom: scrollview.bottom
+        anchors.left: scrollview.right
+    }
 
     property string orgName: ""
     property string orgDescription: ""
@@ -20,118 +37,292 @@ Item {
     property string orgDomain: ""
     property string orgCreated: ""
     property bool orgActivated: false
-
     property DsMessageBox messageBox: DsMessageBox{}
-    property Requests requests: Requests{}
-    property bool isRequestRunning: requests.running
 
-    ScrollView {
-        anchors.fill: parent
-        anchors.margins: Theme.smSpacing
 
-        ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AsNeeded }
+    Column {
+        id: scrollcol
+        width: scrollview.width
+        spacing: Theme.xsSpacing
 
-        Column {
-            width: parent.width
-            spacing: Theme.xsSpacing
+        // Organization Details
+        DsSettingsCard {
+            width: scrollcol.width
+            title: qsTr("Organization")
+            desc: qsTr("Organization details and subscription plan.")
 
-            Item {
+            actions: [
+                DsButton {
+                    text: qsTr("Update Org.")
+                },
+
+                DsButton {
+                    text: qsTr("Upgrade Plan")
+                    bgColor: Theme.warningColor
+                    textColor: Theme.baseColor
+                    endIcon: IconType.arrowUpRight
+                }
+
+            ]
+
+            RowLayout {
                 width: parent.width
-                height: 350
+                spacing: Theme.xsSpacing
 
-                Rectangle {
-                    width: parent.width
-                    height: 250
-                    color: Theme.baseAlt2Color
-                    radius: Theme.btnRadius
+                DsInputWithLabel {
+                    id: orgnameinput
+                    label: qsTr("Org. Website")
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("Some Org Inc.")
+                    Layout.fillWidth: true
+                }
 
-                    DsImage {
-                        source: orgBanner==="" ? "qrc:/assets/imgs/org-banner-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgBanner}`
-                        radius: Theme.btnRadius
-                        anchors.fill: parent
-
-                        DsButton {
-                            iconType: IconType.edit
-                            text: qsTr("Edit Details")
-                            anchors.right: parent.right
-                            anchors.top: parent.bottom
-                            anchors.topMargin: Theme.baseSpacing
-                        }
-                    }
-
-                    Rectangle {
-                        height: 200
-                        width: 200
-                        radius: height/2
-                        border.width: 2
-                        border.color: Theme.baseColor
-                        anchors.verticalCenter: parent.bottom
-                        anchors.left: parent.left
-                        anchors.leftMargin: Theme.baseSpacing
-
-                        DsImage {
-                            source: orgLogo==="" ? "qrc:/assets/imgs/org-logo-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgLogo}`
-                            radius: parent.height/2
-                            anchors.fill: parent
-                            anchors.margins: 2
-                        }
-                    }
+                DsInputWithLabel {
+                    id: orgdescinput
+                    label: qsTr("Org. Description")
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("Some Org Inc.")
+                    Layout.fillWidth: true
                 }
             }
 
-            DsFormTextElement {
+            RowLayout {
                 width: parent.width
-                label: qsTr("Org. Name")
-                value: orgName
-            }
+                spacing: Theme.xsSpacing
 
-            Row {
-                width: parent.width
-                spacing: Theme.baseSpacing
-
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
+                DsInputWithLabel {
+                    id: orgemailinput
                     label: qsTr("Org. Email")
-                    value: orgEmail
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("email@org.com")
+                    Layout.fillWidth: true
                 }
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
+                DsInputWithLabel {
+                    id: orgmobileinput
                     label: qsTr("Org. Mobile")
-                    value: orgMobile
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("+1 234 456 789")
+                    Layout.fillWidth: true
+                }
+
+                DsInputWithLabel {
+                    id: orgwebsiteinput
+                    label: qsTr("Org. Website")
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("https://someorg.com")
+                    Layout.fillWidth: true
                 }
             }
 
-            Row {
-                width: parent.width
-                spacing: Theme.baseSpacing
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Address")
-                    value: orgAddress
+            Rectangle {
+                width: parent.width
+                radius: Theme.btnRadius
+                height: plancol.height + Theme.xsSpacing * 2
+                color: Theme.warningAltColor
+
+                RowLayout {
+                    width: parent.width - Theme.xsSpacing * 2
+                    spacing: Theme.xsSpacing
+                    anchors.centerIn: parent
+
+                    Column {
+                        id: plancol
+                        spacing: Theme.xsSpacing/2
+                        Layout.fillWidth: true
+
+                        DsLabel {
+                            color: Theme.txtHintColor
+                            fontSize: Theme.smFontSize
+                            text: qsTr("Current Plan")
+                        }
+
+                        DsLabel {
+                            color: Theme.txtHintColor
+                            fontSize: Theme.h3
+                            text: qsTr("STARTER")
+                            isBold: true
+                        }
+                    }
+
+                    Column {
+                        spacing: Theme.xsSpacing/2
+                        Layout.fillWidth: true
+
+                        DsLabel {
+                            color: Theme.txtHintColor
+                            fontSize: Theme.smFontSize
+                            text: qsTr("Expires")
+                        }
+
+                        DsLabel {
+                            color: Theme.txtHintColor
+                            fontSize: Theme.h3
+                            text: qsTr("NEVER")
+                            isBold: true
+                        }
+                    }
+                }
+            }
+        }
+
+        // Organization Settings
+        DsSettingsCard {
+            width: parent.width
+            title: qsTr("Organization Settings")
+            desc: qsTr("Configure organization settings")
+
+            // Workspace
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Workspace URL")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
                 }
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Domain")
-                    value: orgDomain
+                DsInputWithLabel {
+                    id: orgworkspaceinput
+                    labelShown: false
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("xxxx.digisto.app")
+                    Layout.minimumWidth: 300
                 }
             }
 
-            DsFormTextElement {
+            // Domain
+            RowLayout {
                 width: parent.width
-                label: qsTr("Org. Description")
-                value: orgDescription
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Server Root Domain")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsInputWithLabel {
+                    id: domaininput
+                    labelShown: false
+                    color: Theme.bodyColor
+                    input.placeholderText: qsTr("https://digisto.app")
+                    // text: dsController.
+                    Layout.minimumWidth: 300
+                }
+            }
+
+            // Currency
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Workspace default currency")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsComboBox {
+                    id: currecycb
+                    height: Theme.inputHeight + Theme.xsSpacing
+                    radius: Theme.btnRadius
+                    bgColor: Theme.bodyColor
+                    model: [qsTr("Kenyan Shilling (KSH)"), qsTr("US Dollar ($)")]
+                    Layout.minimumWidth: 300
+                }
+            }
+
+            // Lock timeout
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("App lock timeout")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsComboBox {
+                    id: screenlockcb
+                    height: Theme.inputHeight + Theme.xsSpacing
+                    radius: Theme.btnRadius
+                    bgColor: Theme.bodyColor
+                    model: [qsTr("1 Minute"), qsTr("5 Minutes"), qsTr("15 Minutes"), qsTr("30 Minutes"), qsTr("1 Hour")]
+                    Layout.minimumWidth: 300
+                }
+            }
+
+        }
+
+        DsLabel {
+            width: parent.width
+            text: qsTr("Product Settings")
+            fontSize: Theme.baseFontSize
+            color: Theme.txtPrimaryColor
+        }
+
+        // Organization Settings
+        DsSettingsCard {
+            width: parent.width
+            title: qsTr("Organization Settings")
+            desc: qsTr("Configure organization settings")
+
+            // Update Stock ...
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Enforce stock quantity update on sales")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsIconButton {
+                    iconType: IconType.infoCircle
+                    width: Theme.xsBtnheight
+                    height: width
+                    radius: height/2
+                    iconSize: width*0.5
+                    textColor: hovered ? Theme.txtPrimaryColor : Theme.txtHintColor
+                    bgColor: "transparent"
+                    bgHover: Utils.withOpacity(Theme.baseAlt2Color, 0.8)
+                    bgDown: Utils.withOpacity(Theme.baseAlt2Color, 0.6)
+                    Layout.alignment: Qt.AlignVCenter
+                    toolTip: qsTr("What's this?")
+                }
+
+                DsSwitch {
+                    id: stockswitch
+                    checked: true
+                    bgColor: Theme.bodyColor
+                    inactiveColor: Theme.baseAlt3Color
+                    Layout.alignment: Qt.AlignVCenter
+                }
             }
         }
     }
 
     function fetchOrganizationDetails() {
-        var orgid = dsController.workspaceId
-        requests.clear()
-        requests.path = `/api/collections/organization/records/${orgid}`
-        var res = requests.send();
+        request.clear()
+        request.token = dsController.token
+        request.baseUrl = dsController.baseUrl
+        request.path = `/api/collections/organization/records/${dsController.workspaceId}`
+        var res = request.send();
 
         if(res.status===200) {
             var data = res.data;
@@ -149,11 +340,13 @@ Item {
         }
 
         else if(res.status === 403) {
-            showMessage("Access Error", "Only admins can access this action.")
+            showMessage("Access Error",
+                        "Only admins can access this action.")
         }
 
         else {
-            showMessage("Organization Error", "The requested resource wasn't found.")
+            showMessage("Organization Error",
+                        "The requested resource wasn't found.")
         }
     }
 

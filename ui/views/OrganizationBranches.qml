@@ -155,7 +155,8 @@ Item {
 
     Requests {
         id: getorgbranchesRequest
-        baseUrl: "https://pb.digisto.app"
+        token: dsController.token
+        baseUrl: dsController.baseUrl
         path: "/api/collections/suppliers/records"
     }
 
@@ -164,13 +165,15 @@ Item {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: "organization='clhyn7tolbhy98k'" + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+            filter: `organization='${dsController.workspaceId}'`
+                    + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
-        // console.log(JSON.stringify(query))
         getorgbranchesRequest.clear()
         getorgbranchesRequest.query = query;
         var res = getorgbranchesRequest.send();
+
+        console.log("Branches: ", JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -190,5 +193,6 @@ Item {
 
         }
     }
+
     Component.onCompleted: getOrgBranches()
 }

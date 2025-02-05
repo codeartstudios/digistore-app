@@ -45,7 +45,7 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h2
                 color: Theme.txtPrimaryColor
-                text: tabslv.currentItem.text ? tabslv.currentItem.text : ""
+                text: qsTr("Info")
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -59,7 +59,7 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: root.refreshPage()
+                // onClicked: root.refreshPage()
             }
 
             Item {
@@ -68,141 +68,16 @@ DsPage {
             }
         }
 
-        Item {
+        StackView {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
             Layout.bottomMargin: Theme.baseSpacing
 
-            ColumnLayout {
-                id: orgStack
-                anchors.fill: parent
-                spacing: 0
-
-                Item {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.btnHeight
-
-                    ListView {
-                        id: tabslv
-                        model: orgTabModel
-                        orientation: ListView.Horizontal
-                        anchors.fill: parent
-                        currentIndex: 0
-                        delegate: DsTabButton {
-                            active: index===tabslv.currentIndex
-                            text: model.label
-                            iconType: model.iconType
-
-                            onClicked: {
-                                tabslv.currentIndex=index
-                                model.componentId.active=true
-                            }
-                        }
-                    }
-                }
-
-                Rectangle {
-                    color: Theme.baseAlt1Color
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    Rectangle {
-                        height: 1
-                        color: Theme.bodyColor
-                        width: parent.width
-                        anchors.top: parent.top
-                    }
-
-                    StackLayout {
-                        anchors.fill: parent
-                        currentIndex: tabslv.currentIndex
-
-                        Component.onCompleted: orginfoloader.active=true
-
-                        // OrganizationInfoPage
-                        DsFlowLoader {
-                            id: orginfoloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orginfocomponent
-
-                                OrganizationInfo {
-                                    id: orginfopage
-
-                                    // Binding {
-                                    //     refreshBtn.enabled: orginfopage.isRequestRunning
-                                    //     when: orgStack.currentIndex===0
-                                    // }
-
-                                    Connections {
-                                        target: root
-
-                                        function onRefreshPage() {
-                                            if(orgStack.currentIndex===0)
-                                                orginfopage.fetchOrganizationDetails();
-                                        }
-                                    }
-                                }
-                            }
-                        } // OrganizationInfoPage Loader
-
-                        // OrganizationBranchesPage
-                        DsFlowLoader {
-                            id: orgbranchesloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orgbranchescomponent
-
-                                OrganizationBranches {
-                                    id: orgbranchespage
-                                }
-                            }
-                        } // OrganizationBranchesPage Loader
-
-                        // OrganizationSettingsPage
-                        DsFlowLoader {
-                            id: orgsettingsloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orgsettingscomponent
-
-                                OrganizationSettings {
-                                    id: orgsettingspage
-                                }
-                            }
-                        } // OrganizationSettingsPage Loader
-                    }
-                }
+            initialItem: OrganizationInfo {
+                id: organizationinfopage
             }
         }
     }
-
-    Component.onCompleted: orgTabModel.append([
-                                                  {
-                                                      label: "Info",
-                                                      iconType: IconType.infoCircle,
-                                                      componentId: orginfoloader
-                                                  }
-                                                  // {
-                                                  //     label: "Branches",
-                                                  //     iconType: IconType.gitMerge,
-                                                  //     componentId: orgbranchesloader
-                                                  // },
-                                                  // {
-                                                  //     label: "Settings",
-                                                  //     iconType: IconType.settings,
-                                                  //     componentId: orgsettingsloader
-                                                  // }
-                                              ])
 }

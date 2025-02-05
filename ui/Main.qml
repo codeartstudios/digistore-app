@@ -26,6 +26,9 @@ Window {
     // Create UserPermission object: Manage all user permissions centrally
     property UserPermissions loggedUserPermissions: UserPermissions{}
 
+    // Add Global Models to the mainApp
+    property GlobalModels globalModels: GlobalModels{}
+
     FontLoader {
         id: tablerIconsFontLoader
         source: "qrc:/assets/fonts/tabler-icons.ttf"
