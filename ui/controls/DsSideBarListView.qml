@@ -5,7 +5,7 @@ ListView {
     id: root
     spacing: Theme.btnRadius
     delegate: DsIconButton {
-        property bool isActive: currentSideBarMenu===model.label
+        property bool isActive: globalModels.currentSideBarMenu===model.label
 
         iconType: model.iconType
         toolTip: model.tooltip
@@ -19,7 +19,7 @@ ListView {
         anchors.horizontalCenter: parent.horizontalCenter
 
         onClicked: {
-            if(model.checkable) currentSideBarMenu = model.label
+            if(model.checkable) globalModels.currentSideBarMenu = model.label
             menuSelected(model.label)
         }
 

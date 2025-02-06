@@ -26,18 +26,21 @@ Drawer {
             radius: height/2
             anchors.top: parent.top
             anchors.right: parent.left
+            anchors.topMargin: Theme.btnHeight/2
             anchors.rightMargin: -Theme.btnHeight/2
 
             DsIconButton {
-                height: parent.height
+                height: parent.height - Theme.btnRadius
                 width: height
-                anchors.left: parent.left
                 iconType: IconType.x
                 radius: height/2
                 textColor: Theme.warningColor
                 bgColor: "transparent"
                 bgHover: withOpacity(Theme.warningAltColor, 0.8)
                 bgDown: withOpacity(Theme.warningAltColor, 0.6)
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.btnRadius/2
+                anchors.verticalCenter: parent.verticalCenter
 
                 onClicked: root.close()
             }

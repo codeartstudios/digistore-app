@@ -22,7 +22,6 @@
         <file>ui/views/auth/ConfirmEmail.qml</file>
         <file>ui/views/DashboardPage.qml</file>
         <file>ui/views/SettingsPage.qml</file>
-        <file>ui/views/AccountsPage.qml</file>
         <file>ui/views/InventoryPage.qml</file>
         <file>ui/views/TellerPage.qml</file>
         <file>ui/views/SalesPage.qml</file>
@@ -85,7 +84,6 @@
         <file>ui/controls/DsCard.qml</file>
         <file>ui/controls/DsSettingsStackPage.qml</file>
         <file>ui/views/settings/DsGeneralSettings.qml</file>
-        <file>ui/views/settings/controls/DsSettingsCard.qml</file>
         <file>ui/views/settings/DsAccountSettings.qml</file>
         <file>assets/imgs/no-profile.png</file>
         <file>ui/controls/DsSwitch.qml</file>
@@ -98,6 +96,8 @@
         <file>ui/popups/DsOrgUserAccountDrawer.qml</file>
         <file>ui/popups/DsOrgSettingsDrawer.qml</file>
         <file>ui/popups/DsOrgPocketbaseAminDrawer.qml</file>
+        <file>ui/controls/DsSettingsCard.qml</file>
+        <file>ui/controls/DsSettingsRowLabel.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

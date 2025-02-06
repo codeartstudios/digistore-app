@@ -8,10 +8,6 @@ Item {
     id: sidebar
     width: Theme.appSidebarWidth
 
-    property string currentSideBarMenu: "dashboard"
-    property ListModel sideMenu: ListModel{}
-    property ListModel sideMenuExtras: ListModel{}
-
     signal menuSelected(var label)
 
     Item {
@@ -41,7 +37,7 @@ Item {
 
         DsSideBarListView {
             width: parent.width
-            model: sideMenu
+            model: globalModels.sideMenu
             anchors.bottom: extraslv.top
             anchors.top: logoitem.bottom
             anchors.bottomMargin: Theme.xsSpacing
@@ -50,9 +46,9 @@ Item {
         DsSideBarListView {
             id: extraslv
             width: parent.width
-            height: (sideMenuExtras.count * Theme.lgBtnHeight) + ((sideMenuExtras.count-1) * spacing)
+            height: (globalModels.sideMenuExtras.count * Theme.lgBtnHeight) + ((globalModels.sideMenuExtras.count-1) * spacing)
             anchors.bottom: parent.bottom
-            model: sideMenuExtras
+            model: globalModels.sideMenuExtras
         }
 
     }
@@ -64,84 +60,4 @@ Item {
         color: Theme.baseAlt1Color
         anchors.right: parent.right
     } // Rectangle: Right border line
-
-    Component.onCompleted: {
-        sideMenu.append({
-                            checkable: true,
-                            label: "dashboard",
-                            tooltip: "Org. Dashboard",
-                            isBusy: false,
-                            iconType: IconType.chalkboard
-                        })
-
-        sideMenu.append({
-                            checkable: true,
-                            label: "teller",
-                            tooltip: "Teller Page",
-                            isBusy: false,
-                            iconType: IconType.shoppingCartBolt
-                        })
-
-        sideMenu.append({
-                            checkable: true,
-                            label: "inventory",
-                            tooltip: "Org. Inventory",
-                            isBusy: false,
-                            iconType: IconType.database
-                        })
-
-        sideMenu.append({
-                            checkable: true,
-                            label: "organization",
-                            tooltip: "My Organization",
-                            isBusy: false,
-                            iconType: IconType.briefcase2
-                        })
-
-        sideMenu.append({
-                            checkable: true,
-                            label: "sales",
-                            tooltip: "Org. Sales",
-                            isBusy: false,
-                            iconType: IconType.tableShare
-                        })
-        sideMenu.append({
-                            checkable: false,
-                            label: "pocketbaseadmin",
-                            tooltip: "Pocketbase Admin",
-                            isBusy: false,
-                            iconType: IconType.databaseCog
-                        })
-        sideMenu.append({
-                            checkable: true,
-                            label: "accounts",
-                            tooltip: "Accounts & Permissions",
-                            isBusy: false,
-                            iconType: IconType.users
-                        })
-
-        sideMenuExtras.append({
-                                  checkable: true,
-                                  label: "notifications",
-                                  tooltip: "Notifications",
-                                  isBusy: false,
-                                  iconType: IconType.bell
-                              })
-
-        sideMenuExtras.append({
-                                  checkable: true,
-                                  label: "settings",
-                                  tooltip: "App Settings",
-                                  isBusy: false,
-                                  iconType: IconType.settings
-                              })
-
-        sideMenuExtras.append({
-                                  checkable: true,
-                                  label: "profile",
-                                  tooltip: "User Profile",
-                                  isBusy: false,
-                                  iconType: IconType.userScreen
-                              })
-    }
 }

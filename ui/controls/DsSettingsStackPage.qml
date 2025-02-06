@@ -4,6 +4,7 @@ import app.digisto.modules
 
 Item {
     id: root
+    title: qsTr("Organization Settings")
 
     // Label & Icon, to be shown on the settings navigation Page
     required property string title

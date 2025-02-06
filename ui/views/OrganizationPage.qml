@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
+import "../popups"
 import "../flow"
 
 DsPage {
@@ -12,6 +13,10 @@ DsPage {
     headerShown: true
 
     property ListModel orgTabModel: ListModel{}
+
+    property alias orgpbadminDrawer: orgpbadminDrawer
+    property alias orgaccountsDrawer: orgaccountsDrawer
+    property alias orgsettingsDrawer: orgsettingsDrawer
     property alias refreshEnabled: refreshBtn.enabled
 
     signal refreshPage()
@@ -80,4 +85,8 @@ DsPage {
             }
         }
     }
+
+    DsOrgSettingsDrawer {id: orgsettingsDrawer }
+    DsOrgUserAccountDrawer { id: orgaccountsDrawer }
+    DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
 }

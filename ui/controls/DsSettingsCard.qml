@@ -3,8 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import app.digisto.modules
 
-import "../../../controls"
-
 Rectangle {
     id: bgrect
     radius: Theme.btnRadius
@@ -72,5 +70,3 @@ Rectangle {
         }
     }
 }
-
-
