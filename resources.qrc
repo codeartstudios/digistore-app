@@ -95,6 +95,9 @@
         <file>ui/controls/DsToast.qml</file>
         <file>ui/flow/UserPermissions.qml</file>
         <file>ui/flow/GlobalModels.qml</file>
+        <file>ui/popups/DsOrgUserAccountDrawer.qml</file>
+        <file>ui/popups/DsOrgSettingsDrawer.qml</file>
+        <file>ui/popups/DsOrgPocketbaseAminDrawer.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

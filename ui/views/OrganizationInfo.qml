@@ -10,21 +10,21 @@ import "../popups"
 ScrollView {
     id: scrollview
 
-    ScrollBar.horizontal: ScrollBar{
-        policy: ScrollBar.AlwaysOff
-    }
+    // ScrollBar.horizontal: ScrollBar{
+    //     policy: ScrollBar.AlwaysOff
+    // }
 
-    Keys.onUpPressed: scrollBar.decrease()
-    Keys.onDownPressed: scrollBar.increase()
+    // Keys.onUpPressed: scrollBar.decrease()
+    // Keys.onDownPressed: scrollBar.increase()
 
-    ScrollBar.vertical: ScrollBar{
-        id: scrollBar
-        policy: ScrollBar.AsNeeded
-        parent: scrollview
-        anchors.top: scrollview.top
-        anchors.bottom: scrollview.bottom
-        anchors.left: scrollview.right
-    }
+    // ScrollBar.vertical: ScrollBar{
+    //     id: scrollBar
+    //     policy: ScrollBar.AsNeeded
+    //     parent: scrollview
+    //     anchors.top: scrollview.top
+    //     anchors.bottom: scrollview.bottom
+    //     anchors.left: scrollview.right
+    // }
 
     property string orgName: ""
     property string orgDescription: ""
@@ -41,13 +41,13 @@ ScrollView {
 
 
     Column {
-        id: scrollcol
+        id: _contentCol
         width: scrollview.width
         spacing: Theme.xsSpacing
 
         // Organization Details
         DsSettingsCard {
-            width: scrollcol.width
+            width: _contentCol.width
             title: qsTr("Organization")
             desc: qsTr("Organization details and subscription plan.")
 
@@ -92,6 +92,7 @@ ScrollView {
 
                 DsInputWithLabel {
                     id: orgemailinput
+                    text: orgEmail
                     label: qsTr("Org. Email")
                     color: Theme.bodyColor
                     input.placeholderText: qsTr("email@org.com")
@@ -100,6 +101,7 @@ ScrollView {
 
                 DsInputWithLabel {
                     id: orgmobileinput
+                    text: orgMobile
                     label: qsTr("Org. Mobile")
                     color: Theme.bodyColor
                     input.placeholderText: qsTr("+1 234 456 789")
@@ -108,61 +110,11 @@ ScrollView {
 
                 DsInputWithLabel {
                     id: orgwebsiteinput
+                    text: orgDomain
                     label: qsTr("Org. Website")
                     color: Theme.bodyColor
                     input.placeholderText: qsTr("https://someorg.com")
                     Layout.fillWidth: true
-                }
-            }
-
-
-            Rectangle {
-                width: parent.width
-                radius: Theme.btnRadius
-                height: plancol.height + Theme.xsSpacing * 2
-                color: Theme.warningAltColor
-
-                RowLayout {
-                    width: parent.width - Theme.xsSpacing * 2
-                    spacing: Theme.xsSpacing
-                    anchors.centerIn: parent
-
-                    Column {
-                        id: plancol
-                        spacing: Theme.xsSpacing/2
-                        Layout.fillWidth: true
-
-                        DsLabel {
-                            color: Theme.txtHintColor
-                            fontSize: Theme.smFontSize
-                            text: qsTr("Current Plan")
-                        }
-
-                        DsLabel {
-                            color: Theme.txtHintColor
-                            fontSize: Theme.h3
-                            text: qsTr("STARTER")
-                            isBold: true
-                        }
-                    }
-
-                    Column {
-                        spacing: Theme.xsSpacing/2
-                        Layout.fillWidth: true
-
-                        DsLabel {
-                            color: Theme.txtHintColor
-                            fontSize: Theme.smFontSize
-                            text: qsTr("Expires")
-                        }
-
-                        DsLabel {
-                            color: Theme.txtHintColor
-                            fontSize: Theme.h3
-                            text: qsTr("NEVER")
-                            isBold: true
-                        }
-                    }
                 }
             }
         }
@@ -276,6 +228,84 @@ ScrollView {
         // Organization Settings
         DsSettingsCard {
             width: parent.width
+            title: qsTr("Organization Admin Actions")
+            desc: qsTr("Configure administrative actions")
+
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("View & Manage User Accounts")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsButton {
+                    text: qsTr("User Accounts")
+                    endIcon: IconType.externalLink
+                    height: Theme.xsBtnheight
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    onClicked: openDrawer("accounts")
+                }
+            }
+
+            // or
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Change Organization Settings")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsButton {
+                    text: qsTr("Org. Settings")
+                    endIcon: IconType.externalLink
+                    height: Theme.xsBtnheight
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    onClicked: openDrawer("settings")
+                }
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: Theme.xsSpacing
+
+                DsLabel {
+                    text: qsTr("Open Pocketbase Admin Panel")
+                    fontSize: Theme.baseFontSize
+                    color: Theme.txtPrimaryColor
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                }
+
+                DsButton {
+                    text: qsTr("Pocketbase Dashboard")
+                    endIcon: IconType.externalLink
+                    height: Theme.xsBtnheight
+                    textColor: Theme.baseColor
+                    Layout.alignment: Qt.AlignVCenter
+
+                    onClicked: openDrawer("pocketbase")
+                }
+            }
+        }
+
+
+        // Organization Settings
+        DsSettingsCard {
+            width: parent.width
             title: qsTr("Organization Settings")
             desc: qsTr("Configure organization settings")
 
@@ -314,6 +344,33 @@ ScrollView {
                     Layout.alignment: Qt.AlignVCenter
                 }
             }
+        }
+    }
+
+    Loader {
+        id: drawerLoader
+        asynchronous: true
+    }
+
+    function openDrawer(page) {
+        switch(page) {
+        case "accounts": {
+            drawerLoader.source = "qrc:/ui/popups/DsOrgUserAccountDrawer.qml";
+            drawerLoader.active = true;
+            break;
+        }
+
+        case "settings": {
+            drawerLoader.source = "qrc:/ui/popups/DsOrgSettingsDrawer.qml";
+            drawerLoader.active = true;
+            break;
+        }
+
+        case "accounts": {
+            drawerLoader.source = "qrc:/ui/popups/DsOrgPocketbaseAdminDrawer.qml";
+            drawerLoader.active = true;
+            break;
+        }
         }
     }
 

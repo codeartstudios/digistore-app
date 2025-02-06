@@ -7,13 +7,15 @@ Rectangle {
     implicitHeight: Theme.inputHeight
     width: height * 2
     radius: height/2
-    color: Theme.baseAlt1Color
+    color: Theme.baseColor
     opacity: enabled ? 1 : 0.7
+    border.width: Theme.btnRadius/2
+    border.color: Theme.shadowColor
 
     property bool checked: false
     property alias bgColor: root.color
     property string activeColor: Theme.successColor
-    property string inactiveColor: Theme.successAltColor // Theme.baseAlt2Color
+    property string inactiveColor: Theme.successAltColor
     property alias idicator: indicator
 
     Rectangle {

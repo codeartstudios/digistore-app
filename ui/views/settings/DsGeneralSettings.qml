@@ -28,7 +28,6 @@ DsSettingsStackPage {
             }
 
             DsSwitch {
-                bgColor: Theme.bodyColor
                 checked: dsController.isDarkTheme
                 Layout.alignment: Qt.AlignVCenter
 
@@ -51,7 +50,6 @@ DsSettingsStackPage {
             }
 
             DsSwitch {
-                bgColor: Theme.bodyColor
                 checked: dsController.startWindowMaximized
                 Layout.alignment: Qt.AlignVCenter
 
