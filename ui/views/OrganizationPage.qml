@@ -17,9 +17,6 @@ DsPage {
     property alias orgpbadminDrawer: orgpbadminDrawer
     property alias orgaccountsDrawer: orgaccountsDrawer
     property alias orgsettingsDrawer: orgsettingsDrawer
-    property alias refreshEnabled: refreshBtn.enabled
-
-    signal refreshPage()
 
     ColumnLayout {
         anchors.fill: parent
@@ -37,20 +34,6 @@ DsPage {
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
                 text: qsTr("Organization")
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            DsLabel {
-                fontSize: Theme.h1
-                color: Theme.txtHintColor
-                text: qsTr("/")
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            DsLabel {
-                fontSize: Theme.h2
-                color: Theme.txtPrimaryColor
-                text: qsTr("Info")
                 Layout.alignment: Qt.AlignVCenter
             }
 

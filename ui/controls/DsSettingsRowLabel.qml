@@ -3,11 +3,12 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 RowLayout {
+    id: root
     width: parent.width
     spacing: Theme.xsSpacing
 
     property alias label: lbl.text
-    property alias value: val.text
+    property string value
 
     DsLabel {
         id: lbl
@@ -19,6 +20,8 @@ RowLayout {
 
     DsLabel {
         id: val
+        text: (!root.value || root.value === "") ?
+                  qsTr("N/A") : root.value
         fontSize: Theme.baseFontSize
         color: Theme.txtHintColor
         height: Theme.inputHeight

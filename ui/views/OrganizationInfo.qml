@@ -9,81 +9,94 @@ import "../popups"
 DsSettingsStackPage {
     id: scrollview
 
-    property string orgName: ""
-    property string orgDescription: ""
-    property string orgEmail: ""
-    property string orgAddress: ""
-    property string orgMobile: ""
-    property string orgId: ""
-    property string orgBanner: ""
-    property string orgLogo: ""
-    property string orgDomain: ""
-    property string orgCreated: ""
-    property bool orgActivated: false
     property DsMessageBox messageBox: DsMessageBox{}
 
     // Organization Details
     DsSettingsCard {
         width: parent.width
         title: qsTr("Organization")
-        desc: qsTr("Organization details and subscription plan.")
-
-        actions: [
-            DsButton {
-                text: qsTr("Update Org.")
-                visible: false
-            }
-        ]
+        desc: qsTr("Organization information.")
 
         DsSettingsRowLabel {
             label: qsTr("Org. Name")
-            value: qsTr("Some Org Inc.")
+            value: dsController.organization.name
         }
 
         DsSettingsRowLabel {
             label: qsTr("Org. Description")
-            value: qsTr("Some Org Inc.")
+            value: dsController.organization.description
         }
 
         DsSettingsRowLabel {
             label: qsTr("Org. Email")
-            value: qsTr("email@org.com")
+            value: dsController.organization.email
         }
 
         DsSettingsRowLabel {
             label: qsTr("Org. Mobile")
-            value: qsTr("+1 234 456 789")
+            value: formatMobile(dsController.organization.mobile)
+
+            function formatMobile(mobile) {
+                if(!mobile || mobile==="") return ""
+                return `(${mobile.dial_code})${mobile.number}`
+            }
         }
 
         DsSettingsRowLabel {
             label: qsTr("Org. Website")
-            value: qsTr("https://someorg.com")
+            value: dsController.organization.domain
+        }
+
+        DsSettingsRowLabel {
+            label: qsTr("Org. Address")
+            value: dsController.organization.address
         }
 
         // Add Separator line
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.baseAlt1Color
+        } // Separator Line
 
         // Workspace
         DsSettingsRowLabel {
-            label: qsTr("Workspace URL")
-            value: qsTr("xxxx.digisto.app")
+            label: qsTr("Workspace Name")
+            value: dsController.organization.workspace
         }
 
         // Domain
         DsSettingsRowLabel {
-            label: qsTr("Server Root Domain")
-            value: qsTr("https://digisto.app")
+            label: qsTr("Workspace URL")
+            value: dsController.organization.workspace_url
         }
+
+        DsSettingsRowLabel {
+            label: qsTr("Workspace Approved")
+            value: dsController.organization.approved
+        }
+
+        // Add Separator line
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.baseAlt1Color
+        } // Separator Line
 
         // Currency
         DsSettingsRowLabel {
             label: qsTr("Default currency")
-            value: qsTr("Kenyan Shilling (KSH)")
+            value: dsController.organization.settings &&
+                   dsController.organization.settings.currency ?
+                       dsController.organization.settings.currency : ""
         }
 
         // Lock timeout
         DsSettingsRowLabel {
             label: qsTr("App lock timeout")
-            value: qsTr("1 Minute")
+            value: dsController.organization.settings &&
+                   dsController.organization.settings.applock ?
+                       dsController.organization.settings.applock : ""
         }
     }
 
@@ -192,17 +205,7 @@ DsSettingsStackPage {
 
         if(res.status===200) {
             var data = res.data;
-            orgName = data.name
-            orgDescription = data.description
-            orgEmail = data.email
-            orgAddress = data.address
-            orgMobile = data.mobile
-            orgId = data.id;
-            orgBanner = data.banner
-            orgLogo = data.logo
-            orgDomain = data.domain
-            orgActivated = data.approved
-            orgCreated = data.created
+            dsController.organization = data
         }
 
         else if(res.status === 403) {
@@ -212,9 +215,9 @@ DsSettingsStackPage {
 
         else {
             showMessage("Organization Error",
-                        "The requested resource wasn't found.")
+                        `${res.data.message ? res.data.message : qsTr("Unknown Error!")}`)
         }
     }
 
-    // Component.onCompleted: fetchOrganizationDetails()
+    Component.onCompleted: fetchOrganizationDetails()
 }
