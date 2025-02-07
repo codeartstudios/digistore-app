@@ -71,8 +71,8 @@ DsPage {
                                      })
 
                     menuModel.append({
-                                         label: "Manage Organization",
-                                         icon: IconType.playlistAdd
+                                         label: "Edit Organization",
+                                         icon: IconType.adjustmentsCog
                                      })
 
                     menuModel.append({ type: "spacer" })

@@ -79,10 +79,25 @@ DsDrawer {
                 text: qsTr("Account Options")
 
                 Component.onCompleted: {
+                    menuModel.clear()
                     menuModel.append({type: "", icon: IconType.usersPlus, label: qsTr("New User")})
                     menuModel.append({type: "spacer" })
                     menuModel.append({type: "", icon: IconType.userCog, label: qsTr("Account Settings")})
                 }
+
+                onCurrentMenuChanged: (index) => {
+                                          switch(index) {
+                                              case 0: {
+                                                  if(loggedUserPermissions.canAddUsers) {
+                                                      newuserDrawer.open()
+                                                  } else {
+                                                      toast.warning("Sorry, you don't have permission to add users.")
+                                                  }
+
+                                                  break;
+                                              }
+                                          }
+                                      }
             }
         }
 
@@ -95,7 +110,7 @@ DsDrawer {
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getTellers()
+            onAccepted: getTellers()
         }
 
         DsTable {
@@ -255,10 +270,17 @@ DsDrawer {
 
         // When Account is deleted or updated, reload the info ...
         onUserDeleted: getTellers()
-        onUserUpdated: {
-            accountstable.currentIndex = -1
-            getTellers()
-        }
+        onUserUpdated: getTellers()
+    }
+
+    DsOrgNewUserAccountDrawer {
+        id: newuserDrawer
+
+        // Reset table current index when the drawer closes
+        onClosed: accountstable.currentIndex = -1
+
+        // When Account is deleted or updated, reload the info ...
+        onUserAdded: getTellers()
     }
 
     Requests {
@@ -321,5 +343,5 @@ DsDrawer {
         }
     }
 
-    Component.onCompleted: getTellers()
+    onOpened: getTellers()
 }

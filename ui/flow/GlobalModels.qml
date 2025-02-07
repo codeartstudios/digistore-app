@@ -6,6 +6,20 @@ Item {
     // Holds the tab information for tab switching
     property ListModel orgTabModel: ListModel{}
 
+    // Template for user permissions
+    property var userPermissonsTemplate: {
+        'can_add_stock': false,
+        'can_manage_stock': false,
+        'can_sell_products': false,
+        'can_add_products': false,
+        'can_manage_products': false,
+        'can_add_suppliers': false,
+        'can_manage_suppliers': false,
+        'can_manage_sales': false,
+        'can_manage_inventory': false,
+        'can_manage_org': false,
+        'can_manage_users': false
+    }
 
     property string currentSideBarMenu: "dashboard"
     property ListModel sideMenu: ListModel{}

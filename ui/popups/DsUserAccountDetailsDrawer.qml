@@ -8,8 +8,7 @@ import "../controls"
 
 DsDrawer {
     id: root
-    width: 500
-    topCloseButtonShown: false
+    width: Math.min(500, mainApp.width * 0.9)
 
     // Hold selected user data
     property var userData: null
@@ -24,12 +23,16 @@ DsDrawer {
         property var accountSwitches: ({})
         property bool loaded: false
         property string requestType: ""
-        property bool isAdminAccount: userData!==null && userData.is_admin
         property bool isMyAccount: userData!==null && userData.id===dsController.loggedUser.id
-        property bool loggedAsAdmin: dsController.loggedUser!==null &&  dsController.loggedUser.is_admin===true
-        property bool canEditPermissions: dsController.loggedUser!==null && dsController.loggedUser.permissions &&  dsController.loggedUser.permissions.can_manage_users===true
+
         property ListModel fieldsModel: ListModel {}
-        property ListModel permissionModel: ListModel {}
+        property var permissionModel: null
+
+        property bool fieldsEdited: loaded ? Object.keys(accountSwitches).length > 0 ||
+                                             (accountPermissions !== null && userData &&
+                                              userData["permissions"] !== permissionModel) : false
+
+        property bool accountIsAdmin: (userData && userData["is_admin"] === true ) ? true : false
     }
 
     contentItem: Item {
@@ -55,19 +58,28 @@ DsDrawer {
                     Layout.fillWidth: true
                 }
 
+                Item {
+                    Layout.fillWidth: true
+                    height: 1
+                }
+
                 DsButton {
-                    text: qsTr("Close")
-                    bgColor: Theme.primaryColor
+                    visible: !internal.isMyAccount && loggedUserPermissions.canEditPermissions
+                    iconType: IconType.userMinus
+                    busy: request.running && internal.requestType==="deleteAccount"
+                    enabled: !request.running
+                    text: qsTr("Delete Account")
+                    bgColor: Theme.dangerColor
                     textColor: Theme.baseColor
                     Layout.alignment: Qt.AlignVCenter
 
-                    onClicked: root.close()
+                    onClicked: deleteAccount()
                 }
             }
 
             Rectangle {
                 width: scrollview.width
-                color: Theme.dangerAltColor
+                color: Theme.warningAltColor
                 visible: internal.isMyAccount
 
                 Layout.fillWidth: true
@@ -76,7 +88,7 @@ DsDrawer {
                 Layout.rightMargin: Theme.baseSpacing
 
                 DsLabel {
-                    color: Theme.dangerColor
+                    color: Theme.warningColor
                     fontSize: Theme.lgFontSize
                     text: qsTr("This is your account, you can't edit it.")
                     anchors.centerIn: parent
@@ -111,7 +123,7 @@ DsDrawer {
                     id: scrollBar
                     hoverEnabled: true
                     active: hovered || pressed
-                    anchors.right: parent.right
+                    anchors.left: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                 }
@@ -202,11 +214,11 @@ DsDrawer {
                                         }
 
                                         DsSwitch {
-                                            bgColor: Theme.bodyColor
+                                            // bgColor: Theme.bodyColor
                                             checked: root.userData ? root.userData[model.key] : ""
                                             enabled: !internal.isMyAccount && model.key!=="verified" &&
                                                      ((root.userData && root.userData.is_admin) ||
-                                                      internal.canEditPermissions)
+                                                      loggedUserPermissions.canEditPermissions)
                                             Layout.alignment: Qt.AlignVCenter
 
                                             onCheckedChanged: if(internal.loaded && root.userData)
@@ -222,7 +234,7 @@ DsDrawer {
                     Column {
                         width: scrollview.width
                         spacing: Theme.xsSpacing
-                        visible: !internal.isAdminAccount
+                        visible: !internal.accountIsAdmin
 
                         DsLabel {
                             color: Theme.txtPrimaryColor
@@ -235,10 +247,17 @@ DsDrawer {
                         Repeater {
                             id: productslv
                             width: scrollview.width
-                            model: internal.permissionModel
+                            model: internal.permissionModel ? Object.keys(internal.permissionModel) : []
                             delegate: Rectangle {
+                                id: productlvDelegate
                                 width: scrollview.width
                                 height: Theme.btnHeight
+                                color: Theme.baseColor
+                                radius: Theme.btnRadius
+
+                                property string key: modelData
+                                property string label: getLabel(key)
+                                property bool value: internal.permissionModel[key]
 
                                 RowLayout {
                                     width: parent.width
@@ -254,18 +273,18 @@ DsDrawer {
                                     DsLabel {
                                         color: Theme.txtPrimaryColor
                                         fontSize: Theme.xlFontSize
-                                        text: model.label
+                                        text: productlvDelegate.label
                                         Layout.fillWidth: true
                                         Layout.alignment: Qt.AlignVCenter
                                     }
 
                                     DsSwitch {
-                                        checked: model.value
-                                        enabled: internal.canEditPermissions && !internal.isMyAccount
+                                        checked: productlvDelegate.value
+                                        enabled: loggedUserPermissions.canEditPermissions && !internal.isMyAccount
                                         Layout.alignment: Qt.AlignVCenter
 
                                         onCheckedChanged: if(internal.loaded)
-                                                              internal.accountPermissions[model.key] = checked
+                                                              internal.permissionModel[key] = checked
                                     }
                                 }
                             }
@@ -276,36 +295,14 @@ DsDrawer {
 
             RowLayout {
                 id: bottomRowLayout
-                visible: !internal.isMyAccount
+                visible: !internal.isMyAccount && internal.fieldsEdited &&
+                         loggedUserPermissions.canEditPermissions
                 spacing: Theme.xsSpacing/2
                 Layout.preferredHeight: visible ? Theme.btnHeight : 0
                 Layout.alignment: Qt.AlignRight
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
                 Layout.bottomMargin: Theme.xsSpacing
-
-                DsButton {
-                    busy: request.running && internal.requestType==="deleteAccount"
-                    enabled: !request.running
-                    text: qsTr("Delete Account")
-                    bgColor: Theme.dangerColor
-                    textColor: Theme.baseColor
-                    Layout.alignment: Qt.AlignVCenter
-
-                    onClicked: deleteAccount()
-                }
-
-                DsButton {
-                    busy: request.running && internal.requestType==="resetPassword"
-                    enabled: !request.running
-                    visible: false // !internal.isMyAccount && (internal.loggedAsAdmin || internal.canEditPermissions)
-                    text: qsTr("Reset Password")
-                    bgColor: Theme.primaryColor
-                    textColor: Theme.baseColor
-                    Layout.alignment: Qt.AlignVCenter
-
-                    onClicked: resetPassword()
-                }
 
                 Item {
                     Layout.fillWidth: true
@@ -315,7 +312,6 @@ DsDrawer {
                 DsButton {
                     busy: request.running && internal.requestType==="updateUser"
                     enabled: !request.running
-                    visible: !internal.isMyAccount && (internal.loggedAsAdmin || internal.canEditPermissions)
                     text: qsTr("Update User")
                     bgColor: Theme.successColor
                     textColor: Theme.baseColor
@@ -338,15 +334,16 @@ DsDrawer {
     }
 
     function populateModel(perm) {
-        let keys = Object.keys(perm)
-        keys.forEach((key) => {
-                         var p = {
-                             key,
-                             value: perm[key],
-                             label: getLabel(key)
-                         }
-                         internal.permissionModel.append(p)
-                     })
+        // let keys = Object.keys(perm)
+        // keys.forEach((key) => {
+        //                  var p = {
+        //                      key,
+        //                      value: perm[key],
+        //                      label: getLabel(key)
+        //                  }
+        //                  internal.permissionModel.append(p)
+        //              })
+        internal.permissionModel = perm
     }
 
     onOpened: {
@@ -362,7 +359,7 @@ DsDrawer {
             return val ? `(${val.dial_code})${val.number}` : 'None'}
                                     })
 
-        internal.permissionModel.clear()
+        internal.permissionModel = null
 
         if(userData) {
             if(userData["permissions"]) {
@@ -370,21 +367,8 @@ DsDrawer {
                 internal.accountPermissions = perm
                 populateModel(perm)
             } else {
-                let perm = {
-                    can_add_stock: false,
-                    can_manage_stock: false,
-                    can_sell_products: false,
-                    can_add_products: false,
-                    can_manage_products: false,
-                    can_add_suppliers: false,
-                    can_manage_suppliers: false,
-                    can_manage_sales: false,
-                    can_manage_inventory: false,
-                    can_manage_org: false,
-                    can_manage_users: false,
-                }
-                internal.accountPermissions = perm
-                populateModel(perm)
+                internal.accountPermissions = globalModels.userPermissonsTemplate
+                populateModel(globalModels.userPermissonsTemplate)
             }
         }
 
@@ -413,13 +397,13 @@ DsDrawer {
 
         if(res.status===204) {
             // Show delete message and close drawer ...
-            root.close()
-            // console.log("Account Deleted ...")
-            showMessage(
-                        qsTr("Account Delete Success!"),
-                        qsTr("Selected Account Deleted Successfully!")
-                        )
+            toast.success(qsTr("User account deleted!"))
+            // showMessage(
+            //             qsTr("Account Delete Success!"),
+            //             qsTr("Selected Account Deleted Successfully!")
+            //             )
             root.userDeleted()
+
         }
 
         else if(res.status === 0) {
@@ -480,9 +464,7 @@ DsDrawer {
         var res = request.send();
 
         if(res.status===200) {
-            // root.close()
             root.userUpdated()
-            // console.log('> ', JSON.stringify(res))
         }
 
         else if(res.status === 0) {
