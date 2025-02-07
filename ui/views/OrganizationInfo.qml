@@ -51,13 +51,12 @@ DsSettingsStackPage {
             label: qsTr("Org. Address")
             value: dsController.organization.address
         }
+    }
 
-        // Add Separator line
-        Rectangle {
-            width: parent.width
-            height: 1
-            color: Theme.baseAlt1Color
-        } // Separator Line
+    DsSettingsCard {
+        width: parent.width
+        title: qsTr("Workspace")
+        desc: qsTr("Organization workspace details.")
 
         // Workspace
         DsSettingsRowLabel {
@@ -75,13 +74,12 @@ DsSettingsStackPage {
             label: qsTr("Workspace Approved")
             value: dsController.organization.approved
         }
+    }
 
-        // Add Separator line
-        Rectangle {
-            width: parent.width
-            height: 1
-            color: Theme.baseAlt1Color
-        } // Separator Line
+    DsSettingsCard {
+        width: parent.width
+        title: qsTr("Preferences")
+        desc: qsTr("Organization defined settings.")
 
         // Currency
         DsSettingsRowLabel {
@@ -97,102 +95,6 @@ DsSettingsStackPage {
             value: dsController.organization.settings &&
                    dsController.organization.settings.applock ?
                        dsController.organization.settings.applock : ""
-        }
-    }
-
-    // Organization Settings
-    DsSettingsCard {
-        width: parent.width
-        title: qsTr("Organization Admin Actions")
-        desc: qsTr("Configure administrative actions")
-
-        RowLayout {
-            width: parent.width
-            spacing: Theme.xsSpacing
-
-            DsLabel {
-                text: qsTr("View & Manage User Accounts")
-                fontSize: Theme.baseFontSize
-                color: Theme.txtPrimaryColor
-                Layout.alignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
-
-            DsButton {
-                text: qsTr("User Accounts")
-                endIcon: IconType.externalLink
-                height: Theme.xsBtnheight
-                textColor: Theme.baseColor
-                Layout.alignment: Qt.AlignVCenter
-
-                onClicked: openDrawer("accounts")
-            }
-        }
-
-        // or
-        RowLayout {
-            width: parent.width
-            spacing: Theme.xsSpacing
-
-            DsLabel {
-                text: qsTr("Change Organization Settings")
-                fontSize: Theme.baseFontSize
-                color: Theme.txtPrimaryColor
-                Layout.alignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
-
-            DsButton {
-                text: qsTr("Org. Settings")
-                endIcon: IconType.externalLink
-                height: Theme.xsBtnheight
-                textColor: Theme.baseColor
-                Layout.alignment: Qt.AlignVCenter
-
-                onClicked: openDrawer("settings")
-            }
-        }
-
-        RowLayout {
-            width: parent.width
-            spacing: Theme.xsSpacing
-
-            DsLabel {
-                text: qsTr("Open Pocketbase Admin Panel")
-                fontSize: Theme.baseFontSize
-                color: Theme.txtPrimaryColor
-                Layout.alignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
-
-            DsButton {
-                text: qsTr("Pocketbase Dashboard")
-                endIcon: IconType.externalLink
-                height: Theme.xsBtnheight
-                textColor: Theme.baseColor
-                Layout.alignment: Qt.AlignVCenter
-
-                onClicked: openDrawer("pocketbase")
-            }
-        }
-    }
-
-    function openDrawer(page) {
-        switch(page) {
-        case "pocketbase": {
-            orgpbadminDrawer.open()
-            break;
-        }
-
-        case "settings": {
-            orgsettingsDrawer.open()
-            break;
-        }
-
-        case "accounts": {
-            orgaccountsDrawer.open()
-            break;
-        }
         }
     }
 

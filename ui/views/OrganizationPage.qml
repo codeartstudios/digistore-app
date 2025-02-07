@@ -39,6 +39,7 @@ DsPage {
 
             DsIconButton {
                 id: refreshBtn
+                enabled: !request.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -47,13 +48,42 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                // onClicked: root.refreshPage()
+                onClicked: organizationinfopage.fetchOrganizationDetails()
             }
 
             Item {
                 Layout.fillWidth: true
                 height: 1
             }
+
+            DsMenu {
+                id: toolsMenu
+                iconType: IconType.shieldCog
+                text: qsTr("Admin Actions")
+                onCurrentMenuChanged: (index) => openDrawer(index)
+
+                Component.onCompleted: {
+                    menuModel.clear()
+
+                    menuModel.append({
+                                         label: "Manage User Accounts",
+                                         icon: IconType.users
+                                     })
+
+                    menuModel.append({
+                                         label: "Manage Organization",
+                                         icon: IconType.playlistAdd
+                                     })
+
+                    menuModel.append({ type: "spacer" })
+
+                    menuModel.append({
+                                         label: "Pocketbase Admin Panel",
+                                         icon: IconType.shieldLock
+                                     })
+                }
+            }
+
         }
 
         StackView {
@@ -72,4 +102,23 @@ DsPage {
     DsOrgSettingsDrawer {id: orgsettingsDrawer }
     DsOrgUserAccountDrawer { id: orgaccountsDrawer }
     DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
+
+    function openDrawer(ind) {
+        switch(ind) {
+        case 3: {
+            orgpbadminDrawer.open()
+            break;
+        }
+
+        case 1: {
+            orgsettingsDrawer.open()
+            break;
+        }
+
+        case 0: {
+            orgaccountsDrawer.open()
+            break;
+        }
+        }
+    }
 }

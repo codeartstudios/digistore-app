@@ -272,7 +272,7 @@ void Requests::logRequest(const QString &method, const QString &endpoint, const 
         return val;
     };
 
-    qDebug() << "\n" << QString("/%1 %2 %3")
+    qDebug() << QString("/%1 %2 %3")
                     .arg(pad(method, 6),
                          pad(QString::number(statusCode), 4),
                          endpoint);

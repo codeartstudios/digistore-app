@@ -3,10 +3,10 @@ import QtQuick
 QtObject {
     // Is an admin account
     property bool isAdmin: dsController.loggedUser &&
-                           dsController.loggedUser.is_admin
+                           dsController.loggedUser.is_admin ? true : false
 
     // User has the  permission to sell products (teller mode)
     property bool canSellProducts: dsController.loggedUser &&
                                    dsController.loggedUser.permissions &&
-                                   dsController.loggedUser.permissions.can_sell_products
+                                   dsController.loggedUser.permissions.can_sell_products ? true : false
 }
