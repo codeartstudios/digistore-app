@@ -96,6 +96,11 @@ DsDrawer {
 
                                                   break;
                                               }
+
+                                              case 2: {
+                                                  toast.warning("Sorry, we've not implemented this feature yet!")
+                                                  break;
+                                              }
                                           }
                                       }
             }

@@ -80,8 +80,8 @@ DsDrawer {
                         id: namefield
                         mandatory: true
                         width: col.width
-                        label: qsTr("Full Name")
-                        input.placeholderText: qsTr("Firstname Lastname")
+                        label: qsTr("Fullname")
+                        input.placeholderText: qsTr("John Doe")
                     }
 
                     DsInputWithLabel {
@@ -144,13 +144,14 @@ DsDrawer {
         var mobileno = parseInt(mobilefield.input.text.trim()) ? parseInt(mobilefield.input.text.trim()) : 0
 
         if(name.split(' ')<=1 || name.length < 3) {
-            namefield.hasError=true;
-            namefield.errorString = qsTr("At least two names expected")
+            showMessage(qsTr("Create Account Error"),
+                        qsTr("At least two names required!"))
             return;
         }
 
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            emailfield.hasError = true;
+            showMessage(qsTr("Create Account Error"),
+                        qsTr("User email is not valid!"))
             return;
         }
 

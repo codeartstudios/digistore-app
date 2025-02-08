@@ -12,6 +12,9 @@ Drawer {
 
     property alias bgrect: bg
     property alias topCloseButtonShown: clsbtn.visible
+    property alias toast : toast
+
+    DsToast{ id: toast}
 
     background: Rectangle {
         id: bg
