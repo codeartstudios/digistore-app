@@ -21,17 +21,27 @@ DsDrawer {
 
         property var accountPermissions: null
         property var accountSwitches: ({})
+
         property bool loaded: false
         property string requestType: ""
+
+        // Check if the current current matches the logged user account, a.k.a `myAccount`
         property bool isMyAccount: userData!==null && userData.id===dsController.loggedUser.id
 
         property ListModel fieldsModel: ListModel {}
         property var permissionModel: null
 
-        property bool fieldsEdited: loaded ? Object.keys(accountSwitches).length > 0 ||
-                                             (accountPermissions !== null && userData &&
-                                              userData["permissions"] !== permissionModel) : false
+        // Check if any input fileds were edited ...
+        // First, check if the window `loaded` flag is set,if not return `false`
+        // If, loaded, check for:
+        //      - Either the `accountSwitches` object has value(s) in it (non empty) -> return true
+        //      - Else, check whether the `userData["permissions"]` & `permissionModel` are not equal
+        property bool fieldsEdited: loaded ? (Object.keys(accountSwitches).length > 0 ||
+                                              (accountPermissions !== null && userData &&
+                                               !Utils.isJSONEqual(userData["permissions"], permissionModel)))
+                                             ? true : false  : false
 
+        // Check if current user has the `is_admin` flag set
         property bool accountIsAdmin: (userData && userData["is_admin"] === true ) ? true : false
     }
 
@@ -213,9 +223,11 @@ DsDrawer {
                                             Layout.alignment: Qt.AlignVCenter
                                         }
 
+                                        // NOTE: We can't edit `verified` field as a normal user
+                                        // only done by admin accounts, in this case, pocketbase
+                                        // admin account not organization admin account
                                         DsSwitch {
-                                            // bgColor: Theme.bodyColor
-                                            checked: root.userData ? root.userData[model.key] : ""
+                                            checked: root.userData ? root.userData[model.key] : false
                                             enabled: !internal.isMyAccount && model.key!=="verified" &&
                                                      ((root.userData && root.userData.is_admin) ||
                                                       loggedUserPermissions.canEditPermissions)
@@ -223,7 +235,6 @@ DsDrawer {
 
                                             onCheckedChanged: if(internal.loaded && root.userData)
                                                                   internal.accountSwitches[model.key] = checked
-
                                         }
                                     }
                                 }
@@ -231,10 +242,12 @@ DsDrawer {
                         }
                     }
 
+                    // If the user has the `is_admin` flag set,
+                    // hide individual permission flags, not needed.
                     Column {
                         width: scrollview.width
                         spacing: Theme.xsSpacing
-                        visible: !internal.accountIsAdmin
+                        visible: !internal.accountIsAdmin   // Show for non-admins
 
                         DsLabel {
                             color: Theme.txtPrimaryColor
@@ -244,6 +257,9 @@ DsDrawer {
                             width: scrollview.width
                         }
 
+                        // The model for the repeater is generated from `permissionModel` JSON
+                        // object keys. When JSON object is null, this throws an error, so we pass
+                        // empty array '[]'
                         Repeater {
                             id: productslv
                             width: scrollview.width
@@ -255,8 +271,8 @@ DsDrawer {
                                 color: Theme.baseColor
                                 radius: Theme.btnRadius
 
-                                property string key: modelData
-                                property string label: getLabel(key)
+                                property string key: modelData  // JSON Object Key
+                                property string label: getLabel(key)    // Convert the key to a string (remove '_')
                                 property bool value: internal.permissionModel[key]
 
                                 RowLayout {
@@ -278,13 +294,25 @@ DsDrawer {
                                         Layout.alignment: Qt.AlignVCenter
                                     }
 
+                                    // Only allow editing user permissions if the selected user
+                                    // account is not 'myAccount' and logged in user has permission
+                                    // to edit user permissions
                                     DsSwitch {
                                         checked: productlvDelegate.value
-                                        enabled: loggedUserPermissions.canEditPermissions && !internal.isMyAccount
+                                        enabled: loggedUserPermissions.canEditPermissions &&
+                                                 !internal.isMyAccount
                                         Layout.alignment: Qt.AlignVCenter
 
-                                        onCheckedChanged: if(internal.loaded)
+                                        onCheckedChanged: if(internal.loaded) { // Avoid setting model when we are setting up
+                                                              // Insert  if not exits the key and value
+                                                              // If exists, update it
+                                                              // NOTE: This change DOES NOT trigger signal change
                                                               internal.permissionModel[key] = checked
+
+                                                              // To trigger the permissionModel changed signal, we have
+                                                              // to do an assignment
+                                                              internal.permissionModel = internal.permissionModel
+                                                          }
                                     }
                                 }
                             }
@@ -293,6 +321,9 @@ DsDrawer {
                 }
             }
 
+            // Show this section only if the fields were changed and
+            // we have permissions to do permissions changes and
+            // we are not editing any user permissions.
             RowLayout {
                 id: bottomRowLayout
                 visible: !internal.isMyAccount && internal.fieldsEdited &&
@@ -303,6 +334,8 @@ DsDrawer {
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
                 Layout.bottomMargin: Theme.xsSpacing
+
+                Behavior on height{ NumberAnimation { easing.type: Easing.InOutQuad }}
 
                 Item {
                     Layout.fillWidth: true
@@ -334,20 +367,13 @@ DsDrawer {
     }
 
     function populateModel(perm) {
-        // let keys = Object.keys(perm)
-        // keys.forEach((key) => {
-        //                  var p = {
-        //                      key,
-        //                      value: perm[key],
-        //                      label: getLabel(key)
-        //                  }
-        //                  internal.permissionModel.append(p)
-        //              })
         internal.permissionModel = perm
     }
 
     onOpened: {
+        internal.loaded = false
         internal.fieldsModel.clear()
+        internal.permissionModel = null
 
         internal.fieldsModel.append({ key: "name", label: "Name", type: "label" })
         internal.fieldsModel.append({ key: "username", label: "Username", type: "label" })
@@ -356,24 +382,28 @@ DsDrawer {
         internal.fieldsModel.append({ key: "approved", label: "Is Approved?", type: "switch" })
         internal.fieldsModel.append({ key: "is_admin", label: "Is Admin?", type: "switch" })
         internal.fieldsModel.append({ key: "mobile", label: "Mobile", type: "label", fn: function(val) {
-            return val ? `(${val.dial_code})${val.number}` : 'None'}
-                                    })
-
-        internal.permissionModel = null
+            return val ? `(${val.dial_code})${val.number}` : 'None'} })
 
         if(userData) {
+            var perm = null
+
+            // If user has `permission` obj, use it, else
+            // use default permissions template
             if(userData["permissions"]) {
-                var perm = userData["permissions"]
-                internal.accountPermissions = perm
-                populateModel(perm)
+                perm = userData["permissions"]
             } else {
-                internal.accountPermissions = globalModels.userPermissonsTemplate
-                populateModel(globalModels.userPermissonsTemplate)
+                perm = globalModels.userPermissonsTemplate
             }
+
+            internal.accountPermissions = perm
+            internal.permissionModel = perm
         }
 
-        internal.loaded = true
+        // Reset Account Switches
         internal.accountSwitches = {}
+
+        // Set loaded flag, a.k.a. we are done setting up
+        internal.loaded = true
     }
 
     onClosed: {
@@ -445,10 +475,13 @@ DsDrawer {
         var body = {
             name: root.userData.name,
             mobile: root.userData.mobile,
+            // Overwrite permission to default template if user is admin
             permissions: internal.accountSwitches['is_admin'] ?
                 globalModels.userPermissonsTemplate : internal.accountPermissions
         }
 
+        // If we have any account switches, use them to overwrite the switches
+        // in the body
         var accSwitchKeys = Object.keys(internal.accountSwitches)
         accSwitchKeys.forEach((key) => {
                                   body[key] = internal.accountSwitches[key]
