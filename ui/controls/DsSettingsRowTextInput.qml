@@ -1,7 +1,7 @@
 // DsSettingsRowTextInput Component
-// Displays two `Text` elements
+// Displays a `Text` element and a `TextInput` component
 // side by side in a 'RowLayout'
-// for displaying label and value kind of
+
 
 import QtQuick
 import QtQuick.Layouts
@@ -13,7 +13,10 @@ RowLayout {
     spacing: Theme.xsSpacing
 
     property alias label: lbl.text
-    property string value
+    property alias inputBox: input
+    property alias text: input.text
+    property alias validator: input.validator
+    property alias placeholderText: input.placeholderText
 
     DsLabel {
         id: lbl
@@ -23,16 +26,10 @@ RowLayout {
         Layout.fillWidth: true
     }
 
-    DsLabel {
-        id: val
-        text: (!root.value || root.value === "") ?
-                  qsTr("N/A") : root.value
-        fontSize: Theme.baseFontSize
-        color: Theme.txtHintColor
-        height: Theme.inputHeight
-        verticalAlignment: DsLabel.AlignVCenter
-        horizontalAlignment: DsLabel.AlignRight
-        Layout.alignment: Qt.AlignVCenter
+    DsInputWithLabel {
+        id: input
+        labelShown: false
+        color: Theme.bodyColor
         Layout.minimumWidth: 300
     }
 }

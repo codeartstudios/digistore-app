@@ -17,4 +17,9 @@ QtObject {
     property bool canAddUsers: (isAdmin || (dsController.loggedUser!==null &&
                                             dsController.loggedUser.permissions &&
                                             dsController.loggedUser.permissions.can_manage_users===true)) ? true : false
+
+    // Check if logged in user can manage organization parameters
+    property bool canEditOrganization: (isAdmin || (dsController.loggedUser!==null &&
+                                                    dsController.loggedUser.permissions &&
+                                                    dsController.loggedUser.permissions.can_manage_org===true)) ? true : false
 }

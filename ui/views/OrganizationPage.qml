@@ -37,6 +37,7 @@ DsPage {
                 Layout.alignment: Qt.AlignVCenter
             }
 
+            // Reload button
             DsIconButton {
                 id: refreshBtn
                 enabled: !request.running
@@ -56,12 +57,16 @@ DsPage {
                 height: 1
             }
 
+            // Admin actions in the organization context
             DsMenu {
                 id: toolsMenu
                 iconType: IconType.shieldCog
                 text: qsTr("Admin Actions")
+                menuPopup.width: width * 1.3
                 onCurrentMenuChanged: (index) => openDrawer(index)
 
+                // Create the menu options, append to the ListModel used
+                // to populate the menus
                 Component.onCompleted: {
                     menuModel.clear()
 
@@ -99,7 +104,12 @@ DsPage {
         }
     }
 
-    DsOrgSettingsDrawer {id: orgsettingsDrawer }
+    DsOrgSettingsDrawer {
+        id: orgsettingsDrawer
+
+        fetchOrganizationInProgess: request.running
+        onReloadOrganization: organizationinfopage.fetchOrganizationDetails()
+    }
     DsOrgUserAccountDrawer { id: orgaccountsDrawer }
     DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
 

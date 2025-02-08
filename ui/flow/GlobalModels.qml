@@ -6,8 +6,8 @@ Item {
     // Holds the tab information for tab switching
     property ListModel orgTabModel: ListModel{}
 
-    // Template for user permissions
-    property var userPermissonsTemplate: {
+    // Template for user permissions, readonly mode
+    readonly property var userPermissonsTemplate: {
         'can_add_stock': false,
         'can_manage_stock': false,
         'can_sell_products': false,
@@ -19,6 +19,11 @@ Item {
         'can_manage_inventory': false,
         'can_manage_org': false,
         'can_manage_users': false
+    }
+
+    // Email Regex Validator
+    readonly property RegularExpressionValidator emailRegex: RegularExpressionValidator { // Email Regex
+        regularExpression: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     }
 
     property string currentSideBarMenu: "dashboard"

@@ -207,6 +207,35 @@ DsInputWithLabel {
         input.clear()
     }
 
+    // Convenience function to select by dial code
+    function findAndSetCountryByDialCode(dialCode) {
+        findAndSetCountryBy('dial_code', dialCode)
+    }
+
+    // Expects 2 args, the model `key`, and `value` to be checked
+    // optionally, allows providing the compare function, by default is null
+    //          compareFunc(modelValue, filterValue)
+    // Example:
+    //      findAndSetCountryBy('dial_code', '+254', (modelValue, value) => modelValue.includes(value))
+    function findAndSetCountryBy(key, value, compareFunc = null) {
+        for(var i=0; i<countryModel.length; i++) {
+            var country = countryModel[i]
+            if(compareFunc) {
+                if(compareFunc(country[key],value)) {
+                    selectedCountry = country
+                    break
+                }
+            }
+
+            else{
+                if(country[key] === value) {
+                    selectedCountry = country
+                    break
+                }
+            }
+        }
+    }
+
     property string displayField: "dial_code"
     property var selectedCountry: null
     property ListModel searchModel: ListModel{}

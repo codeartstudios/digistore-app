@@ -12,9 +12,6 @@ DsDrawer {
     property bool webviewLoading: false
     property real webviewLoadingProgress: 0
 
-    onWebviewLoadingChanged: console.log(`WebView Loading? `, webviewLoading)
-    onWebviewLoadingProgressChanged: console.log(`WebView Loading Progress: ${webviewLoadingProgress} `)
-
     Loader {
         id: webviewloader
         asynchronous: true
