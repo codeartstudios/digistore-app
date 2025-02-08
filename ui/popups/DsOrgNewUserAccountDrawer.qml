@@ -66,7 +66,6 @@ DsDrawer {
                 ScrollBar.vertical: ScrollBar{
                     id: scrollBar
                     hoverEnabled: true
-                    active: hovered || pressed
                     anchors.left: parent.right
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom

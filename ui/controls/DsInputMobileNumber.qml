@@ -5,15 +5,29 @@ import app.digisto.modules
 
 DsInputWithLabel {
     id: root
+    validator: IntValidator{ bottom: 100000000 }
     inputRL.spacing: Theme.xsSpacing/2
+    secondaryActionLabel.text: qsTr("Clear")
+    secondaryActionLabel.visible: !(selectedCountry===null && input.text.trim()==='')
+
+    onSecondaryAction: {
+        selectedCountry=null
+        input.text=''
+    }
+
+    onSelectedCountryChanged: {
+        if(selectedCountry && input.text==='') {
+            input.forceActiveFocus()
+        }
+    }
 
     beforeItem: [
         DsButton {
             id: countryselectbtn
             height: Theme.inputHeight
             bgColor: "transparent"
-            text: selectedCountry ? selectedCountry[displayField] : "---"
-            textColor: Theme.txtPrimaryColor
+            text: selectedCountry ? selectedCountry[displayField] : "+--"
+            textColor: selectedCountry ? Theme.txtPrimaryColor : Theme.txtDisabledColor
             bgHover: withOpacity(Theme.baseAlt2Color, 0.8)
             bgDown: withOpacity(Theme.baseAlt2Color, 0.6)
             endIcon: IconType.caretUpDownFilled
