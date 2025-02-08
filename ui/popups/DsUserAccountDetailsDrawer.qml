@@ -398,10 +398,7 @@ DsDrawer {
         if(res.status===204) {
             // Show delete message and close drawer ...
             toast.success(qsTr("User account deleted!"))
-            // showMessage(
-            //             qsTr("Account Delete Success!"),
-            //             qsTr("Selected Account Deleted Successfully!")
-            //             )
+            root.close()
             root.userDeleted()
 
         }
@@ -448,7 +445,8 @@ DsDrawer {
         var body = {
             name: root.userData.name,
             mobile: root.userData.mobile,
-            permissions: internal.accountPermissions
+            permissions: internal.accountSwitches['is_admin'] ?
+                globalModels.userPermissonsTemplate : internal.accountPermissions
         }
 
         var accSwitchKeys = Object.keys(internal.accountSwitches)
@@ -464,6 +462,7 @@ DsDrawer {
         var res = request.send();
 
         if(res.status===200) {
+            root.close()
             root.userUpdated()
         }
 

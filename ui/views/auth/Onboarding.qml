@@ -63,7 +63,7 @@ DsPage {
                 secondaryActionLabel.color: Theme.dangerColor
                 onSecondaryAction: workspaceinput.text = ""
                 readOnly: (dsController.organization &&
-                           dsController.organization.workspace)
+                           dsController.organization.workspace) ? true : false
 
                 beforeItem: DsLabel {
                     text: qsTr("https://")
