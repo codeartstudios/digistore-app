@@ -82,7 +82,6 @@
         <file>ui/controls/DsSettingsStackPage.qml</file>
         <file>ui/views/settings/DsGeneralSettings.qml</file>
         <file>ui/views/settings/DsAccountSettings.qml</file>
-        <file>assets/imgs/no-profile.png</file>
         <file>ui/controls/DsSwitch.qml</file>
         <file>ui/views/NotificationPage.qml</file>
         <file>ui/controls/DsInputMobileNumber.qml</file>
@@ -98,6 +97,7 @@
         <file>ui/popups/DsOrgNewUserAccountDrawer.qml</file>
         <file>ui/controls/DsSettingsRowTextInput.qml</file>
         <file>ui/popups/DsUserProfileContextPopup.qml</file>
+        <file>assets/imgs/no-profile.jpg</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

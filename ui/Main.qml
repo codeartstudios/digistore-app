@@ -78,8 +78,9 @@ Window {
     }
 
     function logout() {
+        // Clear token
         dsController.token = ''
-        store.userLoggedIn = false
+        store.userLoggedIn = checkIfLoggedIn()
         toast.info(qsTr("Logout Success!"))
     }
 }

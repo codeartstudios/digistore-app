@@ -109,6 +109,8 @@ DsSettingsStackPage {
             DsButton {
                 text: qsTr("Check for Updates")
                 Layout.alignment: Qt.AlignVCenter
+
+                onClicked: toast.warning("Oops, this feature is not implemented yet!")
             }
         }
     }

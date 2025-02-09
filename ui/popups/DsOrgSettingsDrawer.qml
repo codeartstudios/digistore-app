@@ -254,7 +254,6 @@ DsDrawer {
                         Layout.minimumWidth: 300
 
                         onCurrentIndexChanged: {
-                            console.log('> ', dsController.organization.settings.currency)
                             if(internal.loaded) {
                                 if(currentIndex===0)
                                     internal.orgSettingsObj['currency'] = 'usd'

@@ -35,7 +35,7 @@ DsSettingsStackPage {
                 Layout.preferredWidth: height
 
                 DsImage {
-                    source: "qrc:/assets/imgs/no-profile.png"
+                    source: "qrc:/assets/imgs/no-profile.jpg"
                     radius: height/2
                     anchors.fill: parent
                 }
@@ -59,12 +59,22 @@ DsSettingsStackPage {
                     }
 
                     DsInputMobileNumber {
+                        id: usermobile
                         mandatory: true
                         color: Theme.bodyColor
-                        text: dsController.mobile ? dsController.loggedUser.mobile.number : ""
+                        text: getNumber(dsController.loggedUser.mobile)
                         label: qsTr("Mobile Number")
-                        input.placeholderText: qsTr("700000xxxx")
+                        input.placeholderText: qsTr("ie. 712234123")
                         Layout.fillWidth: true
+
+                        function getNumber(mobile) {
+                            // Set mobile number
+                            text = mobile.number ? mobile.number : ''
+
+                            // Set Dial Code
+                            if(mobile.dial_code)
+                                usermobile.findAndSetCountryByDialCode(mobile.dial_code)
+                        }
                     }
                 }
 
@@ -84,11 +94,16 @@ DsSettingsStackPage {
                     DsInputWithLabel {
                         mandatory: true
                         color: Theme.bodyColor
-                        isPasswordInput: true
-                        text: dsController.loggedUser ? dsController.loggedUser.created : ""
+                        text: formatDate(dsController.loggedUser.created)
                         label: qsTr("Date Joined")
                         input.placeholderText: "2020-12-11"
                         Layout.fillWidth: true
+
+                        function formatDate(dt) {
+                            if(!dt) return ''
+                            var date = new Date(dt)
+                            return Qt.formatDateTime(date, 'dd/MM/yyyy hh:mm AP')
+                        }
                     }
                 }
             }
@@ -295,7 +310,7 @@ DsSettingsStackPage {
     }
 
     function signOut() {
-
+        mainApp.logout()
     }
 
     function deleteAccount() {
