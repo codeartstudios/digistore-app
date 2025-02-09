@@ -49,6 +49,7 @@ DsPage {
                 Layout.fillWidth: true
                 height: 1
             }
+
         }
 
         Item {

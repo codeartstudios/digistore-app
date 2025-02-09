@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
+import "../popups"
 import "../flow"
 
 DsPage {
@@ -12,9 +13,10 @@ DsPage {
     headerShown: true
 
     property ListModel orgTabModel: ListModel{}
-    property alias refreshEnabled: refreshBtn.enabled
 
-    signal refreshPage()
+    property alias orgpbadminDrawer: orgpbadminDrawer
+    property alias orgaccountsDrawer: orgaccountsDrawer
+    property alias orgsettingsDrawer: orgsettingsDrawer
 
     ColumnLayout {
         anchors.fill: parent
@@ -35,22 +37,10 @@ DsPage {
                 Layout.alignment: Qt.AlignVCenter
             }
 
-            DsLabel {
-                fontSize: Theme.h1
-                color: Theme.txtHintColor
-                text: qsTr("/")
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            DsLabel {
-                fontSize: Theme.h2
-                color: Theme.txtPrimaryColor
-                text: tabslv.currentItem.text ? tabslv.currentItem.text : ""
-                Layout.alignment: Qt.AlignVCenter
-            }
-
+            // Reload button
             DsIconButton {
                 id: refreshBtn
+                enabled: !request.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -59,150 +49,86 @@ DsPage {
                 radius: height/2
                 Layout.alignment: Qt.AlignVCenter
 
-                onClicked: root.refreshPage()
+                onClicked: organizationinfopage.fetchOrganizationDetails()
             }
 
             Item {
                 Layout.fillWidth: true
                 height: 1
             }
+
+            // Admin actions in the organization context
+            DsMenu {
+                id: toolsMenu
+                iconType: IconType.shieldCog
+                text: qsTr("Admin Actions")
+                menuPopup.width: width * 1.3
+                onCurrentMenuChanged: (index) => openDrawer(index)
+
+                // Create the menu options, append to the ListModel used
+                // to populate the menus
+                Component.onCompleted: {
+                    menuModel.clear()
+
+                    menuModel.append({
+                                         label: "Manage User Accounts",
+                                         icon: IconType.users
+                                     })
+
+                    menuModel.append({
+                                         label: "Edit Organization",
+                                         icon: IconType.adjustmentsCog
+                                     })
+
+                    menuModel.append({ type: "spacer" })
+
+                    menuModel.append({
+                                         label: "Pocketbase Admin Panel",
+                                         icon: IconType.shieldLock
+                                     })
+                }
+            }
+
         }
 
-        Item {
+        StackView {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
             Layout.bottomMargin: Theme.baseSpacing
 
-            ColumnLayout {
-                id: orgStack
-                anchors.fill: parent
-                spacing: 0
-
-                Item {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Theme.btnHeight
-
-                    ListView {
-                        id: tabslv
-                        model: orgTabModel
-                        orientation: ListView.Horizontal
-                        anchors.fill: parent
-                        currentIndex: 0
-                        delegate: DsTabButton {
-                            active: index===tabslv.currentIndex
-                            text: model.label
-                            iconType: model.iconType
-
-                            onClicked: {
-                                tabslv.currentIndex=index
-                                model.componentId.active=true
-                            }
-                        }
-                    }
-                }
-
-                Rectangle {
-                    color: Theme.baseAlt1Color
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    Rectangle {
-                        height: 1
-                        color: Theme.bodyColor
-                        width: parent.width
-                        anchors.top: parent.top
-                    }
-
-                    StackLayout {
-                        anchors.fill: parent
-                        currentIndex: tabslv.currentIndex
-
-                        Component.onCompleted: orginfoloader.active=true
-
-                        // OrganizationInfoPage
-                        DsFlowLoader {
-                            id: orginfoloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orginfocomponent
-
-                                OrganizationInfo {
-                                    id: orginfopage
-
-                                    // Binding {
-                                    //     refreshBtn.enabled: orginfopage.isRequestRunning
-                                    //     when: orgStack.currentIndex===0
-                                    // }
-
-                                    Connections {
-                                        target: root
-
-                                        function onRefreshPage() {
-                                            if(orgStack.currentIndex===0)
-                                                orginfopage.fetchOrganizationDetails();
-                                        }
-                                    }
-                                }
-                            }
-                        } // OrganizationInfoPage Loader
-
-                        // OrganizationBranchesPage
-                        DsFlowLoader {
-                            id: orgbranchesloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orgbranchescomponent
-
-                                OrganizationBranches {
-                                    id: orgbranchespage
-                                }
-                            }
-                        } // OrganizationBranchesPage Loader
-
-                        // OrganizationSettingsPage
-                        DsFlowLoader {
-                            id: orgsettingsloader
-                            active: false
-                            asynchronous: true
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: Component {
-                                id: orgsettingscomponent
-
-                                OrganizationSettings {
-                                    id: orgsettingspage
-                                }
-                            }
-                        } // OrganizationSettingsPage Loader
-                    }
-                }
+            initialItem: OrganizationInfo {
+                id: organizationinfopage
             }
         }
     }
 
-    Component.onCompleted: orgTabModel.append([
-                                                  {
-                                                      label: "Info",
-                                                      iconType: IconType.infoCircle,
-                                                      componentId: orginfoloader
-                                                  }
-                                                  // {
-                                                  //     label: "Branches",
-                                                  //     iconType: IconType.gitMerge,
-                                                  //     componentId: orgbranchesloader
-                                                  // },
-                                                  // {
-                                                  //     label: "Settings",
-                                                  //     iconType: IconType.settings,
-                                                  //     componentId: orgsettingsloader
-                                                  // }
-                                              ])
+    DsOrgSettingsDrawer {
+        id: orgsettingsDrawer
+
+        fetchOrganizationInProgess: request.running
+        onReloadOrganization: organizationinfopage.fetchOrganizationDetails()
+    }
+    DsOrgUserAccountDrawer { id: orgaccountsDrawer }
+    DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
+
+    function openDrawer(ind) {
+        switch(ind) {
+        case 3: {
+            orgpbadminDrawer.open()
+            break;
+        }
+
+        case 1: {
+            orgsettingsDrawer.open()
+            break;
+        }
+
+        case 0: {
+            orgaccountsDrawer.open()
+            break;
+        }
+        }
+    }
 }

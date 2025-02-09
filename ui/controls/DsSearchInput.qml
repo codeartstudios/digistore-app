@@ -12,7 +12,6 @@ Item {
     signal textChanged(var text)
     signal accepted(var object)
 
-
     property alias busy: busyindicator.running
     property alias model: searchlvresults.model
 

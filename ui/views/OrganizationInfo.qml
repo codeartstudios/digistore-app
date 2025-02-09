@@ -6,154 +6,118 @@ import app.digisto.modules
 import "../controls"
 import "../popups"
 
-Item {
-    id: root
-
-    property string orgName: ""
-    property string orgDescription: ""
-    property string orgEmail: ""
-    property string orgAddress: ""
-    property string orgMobile: ""
-    property string orgId: ""
-    property string orgBanner: ""
-    property string orgLogo: ""
-    property string orgDomain: ""
-    property string orgCreated: ""
-    property bool orgActivated: false
+DsSettingsStackPage {
+    id: scrollview
 
     property DsMessageBox messageBox: DsMessageBox{}
-    property Requests requests: Requests{}
-    property bool isRequestRunning: requests.running
 
-    ScrollView {
-        anchors.fill: parent
-        anchors.margins: Theme.smSpacing
+    // Organization Details
+    DsSettingsCard {
+        width: parent.width
+        title: qsTr("Organization")
+        desc: qsTr("Organization information.")
 
-        ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AsNeeded }
+        DsSettingsRowLabel {
+            label: qsTr("Org. Name")
+            value: dsController.organization.name
+        }
 
-        Column {
-            width: parent.width
-            spacing: Theme.xsSpacing
+        DsSettingsRowLabel {
+            label: qsTr("Org. Description")
+            value: dsController.organization.description
+        }
 
-            Item {
-                width: parent.width
-                height: 350
+        DsSettingsRowLabel {
+            label: qsTr("Org. Email")
+            value: dsController.organization.email
+        }
 
-                Rectangle {
-                    width: parent.width
-                    height: 250
-                    color: Theme.baseAlt2Color
-                    radius: Theme.btnRadius
+        DsSettingsRowLabel {
+            label: qsTr("Org. Mobile")
+            value: formatMobile(dsController.organization.mobile)
 
-                    DsImage {
-                        source: orgBanner==="" ? "qrc:/assets/imgs/org-banner-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgBanner}`
-                        radius: Theme.btnRadius
-                        anchors.fill: parent
-
-                        DsButton {
-                            iconType: IconType.edit
-                            text: qsTr("Edit Details")
-                            anchors.right: parent.right
-                            anchors.top: parent.bottom
-                            anchors.topMargin: Theme.baseSpacing
-                        }
-                    }
-
-                    Rectangle {
-                        height: 200
-                        width: 200
-                        radius: height/2
-                        border.width: 2
-                        border.color: Theme.baseColor
-                        anchors.verticalCenter: parent.bottom
-                        anchors.left: parent.left
-                        anchors.leftMargin: Theme.baseSpacing
-
-                        DsImage {
-                            source: orgLogo==="" ? "qrc:/assets/imgs/org-logo-default.jpg" : `https://pb.digisto.app/api/files/organization/${orgId}/${orgLogo}`
-                            radius: parent.height/2
-                            anchors.fill: parent
-                            anchors.margins: 2
-                        }
-                    }
-                }
+            function formatMobile(mobile) {
+                if(!mobile || mobile==="") return ""
+                return `(${mobile.dial_code})${mobile.number}`
             }
+        }
 
-            DsFormTextElement {
-                width: parent.width
-                label: qsTr("Org. Name")
-                value: orgName
-            }
+        DsSettingsRowLabel {
+            label: qsTr("Org. Website")
+            value: dsController.organization.domain
+        }
 
-            Row {
-                width: parent.width
-                spacing: Theme.baseSpacing
+        DsSettingsRowLabel {
+            label: qsTr("Org. Address")
+            value: dsController.organization.address
+        }
+    }
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Email")
-                    value: orgEmail
-                }
+    DsSettingsCard {
+        width: parent.width
+        title: qsTr("Workspace")
+        desc: qsTr("Organization workspace details.")
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Mobile")
-                    value: orgMobile
-                }
-            }
+        // Workspace
+        DsSettingsRowLabel {
+            label: qsTr("Workspace Name")
+            value: dsController.organization.workspace
+        }
 
-            Row {
-                width: parent.width
-                spacing: Theme.baseSpacing
+        // Domain
+        DsSettingsRowLabel {
+            label: qsTr("Workspace URL")
+            value: dsController.organization.workspace_url
+        }
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Address")
-                    value: orgAddress
-                }
+        DsSettingsRowLabel {
+            label: qsTr("Workspace Approved")
+            value: dsController.organization.approved
+        }
+    }
 
-                DsFormTextElement {
-                    width: (parent.width-Theme.baseSpacing)/2
-                    label: qsTr("Org. Domain")
-                    value: orgDomain
-                }
-            }
+    DsSettingsCard {
+        width: parent.width
+        title: qsTr("Preferences")
+        desc: qsTr("Organization defined settings.")
 
-            DsFormTextElement {
-                width: parent.width
-                label: qsTr("Org. Description")
-                value: orgDescription
-            }
+        // Currency
+        DsSettingsRowLabel {
+            label: qsTr("Default currency")
+            value: dsController.organization.settings &&
+                   dsController.organization.settings.currency ?
+                       dsController.organization.settings.currency.toUpperCase() : "--"
+        }
+
+        // Lock timeout
+        DsSettingsRowLabel {
+            label: qsTr("Applock Timeout Enabled (10 minutes)")
+            value: dsController.organization.settings &&
+                   dsController.organization.settings.screen_timeout_enabled ?
+                       qsTr("True") : qsTr("False")
         }
     }
 
     function fetchOrganizationDetails() {
-        var orgid = dsController.workspaceId
-        requests.clear()
-        requests.path = `/api/collections/organization/records/${orgid}`
-        var res = requests.send();
+        request.clear()
+        request.token = dsController.token
+        request.baseUrl = dsController.baseUrl
+        request.path = `/api/collections/organization/records/${dsController.workspaceId}`
+        var res = request.send();
 
         if(res.status===200) {
             var data = res.data;
-            orgName = data.name
-            orgDescription = data.description
-            orgEmail = data.email
-            orgAddress = data.address
-            orgMobile = data.mobile
-            orgId = data.id;
-            orgBanner = data.banner
-            orgLogo = data.logo
-            orgDomain = data.domain
-            orgActivated = data.approved
-            orgCreated = data.created
+            dsController.organization = data
         }
 
         else if(res.status === 403) {
-            showMessage("Access Error", "Only admins can access this action.")
+            showMessage("Access Error",
+                        "Only admins can access this action.")
         }
 
         else {
-            showMessage("Organization Error", "The requested resource wasn't found.")
+            showMessage("Organization Error",
+                        `${res.data.message ? res.data.message : qsTr("Unknown Error!")}`)
         }
     }
 

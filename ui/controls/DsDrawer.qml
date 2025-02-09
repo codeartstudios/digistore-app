@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import app.digisto.modules
 
+import "../popups"
+
 Drawer {
     id: root
     width: 400
@@ -12,6 +14,29 @@ Drawer {
 
     property alias bgrect: bg
     property alias topCloseButtonShown: clsbtn.visible
+    property alias toast : toast
+
+    property Requests request: Requests {
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+    }
+
+    property DsMessageBox messageBox: DsMessageBox{ // TODO
+        x: (root.width-width)/2 // - root.mapToGlobal(0, 0).x
+        y: (root.height-height)/2 // - root.mapToGlobal(0, 0).y
+
+        function showMessage(title="", info="") {
+            messageBox.title = title
+            messageBox.info = info
+            messageBox.open()
+        }
+    }
+
+    function showMessage(title="", info="") {
+        messageBox.showMessage(title, info)
+    }
+
+    DsToast{ id: toast}
 
     background: Rectangle {
         id: bg
@@ -26,18 +51,20 @@ Drawer {
             radius: height/2
             anchors.top: parent.top
             anchors.right: parent.left
+            anchors.topMargin: Theme.btnHeight/2
             anchors.rightMargin: -Theme.btnHeight/2
 
             DsIconButton {
-                height: parent.height
+                height: parent.height - Theme.btnRadius
                 width: height
-                anchors.left: parent.left
                 iconType: IconType.x
                 radius: height/2
-                textColor: Theme.warningColor
-                bgColor: "transparent"
-                bgHover: withOpacity(Theme.warningAltColor, 0.8)
-                bgDown: withOpacity(Theme.warningAltColor, 0.6)
+                textColor: Theme.dangerColor
+                bgColor: Theme.dangerAltColor
+                toolTip: qsTr("Close")
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.btnRadius/2
+                anchors.verticalCenter: parent.verticalCenter
 
                 onClicked: root.close()
             }

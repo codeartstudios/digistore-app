@@ -22,7 +22,6 @@
         <file>ui/views/auth/ConfirmEmail.qml</file>
         <file>ui/views/DashboardPage.qml</file>
         <file>ui/views/SettingsPage.qml</file>
-        <file>ui/views/AccountsPage.qml</file>
         <file>ui/views/InventoryPage.qml</file>
         <file>ui/views/TellerPage.qml</file>
         <file>ui/views/SalesPage.qml</file>
@@ -50,8 +49,6 @@
         <file>ui/popups/DsNewSupplierPopup.qml</file>
         <file>ui/controls/DsTabButton.qml</file>
         <file>ui/views/OrganizationInfo.qml</file>
-        <file>ui/views/OrganizationSettings.qml</file>
-        <file>ui/views/OrganizationBranches.qml</file>
         <file>ui/popups/DsMessageBox.qml</file>
         <file>ui/controls/DsImage.qml</file>
         <file>assets/imgs/org-banner-default.jpg</file>
@@ -71,7 +68,6 @@
         <file>assets/imgs/payments/5.png</file>
         <file>ui/popups/DsCheckoutCompletePopup.qml</file>
         <file>ui/popups/DsCheckoutBalanceDisplayPopup.qml</file>
-        <file>ui/views/PocketbaseAdminPage.qml</file>
         <file>ui/controls/DsMenu.qml</file>
         <file>ui/popups/DsSupplierViewPopup.qml</file>
         <file>ui/popups/DsSupplyHistoryViewPopup.qml</file>
@@ -85,15 +81,23 @@
         <file>ui/controls/DsCard.qml</file>
         <file>ui/controls/DsSettingsStackPage.qml</file>
         <file>ui/views/settings/DsGeneralSettings.qml</file>
-        <file>ui/views/settings/controls/DsSettingsCard.qml</file>
         <file>ui/views/settings/DsAccountSettings.qml</file>
-        <file>ui/views/settings/DsOrganizationSettings.qml</file>
-        <file>assets/imgs/no-profile.png</file>
         <file>ui/controls/DsSwitch.qml</file>
         <file>ui/views/NotificationPage.qml</file>
         <file>ui/controls/DsInputMobileNumber.qml</file>
         <file>ui/popups/DsUserAccountDetailsDrawer.qml</file>
         <file>ui/controls/DsToast.qml</file>
+        <file>ui/flow/UserPermissions.qml</file>
+        <file>ui/flow/GlobalModels.qml</file>
+        <file>ui/popups/DsOrgUserAccountDrawer.qml</file>
+        <file>ui/popups/DsOrgSettingsDrawer.qml</file>
+        <file>ui/popups/DsOrgPocketbaseAminDrawer.qml</file>
+        <file>ui/controls/DsSettingsCard.qml</file>
+        <file>ui/controls/DsSettingsRowLabel.qml</file>
+        <file>ui/popups/DsOrgNewUserAccountDrawer.qml</file>
+        <file>ui/controls/DsSettingsRowTextInput.qml</file>
+        <file>ui/popups/DsUserProfileContextPopup.qml</file>
+        <file>assets/imgs/no-profile.jpg</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

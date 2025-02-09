@@ -59,3 +59,14 @@ function withOpacity(color, opacity) {
 
     return Qt.rgba(r, g, b, opacity);
 }
+
+// https://stackoverflow.com/a/65425828
+function isJSONEqual(obj1,obj2) {
+    var obj1keys = Object.keys(obj1);
+    var obj2keys = Object.keys(obj2);
+
+    //return true when the two json has same length
+    // and all the properties has same value key by key
+    return obj1keys.length === obj2keys.length &&
+            Object.keys(obj1).every(key=>obj1[key]===obj2[key]);
+}

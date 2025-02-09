@@ -4,6 +4,7 @@ import app.digisto.modules
 
 Item {
     id: root
+    title: qsTr("Organization Settings")
 
     // Label & Icon, to be shown on the settings navigation Page
     required property string title
@@ -11,6 +12,12 @@ Item {
 
     default property alias contentItem: col.children
     property alias spacing: col.spacing
+
+    // Paddings
+    property alias leftPadding: col.leftPadding
+    property alias rightPadding: col.rightPadding
+    property alias topPadding: col.topPadding
+    property alias bottomPadding: col.bottomPadding
 
     ScrollView {
         id: scrollview

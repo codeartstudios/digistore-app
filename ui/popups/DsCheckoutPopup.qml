@@ -298,8 +298,10 @@ Popup {
 
     Requests {
         id: checkoutrequest
-        path: "/fn/checkout"
         method: "POST"
+        path: "/fn/checkout"
+        token: dsController.token
+        baseUrl: dsController.baseUrl
     }
 
     Connections {
@@ -328,6 +330,7 @@ Popup {
 
         var paymentTotals = 0;
         var cashPayment = 0;
+
         // Compute payment totals vs checkout totals
         for(var j=0; j<paymentModel.count; j++) {
             const paymentObject = paymentModel.get(j)
@@ -338,17 +341,20 @@ Popup {
         }
 
         if(paymentTotals === 0) {
-            showMessage("Payment Error", "Payment Methods Are Zero")
+            showMessage("Payment Error",
+                        "Payment Methods Are Zero")
             return
         }
 
         if(paymentTotals < root.totals) {
-            showMessage("Payment Error", "Payments can't be less than cart totals.")
+            showMessage("Payment Error",
+                        "Payments can't be less than cart totals.")
             return
         }
 
         if(paymentTotals > root.totals) {
-            showMessage("Payment Error", "Payments can't exeed the cart totals.")
+            showMessage("Payment Error",
+                        "Payments can't exeed the cart totals.")
             return
         }
 
@@ -412,6 +418,7 @@ Popup {
             // If we dont have cash payment, just end the session
             if(cashPayment === 0) {
                 completeCheckoutSession()
+                toast.info(qsTr("Checkout Successful!"))
             }
 
             // Spin up cash input popup, otherwise

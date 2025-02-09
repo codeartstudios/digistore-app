@@ -6,10 +6,10 @@ import app.digisto.modules
 import "../controls"
 import "../popups"
 
-DsPage {
+DsDrawer {
     id: root
-    title: "Accounts Page"
-    headerShown: false
+    width: mainApp.width * 0.9
+    modal: true
 
     property real pageNo: 1
     property real totalPages: 0
@@ -19,8 +19,7 @@ DsPage {
     property string sortByKey: "name"
     property bool sortAsc: false
 
-    // Page properties
-    property string salesDateRange: qsTr("Today")
+    // Accounts Model
     property ListModel datamodel: ListModel{}
 
     ColumnLayout {
@@ -80,10 +79,30 @@ DsPage {
                 text: qsTr("Account Options")
 
                 Component.onCompleted: {
+                    menuModel.clear()
                     menuModel.append({type: "", icon: IconType.usersPlus, label: qsTr("New User")})
                     menuModel.append({type: "spacer" })
                     menuModel.append({type: "", icon: IconType.userCog, label: qsTr("Account Settings")})
                 }
+
+                onCurrentMenuChanged: (index) => {
+                                          switch(index) {
+                                              case 0: {
+                                                  if(loggedUserPermissions.canAddUsers) {
+                                                      newuserDrawer.open()
+                                                  } else {
+                                                      toast.warning("Sorry, you don't have permission to add users.")
+                                                  }
+
+                                                  break;
+                                              }
+
+                                              case 2: {
+                                                  toast.warning("Sorry, we've not implemented this feature yet!")
+                                                  break;
+                                              }
+                                          }
+                                      }
             }
         }
 
@@ -96,7 +115,7 @@ DsPage {
             Layout.leftMargin: Theme.baseSpacing
             Layout.rightMargin: Theme.baseSpacing
 
-            onAccepted: (txt) => getTellers()
+            onAccepted: getTellers()
         }
 
         DsTable {
@@ -255,11 +274,18 @@ DsPage {
         onClosed: accountstable.currentIndex = -1
 
         // When Account is deleted or updated, reload the info ...
-        onUserDeleted: getTellers()
-        onUserUpdated: {
-            accountstable.currentIndex = -1
-            getTellers()
-        }
+        onUserDeleted: fetchTellerAccounts()
+        onUserUpdated: fetchTellerAccounts()
+    }
+
+    DsOrgNewUserAccountDrawer {
+        id: newuserDrawer
+
+        // Reset table current index when the drawer closes
+        onClosed: accountstable.currentIndex = -1
+
+        // When Account is deleted or updated, reload the info ...
+        onUserAdded: fetchTellerAccounts()
     }
 
     Requests {
@@ -267,6 +293,11 @@ DsPage {
         token: dsController.token
         baseUrl: dsController.baseUrl
         path: "/api/collections/tellers/records"
+    }
+
+    function fetchTellerAccounts() {
+        accountstable.currentIndex = -1
+        getTellers()
     }
 
     function getTellers() {
@@ -322,6 +353,5 @@ DsPage {
         }
     }
 
-    Component.onCompleted: getTellers()
+    onOpened: getTellers()
 }
-

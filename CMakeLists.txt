@@ -8,7 +8,7 @@ find_package(Qt6 6.4 REQUIRED COMPONENTS
         Core
         Quick
         Widgets
-        # WebView
+        WebView
     )
 
 qt_standard_project_setup()
@@ -39,7 +39,7 @@ target_link_libraries(digisto
         Qt6::Core
         Qt6::Quick
         Qt6::Widgets
-        # Qt6::WebView
+        Qt6::WebView
 )
 
 include(GNUInstallDirs)

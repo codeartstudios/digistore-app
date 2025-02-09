@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtWebview/QtWebView>
 
 // User defined headers
 #include "dscontroller.h"
@@ -8,7 +9,9 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QtWebView::initialize();
+
+    QGuiApplication app(argc, argv);
 
     // Create the dscontroller instance
     DsController dsController;

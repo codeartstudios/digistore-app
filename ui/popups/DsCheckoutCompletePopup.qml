@@ -117,4 +117,6 @@ Popup {
         cashInput.input.clear()
         cashInput.input.forceActiveFocus()
     }
+
+    onClosed: toast.info(qsTr("Checkout Successful!"))
 }

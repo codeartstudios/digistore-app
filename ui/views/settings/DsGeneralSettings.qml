@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import app.digisto.modules
 
-import "controls" // Settings
 import "../../controls"
 
 DsSettingsStackPage {
@@ -13,6 +12,7 @@ DsSettingsStackPage {
     property var appReleaseDate: new Date()
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("Theme")
         desc: qsTr("Tweak the app look and feel.")
 
@@ -27,7 +27,6 @@ DsSettingsStackPage {
             }
 
             DsSwitch {
-                bgColor: Theme.bodyColor
                 checked: dsController.isDarkTheme
                 Layout.alignment: Qt.AlignVCenter
 
@@ -50,7 +49,6 @@ DsSettingsStackPage {
             }
 
             DsSwitch {
-                bgColor: Theme.bodyColor
                 checked: dsController.startWindowMaximized
                 Layout.alignment: Qt.AlignVCenter
 
@@ -65,6 +63,7 @@ DsSettingsStackPage {
     }
 
     DsSettingsCard {
+        width: root.width
         title: qsTr("App Updates")
         desc: qsTr("Keeping up with the latest version released.")
 
@@ -110,6 +109,8 @@ DsSettingsStackPage {
             DsButton {
                 text: qsTr("Check for Updates")
                 Layout.alignment: Qt.AlignVCenter
+
+                onClicked: toast.warning("Oops, this feature is not implemented yet!")
             }
         }
     }

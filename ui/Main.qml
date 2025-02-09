@@ -23,6 +23,12 @@ Window {
     property alias appFlow: appFlow
     property alias toast: toast
 
+    // Create UserPermission object: Manage all user permissions centrally
+    property UserPermissions loggedUserPermissions: UserPermissions{}
+
+    // Add Global Models to the mainApp
+    property GlobalModels globalModels: GlobalModels{}
+
     FontLoader {
         id: tablerIconsFontLoader
         source: "qrc:/assets/fonts/tabler-icons.ttf"
@@ -69,5 +75,12 @@ Window {
 
         // console.log(tokenIsValid, loggedUserIsValid, orgIsValid)
         return tokenIsValid===true && loggedUserIsValid===true && orgIsValid===true
+    }
+
+    function logout() {
+        // Clear token
+        dsController.token = ''
+        store.userLoggedIn = checkIfLoggedIn()
+        toast.info(qsTr("Logout Success!"))
     }
 }

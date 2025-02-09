@@ -1,14 +1,15 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import app.digisto.modules
 
-import "../../../controls"
-
 Rectangle {
-    width: root.width
+    id: bgrect
     radius: Theme.btnRadius
-    color: Theme.baseAlt1Color
+    color: Theme.baseColor
     height: col.height + 2*Theme.xsSpacing
+    border.width: 1
+    border.color: Theme.shadowColor
 
     property alias title: _title.text
     property alias desc: _desc.text
@@ -17,7 +18,7 @@ Rectangle {
 
     Column {
         id: col
-        width: parent.width - 2*Theme.xsSpacing
+        width: bgrect.width - 2*Theme.xsSpacing
         spacing: Theme.xsSpacing
         anchors.centerIn: parent
 
@@ -69,4 +70,3 @@ Rectangle {
         }
     }
 }
-
