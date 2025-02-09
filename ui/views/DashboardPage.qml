@@ -171,35 +171,58 @@ DsPage {
 
         }
 
-        Row {
+        RowLayout {
             width: parent.width
+            height: 400
             spacing: Theme.baseSpacing
 
+            property real colWidth: (width-(spacing*3))/4
+
             Rectangle {
-                height: 300
                 radius: Theme.btnRadius
-                width: parent.spacing + 2*(parent.width-(parent.spacing*3))/4
                 color: Theme.baseColor
                 border.width: 1
-                border.color: Theme.baseAlt1Color
+                border.color: Theme.shadowColor
+                Layout.fillWidth: true
+                Layout.fillHeight: true
             }
 
             Rectangle {
-                height: 300
                 radius: Theme.btnRadius
-                width: (parent.width-(parent.spacing*3))/4
                 color: Theme.baseColor
                 border.width: 1
-                border.color: Theme.baseAlt1Color
-            }
+                border.color: Theme.shadowColor
+                Layout.preferredWidth: parent.colWidth
+                Layout.fillHeight: true
 
-            Rectangle {
-                height: 300
-                radius: Theme.btnRadius
-                width: (parent.width-(parent.spacing*3))/4
-                color: Theme.baseColor
-                border.width: 1
-                border.color: Theme.baseAlt1Color
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: Theme.xsSpacing
+                    spacing: Theme.btnRadius
+
+                    DsLabel {
+                        width: parent.width
+                        text: qsTr("Quick Links")
+                        fontSize: Theme.xlFontSize
+                        height: Theme.btnHeight
+                        color: Theme.txtHintColor
+                        isBold: true
+                        elide: DsLabel.ElideRight
+                        bottomPadding: Theme.xsSpacing
+                    }
+
+                    DsDashboardQuickLinksDelegate {
+                        text: qsTr('Quick Lookup Item')
+                    }
+
+                    DsDashboardQuickLinksDelegate {
+                        text: qsTr('Close Session Book')
+                    }
+
+                    DsDashboardQuickLinksDelegate {
+                        text: qsTr('Lock Session')
+                    }
+                }
             }
         }
     }

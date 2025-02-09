@@ -97,7 +97,6 @@ DsPage {
                             iconType: modelData.icon
                             iconSize: settingslvdelegate.fontSize * 1.2
                             color: settingslvdelegate.textColor
-                            //label.verticalAlignment: DsLabel.alignVCenter
                             label.horizontalAlignment: DsLabel.alignHCenter
                             anchors.verticalCenter: parent.verticalCenter
                         }
