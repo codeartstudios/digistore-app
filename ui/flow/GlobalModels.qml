@@ -118,7 +118,7 @@ Item {
                               })
 
         sideMenuExtras.append({
-                                  checkable: true,
+                                  checkable: false,
                                   label: "profile",
                                   tooltip: "User Profile",
                                   isBusy: false,

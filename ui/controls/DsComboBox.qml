@@ -20,9 +20,12 @@ ComboBox {
         required property var model
         required property int index
 
-        bgColor: control.highlightedIndex === index ? Theme.baseAlt1Color : "transparent"
-        bgHover: control.highlightedIndex === index ? Qt.lighter(Theme.baseAlt1Color, 0.8) : "transparent"
-        bgDown: control.highlightedIndex === index ? Qt.lighter(Theme.baseAlt1Color, 0.6) : "transparent"
+        bgColor: control.highlightedIndex === index ?
+                     Theme.baseAlt1Color : "transparent"
+        bgHover: control.highlightedIndex === index ?
+                     Qt.lighter(Theme.baseAlt1Color, 0.8) : "transparent"
+        bgDown: control.highlightedIndex === index ?
+                    Qt.lighter(Theme.baseAlt1Color, 0.6) : "transparent"
         textColor: Theme.txtPrimaryColor
         width: control.width
         fontSize: Theme.smFontSize
@@ -38,32 +41,23 @@ ComboBox {
                 leftPadding: Theme.xsSpacing/2
                 rightPadding: Theme.xsSpacing/2
                 anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: control.alignLeft ? DsLabel.AlignLeft : DsLabel.AlignHCenter
+                horizontalAlignment: control.alignLeft ?
+                                         DsLabel.AlignLeft : DsLabel.AlignHCenter
             }
         }
     }
 
-    indicator: Canvas {
-        id: canvas
+    indicator: Row {
         x: control.width - width - control.rightPadding
         y: control.topPadding + (control.availableHeight - height) / 2
         width: 12
         height: 8
-        contextType: "2d"
 
-        Connections {
-            target: control
-            function onPressedChanged() { canvas.requestPaint(); }
-        }
-
-        onPaint: {
-            context.reset();
-            context.moveTo(0, 0);
-            context.lineTo(width, 0);
-            context.lineTo(width / 2, height);
-            context.closePath();
-            context.fillStyle = Theme.txtPrimaryColor;
-            context.fill();
+        DsIcon {
+            iconSize: Theme.smFontSize
+            color: Theme.txtPrimaryColor;
+            iconType: IconType.caretUpDown
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 
@@ -104,10 +98,10 @@ ComboBox {
         }
 
         background: Rectangle {
-            border.color: Theme.baseAlt1Color
-            radius: Theme.xsSpacing
+            radius: Theme.btnRadius
             color: Theme.bodyColor
             border.width: 1
+            border.color: Theme.shadowColor
         }
     }
 }

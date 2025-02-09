@@ -249,8 +249,22 @@ DsDrawer {
                         height: Theme.inputHeight + Theme.xsSpacing
                         radius: Theme.btnRadius
                         bgColor: Theme.bodyColor
-                        model: [qsTr("Kenyan Shilling (KSH)"), qsTr("US Dollar ($)")]
+                        currentIndex: dsController.organization.settings.currency==='ksh' ? 1 : 0
+                        model: [qsTr("US Dollar ($)"), qsTr("Kenyan Shilling (KSH)")]
                         Layout.minimumWidth: 300
+
+                        onCurrentIndexChanged: {
+                            console.log('> ', dsController.organization.settings.currency)
+                            if(internal.loaded) {
+                                if(currentIndex===0)
+                                    internal.orgSettingsObj['currency'] = 'usd'
+                                else
+                                    internal.orgSettingsObj['currency'] = 'ksh'
+
+                                // Update edited flag
+                                internal.orgDetailsEdited = true
+                            }
+                        }
                     }
                 }
 
@@ -268,19 +282,29 @@ DsDrawer {
                     }
 
                     DsComboBox {
-                        id: screenlockcb
                         height: Theme.inputHeight + Theme.xsSpacing
                         radius: Theme.btnRadius
                         bgColor: Theme.bodyColor
-                        model: [qsTr("1 Minute"), qsTr("5 Minutes"), qsTr("15 Minutes"), qsTr("30 Minutes"), qsTr("1 Hour")]
+                        model: [qsTr("True"), qsTr("False")]
+                        currentIndex: dsController.organization.settings.screen_timeout_enabled ? 0 : 1
                         Layout.minimumWidth: 300
+
+                        onCurrentIndexChanged: {
+                            if(internal.loaded) {
+                                internal.orgSettingsObj['screen_timeout_enabled'] = currentIndex===0 ?
+                                            true : false
+
+                                // Update edited flag
+                                internal.orgDetailsEdited = true
+                            }
+                        }
                     }
                 }
             }
 
             // Bottom spacer ...
             Item {
-                height: 40
+                height: 20
                 width: 1
             }
         }
@@ -358,6 +382,7 @@ DsDrawer {
         if(res.status===200) {
             root.reloadOrganization()
             toast.success("Organization Updated!")
+            internal.orgDetailsEdited = false
         }
 
         else if(res.status === 0) {

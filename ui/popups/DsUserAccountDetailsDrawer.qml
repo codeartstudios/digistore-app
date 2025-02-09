@@ -428,9 +428,7 @@ DsDrawer {
         if(res.status===204) {
             // Show delete message and close drawer ...
             toast.success(qsTr("User account deleted!"))
-            root.close()
             root.userDeleted()
-
         }
 
         else if(res.status === 0) {
@@ -495,8 +493,9 @@ DsDrawer {
         var res = request.send();
 
         if(res.status===200) {
-            root.close()
+            // root.close()
             root.userUpdated()
+            toast.success(qsTr("User Updated Successfully!"))
         }
 
         else if(res.status === 0) {

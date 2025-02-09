@@ -274,8 +274,8 @@ DsDrawer {
         onClosed: accountstable.currentIndex = -1
 
         // When Account is deleted or updated, reload the info ...
-        onUserDeleted: getTellers()
-        onUserUpdated: getTellers()
+        onUserDeleted: fetchTellerAccounts()
+        onUserUpdated: fetchTellerAccounts()
     }
 
     DsOrgNewUserAccountDrawer {
@@ -285,7 +285,7 @@ DsDrawer {
         onClosed: accountstable.currentIndex = -1
 
         // When Account is deleted or updated, reload the info ...
-        onUserAdded: getTellers()
+        onUserAdded: fetchTellerAccounts()
     }
 
     Requests {
@@ -293,6 +293,11 @@ DsDrawer {
         token: dsController.token
         baseUrl: dsController.baseUrl
         path: "/api/collections/tellers/records"
+    }
+
+    function fetchTellerAccounts() {
+        accountstable.currentIndex = -1
+        getTellers()
     }
 
     function getTellers() {

@@ -76,4 +76,10 @@ Window {
         // console.log(tokenIsValid, loggedUserIsValid, orgIsValid)
         return tokenIsValid===true && loggedUserIsValid===true && orgIsValid===true
     }
+
+    function logout() {
+        dsController.token = ''
+        store.userLoggedIn = false
+        toast.info(qsTr("Logout Success!"))
+    }
 }

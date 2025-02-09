@@ -86,15 +86,15 @@ DsSettingsStackPage {
             label: qsTr("Default currency")
             value: dsController.organization.settings &&
                    dsController.organization.settings.currency ?
-                       dsController.organization.settings.currency : ""
+                       dsController.organization.settings.currency.toUpperCase() : "--"
         }
 
         // Lock timeout
         DsSettingsRowLabel {
-            label: qsTr("App lock timeout")
+            label: qsTr("Applock Timeout Enabled (10 minutes)")
             value: dsController.organization.settings &&
-                   dsController.organization.settings.applock ?
-                       dsController.organization.settings.applock : ""
+                   dsController.organization.settings.screen_timeout_enabled ?
+                       qsTr("True") : qsTr("False")
         }
     }
 

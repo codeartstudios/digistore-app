@@ -6,6 +6,7 @@ import app.digisto.modules
 // User imports
 import "../controls"
 import "../views"
+import "../popups"
 import "../views/auth"
 
 Item {
@@ -50,6 +51,10 @@ Item {
                 id: onboardingPage
             }
         }
+    }
+
+    DsUserProfileContextPopup {
+        id: profilePopup
     }
 
     Component {
@@ -120,7 +125,7 @@ Item {
                     }
 
                     case "profile": {
-                        // postAuthLoader.sourceComponent = salesStackComponent;
+                        profilePopup.open()
                         break;
                     }
 
