@@ -70,3 +70,9 @@ function isJSONEqual(obj1,obj2) {
     return obj1keys.length === obj2keys.length &&
             Object.keys(obj1).every(key=>obj1[key]===obj2[key]);
 }
+
+// Commafy number in thousands.
+// ie, given 12345 -> 12,345
+function commafy(value) {
+    return value.toLocaleString()
+}

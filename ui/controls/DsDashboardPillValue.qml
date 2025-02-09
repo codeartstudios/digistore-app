@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls.Basic
 import app.digisto.modules
 
 Rectangle {
@@ -6,70 +8,126 @@ Rectangle {
     implicitWidth: 200
     implicitHeight: 150
     color: Theme.baseColor
-    border.width: 1
-    border.color: Theme.baseAlt1Color
     radius: Theme.btnRadius
+    height: col.height + Theme.xsSpacing * 2
+    border.width: 1
+    border.color: Theme.shadowColor
 
-    property alias label: _label.text
-    property alias value: _value.text
-    property alias units: _unit.text
+    // Flag modes, signifying if a value set
+    // has incresed/decreased/stagnated from
+    // previous set value
+    enum Mode {
+        NULL,   // Reset state
+        UP,     // Increasing or Up or Positive
+        DOWN,   // Decreasing or Down or Negative
+        FLAT    // No change or Zero
+    }
+
+    property string label: ''
+    property string value: ''
+    property real deviation: 0
+    property string description: ''
+    property int mode: DsDashboardPillValue.Mode.NULL
+
+    QtObject {
+        id: internal
+
+        property string deviationIcon: ''
+        property string deviationColor: 'transparent'
+        property bool deviationsShown: mode!==DsDashboardPillValue.Mode.NULL
+    }
 
     signal clicked()
 
-    Item {
-        id: _topheading
-        height: Theme.btnHeight
-        width: parent.width
-        anchors.top: parent.top
+    onModeChanged: checkMode()
+    Component.onCompleted: checkMode()
 
-        Rectangle {
-            height: 1
+    Column {
+        id: col
+        spacing: Theme.btnRadius
+        width: parent.width - Theme.xsSpacing * 2
+        anchors.centerIn: parent
+
+        // Label and period dropdown selection
+        RowLayout {
             width: parent.width
-            color: Theme.baseAlt1Color
-            anchors.bottom: parent.bottom
+            spacing: Theme.xsSpacing
+
+            DsLabel {
+                text: root.label
+                fontSize: Theme.xlFontSize
+                height: Theme.btnHeight
+                color: Theme.txtHintColor
+                isBold: true
+                elide: DsLabel.ElideRight
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            DsDashboardPillSelector {
+                model: [qsTr("Last 7 Days"), qsTr("Last 30 Days"), qsTr("Last 3 Months")]
+                onCurrentIndexChanged: {}
+            }
         }
 
         DsLabel {
-            id: _label
-            fontSize: Theme.h2
-            height: Theme.btnHeight
-            leftPadding: Theme.xsSpacing
-            verticalAlignment: DsLabel.AlignVCenter
+            isBold: true
+            text: root.value
+            fontSize: Theme.btnHeight
+
+            Row {
+                spacing: Theme.btnRadius
+                anchors.bottom: parent.baseline
+                anchors.left: parent.right
+                anchors.leftMargin: Theme.btnRadius
+
+                DsLabel {
+                    visible: internal.deviationsShown
+                    text: `${root.deviation}%`
+                    fontSize: Theme.baseFontSize
+                    color: internal.deviationColor
+                    anchors.baseline: parent.bottom
+                }
+
+                DsIcon {
+                    visible: internal.deviationsShown
+                    color: internal.deviationColor
+                    iconType: internal.deviationIcon
+                    iconSize: Theme.lgFontSize
+                    anchors.bottom: parent.bottom
+                }
+            }
         }
 
-        DsIconButton {
-            textColor: Theme.txtPrimaryColor
-            bgColor: "transparent"
-            bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
-            bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-            iconType: IconType.arrowRight
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-
-            onClicked: root.clicked()
+        DsLabel {
+            text: root.description
+            fontSize: Theme.smFontSize
+            color: Theme.txtHintColor
+            width: parent.width
+            elide: DsLabel.ElideRight
         }
     }
 
-    Item {
-        anchors.top: _topheading.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: Theme.xsSpacing
-        anchors.rightMargin: Theme.xsSpacing
+    // Convenience function to assign color and icon
+    function checkMode() {
+        if(mode===DsDashboardPillValue.Mode.NULL) {
+            internal.deviationIcon = ''
+            internal.deviationColor = 'transparent'
+        }
 
-        DsLabel {
-            id: _value
-            fontSize: Theme.lgBtnHeight
-            anchors.verticalCenter: parent.verticalCenter
+        else if(mode===DsDashboardPillValue.Mode.UP) {
+            internal.deviationIcon = IconType.trendingUp
+            internal.deviationColor = Theme.successColor
+        }
 
-            DsLabel {
-                id: _unit
-                fontSize: Theme.baseFontSize
-                anchors.left: parent.right
-                anchors.baseline: parent.baseline
-            }
+        else if(mode===DsDashboardPillValue.Mode.DOWN) {
+            internal.deviationIcon = IconType.trendingDown
+            internal.deviationColor = Theme.dangerColor
+        }
+
+        else if(mode===DsDashboardPillValue.Mode.FLAT) {
+            internal.deviationIcon = IconType.lineDashed
+            internal.deviationColor = Theme.warningColor
         }
     }
 }
-

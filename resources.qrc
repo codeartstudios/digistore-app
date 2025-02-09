@@ -98,6 +98,7 @@
         <file>ui/controls/DsSettingsRowTextInput.qml</file>
         <file>ui/popups/DsUserProfileContextPopup.qml</file>
         <file>assets/imgs/no-profile.jpg</file>
+        <file>ui/controls/DsDashboardPillSelector.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>
