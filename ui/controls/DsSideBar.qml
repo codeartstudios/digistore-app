@@ -40,7 +40,7 @@ Item {
             model: globalModels.sideMenu
             anchors.bottom: extraslv.top
             anchors.top: logoitem.bottom
-            anchors.bottomMargin: Theme.xsSpacing
+            anchors.bottomMargin: Theme.smSpacing
         }
 
         DsSideBarListView {

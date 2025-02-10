@@ -178,7 +178,7 @@ Popup {
 
                                         DsIcon {
                                             iconType: IconType.categoryPlus
-                                            color: Theme.baseColor
+                                            iconColor: Theme.baseColor
                                             iconSize: paymentModeLvDelegate.hovered ? Theme.lgBtnHeight : 0
                                             anchors.centerIn: parent
 
@@ -208,7 +208,7 @@ Popup {
                             DsIcon {
                                 iconSize: Theme.lgBtnHeight
                                 iconType: IconType.scanPosition
-                                color: Theme.txtHintColor
+                                iconColor: Theme.txtHintColor
                                 anchors.horizontalCenter: parent.horizontalCenter
                             }
 

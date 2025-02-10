@@ -20,7 +20,7 @@ Window {
     property alias tablerIconsFontLoader: tablerIconsFontLoader
 
     // Application Flow
-    property alias appFlow: appFlow
+    // property alias appFlow: appFlow
     property alias toast: toast
 
     // Create UserPermission object: Manage all user permissions centrally

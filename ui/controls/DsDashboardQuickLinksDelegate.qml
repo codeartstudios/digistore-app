@@ -42,13 +42,9 @@ Item {
         DsIcon {
             iconSize: root.hovered ?
                           Theme.baseFontSize : 0
-            color: Theme.txtPrimaryColor
+            iconColor: Theme.txtPrimaryColor
             iconType: IconType.chevronRight
             Layout.alignment: Qt.AlignVCenter
-            Component.onCompleted: {
-                root.hovered = true
-                root.hovered = false
-            }
 
             Behavior on iconSize { NumberAnimation { easing.type: Easing.InOutQuad }}
         }

@@ -30,33 +30,6 @@ Item {
     property ListModel sideMenu: ListModel{}
     property ListModel sideMenuExtras: ListModel{}
 
-    function populateOrgTabModel() {
-        orgTabModel.clear()
-        orgTabModel.append({
-                               label: "Info",
-                               iconType: IconType.infoCircle
-                               // componentId: orginfoloader
-                           })
-
-        orgTabModel.append({
-                               label: "Accounts & Permissions",
-                               iconType: IconType.users
-                               // componentId: orginfoloader
-                           })
-
-        orgTabModel.append({
-                               label: "Branches",
-                               iconType: IconType.gitMerge
-                               // componentId: orgbranchesloader
-                           })
-
-        orgTabModel.append({
-                               label: "Settings",
-                               iconType: IconType.settings
-                               // componentId: orgsettingsloader
-                           })
-    }
-
     function populateSideMenuModel() {
         sideMenu.clear()
         sideMenuExtras.clear()
@@ -127,7 +100,6 @@ Item {
     }
 
     Component.onCompleted: {
-        populateOrgTabModel()
         populateSideMenuModel()
     }
 }

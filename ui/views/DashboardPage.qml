@@ -11,6 +11,7 @@ DsPage {
 
     property var currentDateTime: new Date()
     property var greeting: getGreeting(currentDateTime)
+    property ListModel salesModel: ListModel {}
 
     function getGreeting(date) {
         var hours = date.getHours()
@@ -27,8 +28,7 @@ DsPage {
         anchors.fill: parent
         anchors.topMargin: Theme.smSpacing
         anchors.bottomMargin: Theme.xlSpacing
-        anchors.leftMargin: Theme.xlSpacing
-        anchors.rightMargin: Theme.xlSpacing
+        columnHorizontalMargin: Theme.xlSpacing
 
         // Greeting, quick action
         RowLayout {
@@ -51,7 +51,7 @@ DsPage {
                     DsIcon {
                         iconSize: Theme.baseFontSize
                         iconType: greeting.icon
-                        color: Theme.txtHintColor
+                        iconColor: Theme.txtHintColor
                         anchors.bottom: parent.bottom
                     }
 
@@ -120,7 +120,7 @@ DsPage {
                 DsIconButton {
                     iconType: IconType.x
                     radius: height/2
-                    width: height
+                    width: Theme.btnHeight
                     height: Theme.btnHeight
                     textColor: Theme.dangerColor
                     bgColor: "transparent"
@@ -178,49 +178,51 @@ DsPage {
 
             property real colWidth: (width-(spacing*3))/4
 
-            Rectangle {
-                radius: Theme.btnRadius
-                color: Theme.baseColor
-                border.width: 1
-                border.color: Theme.shadowColor
+            DsChartCard {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
 
-            Rectangle {
-                radius: Theme.btnRadius
-                color: Theme.baseColor
-                border.width: 1
-                border.color: Theme.shadowColor
+            DsDashboardQuickLinks {
                 Layout.preferredWidth: parent.colWidth
                 Layout.fillHeight: true
+            }
+        }
 
-                Column {
-                    anchors.fill: parent
-                    anchors.margins: Theme.xsSpacing
-                    spacing: Theme.btnRadius
+        Rectangle {
+            radius: Theme.btnRadius
+            color: Theme.baseColor
+            border.width: 1
+            border.color: Theme.shadowColor
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Column {
+                anchors.fill: parent
+                anchors.margins: Theme.xsSpacing
+                spacing: Theme.btnRadius
 
-                    DsLabel {
-                        width: parent.width
-                        text: qsTr("Quick Links")
-                        fontSize: Theme.xlFontSize
-                        height: Theme.btnHeight
-                        color: Theme.txtHintColor
-                        isBold: true
-                        elide: DsLabel.ElideRight
-                        bottomPadding: Theme.xsSpacing
-                    }
+                DsLabel {
+                    width: parent.width
+                    text: qsTr("Last 10 Sales")
+                    fontSize: Theme.xlFontSize
+                    height: Theme.btnHeight
+                    color: Theme.txtHintColor
+                    isBold: true
+                    elide: DsLabel.ElideRight
+                    bottomPadding: Theme.xsSpacing
+                }
 
-                    DsDashboardQuickLinksDelegate {
-                        text: qsTr('Quick Lookup Item')
-                    }
+                Repeater {
+                    id: rp
+                    width: parent.width
+                    model: salesModel
+                    delegate: RowLayout {
+                        width: rp.width
+                        spacing: Theme.btnRadius
 
-                    DsDashboardQuickLinksDelegate {
-                        text: qsTr('Close Session Book')
-                    }
-
-                    DsDashboardQuickLinksDelegate {
-                        text: qsTr('Lock Session')
+                        DsLabel {
+                            text: name
+                        }
                     }
                 }
             }

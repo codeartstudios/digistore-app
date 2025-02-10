@@ -4,6 +4,7 @@ import app.digisto.modules
 
 Item {
     id: root
+    clip: true
     implicitHeight: iconSize
     implicitWidth: iconSize
 
@@ -11,23 +12,19 @@ Item {
     property real iconSize: Theme.xlFontSize
 
     // Icon to be displayed, string expected from font icon
-    required property string iconType
+    property string iconType: ''
 
-    // Font color
-    property string color: Theme.txtPrimaryColor
-
-    // Alias to the label showing the icon
-    property alias label: lbl
+    // Icon color
+    property string iconColor: Theme.txtPrimaryColor
 
     Label {
         id: lbl
-        color: parent.color
-        text: iconType
+        color: root.iconColor
+        text: root.iconType
         font.pixelSize: root.iconSize
         font.family: tablerIconsFontLoader.name
         verticalAlignment: Label.AlignVCenter
         horizontalAlignment: Label.AlignHCenter
         anchors.centerIn: parent
-        visible: root.iconSize > 0
     }
 }

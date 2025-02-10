@@ -46,7 +46,7 @@ DsButton {
                 id: ico
                 visible: false
                 iconType: IconType.dropletFilled
-                color: Theme.bodyColor
+                iconColor: Theme.bodyColor
                 iconSize: Theme.baseSpacing
                 anchors.right: parent.right
                 anchors.top: parent.top
@@ -174,7 +174,7 @@ DsButton {
                                     visible: leftIconShown
                                     iconType: _menudelegate.iconType ? _menudelegate.iconType : ""
                                     iconSize: _menudelegate.fontSize * 1.2
-                                    color: _menudelegate.textColor
+                                    iconColor: _menudelegate.textColor
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
 

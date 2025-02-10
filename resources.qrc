@@ -100,6 +100,10 @@
         <file>assets/imgs/no-profile.jpg</file>
         <file>ui/controls/DsDashboardPillSelector.qml</file>
         <file>ui/controls/DsDashboardQuickLinksDelegate.qml</file>
+        <file>ui/controls/DsSidebarMenuItem.qml</file>
+        <file>ui/controls/DsChartCard.qml</file>
+        <file>ui/controls/DsDashboardQuickLinks.qml</file>
+        <file>ui/controls/DsCharts.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

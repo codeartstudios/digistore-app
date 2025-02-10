@@ -94,7 +94,7 @@ Rectangle {
             height: Theme.btnHeight - 2
             width: height
             iconSize: height/2
-            color: root.foreColor
+            iconColor: root.foreColor
             iconType: type===DsToast.Type.INFO ?
                           IconType.infoCircle : type===DsToast.Type.SUCCESS ?
                               IconType.circleDashedCheck : type===DsToast.Type.WARNING ?
@@ -127,7 +127,7 @@ Rectangle {
                     id: ico
                     iconType: IconType.x
                     iconSize: closeBtn.fontSize * 1.2
-                    color: closeBtn.textColor
+                    iconColor: closeBtn.textColor
                     anchors.centerIn: parent
 
                     RotationAnimation {

@@ -36,9 +36,10 @@ Item {
                 bgHover: Theme.baseAlt3Color
                 bgDown: Theme.baseAlt3Color
                 textColor: Theme.txtPrimaryColor
+                iconType: IconType.arrowNarrowLeft
+
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.xsSpacing
-                iconType: IconType.arrowNarrowLeft
                 anchors.verticalCenter: parent.verticalCenter
 
                 onClicked: stack.pop()

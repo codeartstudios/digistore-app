@@ -91,7 +91,7 @@ Rectangle {
 
                 DsIcon {
                     visible: internal.deviationsShown
-                    color: internal.deviationColor
+                    iconColor: internal.deviationColor
                     iconType: internal.deviationIcon
                     iconSize: Theme.lgFontSize
                     anchors.bottom: parent.bottom

@@ -27,7 +27,7 @@ Item {
 
         DsIcon {
             iconSize: Theme.baseFontSize
-            color: Theme.txtPrimaryColor
+            iconColor: Theme.txtPrimaryColor
             iconType: IconType.chevronDown
             anchors.verticalCenter: parent.verticalCenter
         }

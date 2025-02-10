@@ -27,7 +27,8 @@ Item {
             DsSideBar {
                 id: sideBar
                 visible: store.userLoggedIn
-                Layout.preferredWidth: store.userLoggedIn && sidebarShown ? Theme.appSidebarWidth : 0
+                Layout.preferredWidth: store.userLoggedIn && sidebarShown ?
+                                           Theme.appSidebarWidth : 0
                 Layout.fillHeight: true
             }
 
@@ -63,7 +64,7 @@ Item {
         AppStackLayout {
             id: appStackLayout
 
-            Component.onCompleted: appStackLayout.dashboardLoader.active=true; // overrideActiveTab() //
+            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
 
             function overrideActiveTab() {
                 sideBar.currentSideBarMenu = "inventory"
@@ -126,12 +127,6 @@ Item {
 
                     case "profile": {
                         profilePopup.open()
-                        break;
-                    }
-
-                    case "pocketbaseadmin": {
-                        Qt.openUrlExternally('http://127.0.0.1:8090/_/')
-                        // pocketbaseAdminPage.show()
                         break;
                     }
                     }

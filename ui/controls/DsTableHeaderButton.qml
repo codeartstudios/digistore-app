@@ -62,7 +62,7 @@ Button {
                 visible: control.sortable
                 iconType: control.iconType
                 iconSize: visible ? lbl.fontSize : 0
-                color: lbl.color
+                iconColor: lbl.color
                 Layout.preferredWidth: Theme.smSpacing + lbl.fontSize
                 Layout.alignment: Qt.AlignVCenter
             }
