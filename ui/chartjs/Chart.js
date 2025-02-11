@@ -1618,6 +1618,12 @@ function Chart (item, config) { 'use strict';
                 + (alpha !== undefined && alpha !== 1 ? ", " + alpha : "") + ")";
     }
 
+    //create a list of reverse color names
+    var reverseNames = {};
+    for (var name in colorName$1) {
+        reverseNames[colorName$1[name]] = name;
+    }
+
     function keyword(rgb) {
         return reverseNames[rgb.slice(0, 3)];
     }
@@ -1633,11 +1639,6 @@ function Chart (item, config) { 'use strict';
     }
 
 
-    //create a list of reverse color names
-    var reverseNames = {};
-    for (var name in colorName$1) {
-        reverseNames[colorName$1[name]] = name;
-    }
 
     /* MIT license */
 
