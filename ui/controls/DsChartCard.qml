@@ -2,6 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import app.digisto.modules
 
+// TODO
+// today = 2AM local time
+// Make a sale, check sales for today, empty!
+// How to reconcile books
 Rectangle {
     id: root
     radius: Theme.btnRadius

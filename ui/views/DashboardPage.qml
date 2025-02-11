@@ -5,23 +5,14 @@ import app.digisto.modules
 import "../controls"
 
 DsPage {
-    id: dashboardPage
+    id: root
     title: qsTr("Dashboard Page")
     headerShown: false
 
     property var currentDateTime: new Date()
     property var greeting: getGreeting(currentDateTime)
     property ListModel salesModel: ListModel {}
-
-    function getGreeting(date) {
-        var hours = date.getHours()
-        if(hours < 12)
-            return { text: qsTr("Good Morning"), icon : IconType.sunset2}
-        else if(hours < 16)
-            return { text: qsTr("Good Afternoon"), icon : IconType.sun}
-        else
-            return { text: qsTr("Good Evening"), icon : IconType.moonStars}
-    }
+    property ListModel gridModel: ListModel {}
 
     DsSettingsStackPage {
         spacing: Theme.baseSpacing
@@ -134,41 +125,47 @@ DsPage {
             }
         }
 
-        Row {
-            spacing: Theme.baseSpacing
+        ListView {
+            id: salePillListview
+
+            // Width and Height for the cell delegates
+            property real cellWidth: Math.max((width-(spacing*3))/4, 200)
+            property real cellHeight: 150
+
+            height: cellHeight // Same as the delegates
             width: parent.width
+            spacing: Theme.baseSpacing
+            model: root.gridModel   //
+            orientation: ListView.Horizontal
             anchors.horizontalCenter: parent.horizontalCenter
+            delegate: DsDashboardPillValue {
+                width: salePillListview.cellWidth
+                label: model.label
+                value: `${Utils.commafy(model.value)}`
+                deviation: getDeviation(model)
+                deviationShown: model.refValue ? true : false
+                description: model.description
+                trendIconShown: model.trendIconShown!==null ? model.trendIconShown : deviationShown
 
-            DsDashboardPillValue {
-                width: (parent.width-(parent.spacing*3))/4
-                label: qsTr("Sales")
-                value: `${Utils.commafy(4325)}`
+                onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
+
+                function getDeviation(_) {
+                    if(!model.refValue) return 0
+
+                    var _old = model.refValue, _new = model.value;
+
+                    // Set the mode value
+                    mode = _old===_new ? DsDashboardPillValue.Mode.FLAT :
+                                         _new > _old ? DsDashboardPillValue.Mode.UP :
+                                                       DsDashboardPillValue.Mode.DOWN
+
+                    // Calculate deviation
+                    var devt = (_new - _old)/_old * 100
+
+                    // Return deviation percentage
+                    return devt%1 === 0 ? devt : devt.toFixed(1)
+                }
             }
-
-            DsDashboardPillValue {
-                width: (parent.width-(parent.spacing*3))/4
-                label: qsTr("Sales")
-                value: `${Utils.commafy(4325)}`
-                deviation: 0
-                mode: DsDashboardPillValue.Mode.FLAT
-            }
-
-            DsDashboardPillValue {
-                width: (parent.width-(parent.spacing*3))/4
-                label: qsTr("Sales")
-                value: `${Utils.commafy(12)}`
-                deviation: 4
-                mode: DsDashboardPillValue.Mode.DOWN
-            }
-
-            DsDashboardPillValue {
-                width: (parent.width-(parent.spacing*3))/4
-                label: qsTr("Sales")
-                value: `${Utils.commafy(432)}`
-                deviation: 63
-                mode: DsDashboardPillValue.Mode.UP
-            }
-
         }
 
         RowLayout {
@@ -228,4 +225,102 @@ DsPage {
             }
         }
     }
+
+    function getGreeting(date) {
+        var hours = date.getHours()
+        if(hours < 12)
+            return { text: qsTr("Good Morning"), icon : IconType.sunset2}
+        else if(hours < 16)
+            return { text: qsTr("Good Afternoon"), icon : IconType.sun}
+        else
+            return { text: qsTr("Good Evening"), icon : IconType.moonStars}
+    }
+
+    Component.onCompleted: {
+        _get_()
+
+        // Populate the gridModel with default data
+        gridModel.clear()   // Reset model if we have any data
+        gridModel.append({
+                             label: qsTr("Total Sales"),
+                             description: qsTr("Revenue generated within the selected period"),
+                             refValue: 0,
+                             value: 0
+                         })
+
+        gridModel.append({
+                             label: qsTr("No. of Sales"),
+                             description: qsTr("Sales transactions completed"),
+                             refValue: 0,
+                             value: 0
+                         })
+
+        gridModel.append({
+                             label: qsTr("Stock Status"),
+                             description: qsTr("Current stock available for sale"),
+                             refValue: 12,
+                             value: 22,
+                             trendIconShown: false
+                         })
+
+        gridModel.append({
+                             label: qsTr("Low Stock Products"),
+                             description: qsTr("Number of products with critically low stock"),
+                             value: 0
+                         })
+
+        console.log('Model appended ...: ', gridModel.count)
+    }
+
+    // Fetch total sales
+    Requests {
+        id: fetchSalesTotalsRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+        path: "/fn/dashboard/total-sales"
+    }
+
+    function getProducts() {
+        var txt = dsSearchInput.text.trim()
+        var query = {
+            page: pageNo,
+            perPage: itemsPerPage,
+            sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
+            filter: `organization = '${dsController.workspaceId}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
+        }
+
+        getproductrequest.clear()
+        getproductrequest.query = query;
+        var res = getproductrequest.send();
+
+        if(res.status===200) {
+            var data = res.data;
+            pageNo=data.page
+            totalPages=data.totalPages
+            totalItems=data.totalItems
+            var items = data.items;
+
+            datamodel.clear()
+
+            // Workaround to get tags:['str'] extractable later
+            for(var i=0; i<items.length; i++) {
+                var tags = []
+                var obj = items[i]
+                if(!obj.tags) obj.tags = []
+                obj.tags.forEach((tag) => {
+                                     tags.push({ data: tag })
+                                 })
+                obj.tags = tags
+                datamodel.append(obj)
+            }
+        }
+
+        else {
+            showMessage(
+                        qsTr("Error fetching products"),
+                        qsTr("There was an issue when fetching products: ") + `[${res.status}]${res.data.message}`
+                        )
+        }
+    }
+
 }

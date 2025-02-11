@@ -6,7 +6,7 @@ import app.digisto.modules
 Rectangle {
     id: root
     implicitWidth: 200
-    implicitHeight: 150
+    implicitHeight: col.height + Theme.xsSpacing * 2
     color: Theme.baseColor
     radius: Theme.btnRadius
     height: col.height + Theme.xsSpacing * 2
@@ -27,6 +27,8 @@ Rectangle {
     property string value: ''
     property real deviation: 0
     property string description: ''
+    property alias deviationShown: devtRow.visible
+    property alias trendIconShown: trendico.visible
     property int mode: DsDashboardPillValue.Mode.NULL
 
     QtObject {
@@ -76,6 +78,7 @@ Rectangle {
             fontSize: Theme.btnHeight
 
             Row {
+                id: devtRow
                 spacing: Theme.btnRadius
                 anchors.bottom: parent.baseline
                 anchors.left: parent.right
@@ -90,6 +93,7 @@ Rectangle {
                 }
 
                 DsIcon {
+                    id: trendico
                     visible: internal.deviationsShown
                     iconColor: internal.deviationColor
                     iconType: internal.deviationIcon
