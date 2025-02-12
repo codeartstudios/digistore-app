@@ -84,46 +84,7 @@ Window {
         toast.info(qsTr("Logout Success!"))
     }
 
-    // Fetch total sales
-    Requests {
-        id: r
-        token: dsController.token
-        baseUrl: dsController.baseUrl
-        path: "/fn/dashboard/total-sales"
-    }
-
-    function _get_() {
-        const today = new Date();
-        const startDate = today;
-        startDate.setMonth(today.getMonth() - 2); // Start from 3 months ago
-
-        const oldDate = startDate;
-        oldDate.setMonth(startDate.getMonth() - 3); // Start from 6 months ago
-
-        var t1 = Qt.formatDateTime(startDate, "yyyy-MM-dd 00:00:00.000Z")
-        var t2 = Qt.formatDateTime(oldDate, "yyyy-MM-dd 00:00:00.000Z")
-
-        var query = {
-            filter: `organization = '${dsController.workspaceId}'` +
-                    ` && startDate = '${t1}' && oldDate = '${t2}'`
-        }
-
-        r.clear()
-        r.query = query;
-        var res = r.send();
-
-        console.log('-> ', res, JSON.stringify(res))
-
-        if(res.status===200) {
-            var data = res.data;
-
-        }
-
-        else {
-            // showMessage(
-            //             qsTr("Error fetching products"),
-            //             qsTr("There was an issue when fetching products: ") + `[${res.status}]${res.data.message}`
-            //             )
-        }
+    Component.onCompleted: {
+        // For quick tests ...
     }
 }

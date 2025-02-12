@@ -142,25 +142,35 @@ DsPage {
                 width: salePillListview.cellWidth
                 label: model.label
                 value: `${Utils.commafy(model.value)}`
-                deviation: getDeviation(model)
-                deviationShown: model.refValue ? true : false
+                deviation: getDeviation(model.value, model.refValue)
+                deviationShown: Utils.isNullOrUndefined(model.deviationShown) ? true : model.deviationShown
                 description: model.description
-                trendIconShown: model.trendIconShown!==null ? model.trendIconShown : deviationShown
+                trendIconShown: true // Utils.isNullOrUndefined(model.trendIconShown) ? true : model.trendIconShown
+                // TODO, fix above
 
                 onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
+                onCurrentIndexChanged: (cindex, lbl) => {
+                                           root.gridModel.setProperty(index, 'period', lbl )
+                                           fetchDashboardTotalSalesSum()
+                                       }
 
-                function getDeviation(_) {
-                    if(!model.refValue) return 0
-
-                    var _old = model.refValue, _new = model.value;
+                function getDeviation(_new, _old) {
+                    if(_old===null) return 0
 
                     // Set the mode value
                     mode = _old===_new ? DsDashboardPillValue.Mode.FLAT :
                                          _new > _old ? DsDashboardPillValue.Mode.UP :
                                                        DsDashboardPillValue.Mode.DOWN
 
+                    // Catch wh
+                    if(_old === _new && _old === 0) return 0
+
                     // Calculate deviation
-                    var devt = (_new - _old)/_old * 100
+                    var devt = 0
+                    if(_old===0)
+                        devt = _new * 100   // We can't divide by 0
+                    else
+                        devt = (_new - _old)/_old * 100
 
                     // Return deviation percentage
                     return devt%1 === 0 ? devt : devt.toFixed(1)
@@ -237,11 +247,10 @@ DsPage {
     }
 
     Component.onCompleted: {
-        _get_()
-
         // Populate the gridModel with default data
         gridModel.clear()   // Reset model if we have any data
         gridModel.append({
+                             period: '7days',
                              label: qsTr("Total Sales"),
                              description: qsTr("Revenue generated within the selected period"),
                              refValue: 0,
@@ -249,6 +258,7 @@ DsPage {
                          })
 
         gridModel.append({
+                             period: '7days',
                              label: qsTr("No. of Sales"),
                              description: qsTr("Sales transactions completed"),
                              refValue: 0,
@@ -256,6 +266,7 @@ DsPage {
                          })
 
         gridModel.append({
+                             period: '7days',
                              label: qsTr("Stock Status"),
                              description: qsTr("Current stock available for sale"),
                              refValue: 12,
@@ -264,12 +275,14 @@ DsPage {
                          })
 
         gridModel.append({
+                             period: '7days',
                              label: qsTr("Low Stock Products"),
                              description: qsTr("Number of products with critically low stock"),
                              value: 0
                          })
 
-        console.log('Model appended ...: ', gridModel.count)
+        // Fetch total sale amount for selected period
+        fetchDashboardTotalSalesSum()
     }
 
     // Fetch total sales
@@ -277,50 +290,40 @@ DsPage {
         id: fetchSalesTotalsRequest
         token: dsController.token
         baseUrl: dsController.baseUrl
-        path: "/fn/dashboard/total-sales"
     }
 
-    function getProducts() {
-        var txt = dsSearchInput.text.trim()
-        var query = {
-            page: pageNo,
-            perPage: itemsPerPage,
-            sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization = '${dsController.workspaceId}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || unit ~ '${txt}' || barcode ~ '${txt}')`)
-        }
+    function fetchDashboardTotalSalesSum() {
+        const totalSales = root.gridModel.get(0) // Fetch model at index 0
 
-        getproductrequest.clear()
-        getproductrequest.query = query;
-        var res = getproductrequest.send();
+        // Fetch current and previous date cycle. i.e, past 7 days and 7 days before that
+        var date = null
+        if(totalSales.period === '3months')
+            date = Utils.last3MonthsDates()
+
+        else if(totalSales.period === '30days')
+            date = Utils.last30DaysDates()
+
+        else // 7days
+            date = Utils.last7DaysDates()
+
+        // Format date
+        const currentDateCycleStart = Qt.formatDateTime(date.current, "yyyy-MM-dd 00:00:00.000Z")
+        const previousDateCycleStart = Qt.formatDateTime(date.previous, "yyyy-MM-dd 00:00:00.000Z")
+        const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
+
+        // Create and send GET request
+        fetchSalesTotalsRequest.clear()
+        fetchSalesTotalsRequest.path = `/fn/dashboard/total-sales/${endpoint}`
+        var res = fetchSalesTotalsRequest.send();
 
         if(res.status===200) {
             var data = res.data;
-            pageNo=data.page
-            totalPages=data.totalPages
-            totalItems=data.totalItems
-            var items = data.items;
-
-            datamodel.clear()
-
-            // Workaround to get tags:['str'] extractable later
-            for(var i=0; i<items.length; i++) {
-                var tags = []
-                var obj = items[i]
-                if(!obj.tags) obj.tags = []
-                obj.tags.forEach((tag) => {
-                                     tags.push({ data: tag })
-                                 })
-                obj.tags = tags
-                datamodel.append(obj)
-            }
+            root.gridModel.setProperty(0, 'refValue', data.old_value)
+            root.gridModel.setProperty(0, 'value', data.value)
         }
 
         else {
-            showMessage(
-                        qsTr("Error fetching products"),
-                        qsTr("There was an issue when fetching products: ") + `[${res.status}]${res.data.message}`
-                        )
+            toast.error(res.data.message)
         }
     }
-
 }

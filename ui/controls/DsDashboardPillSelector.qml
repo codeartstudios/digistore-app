@@ -8,7 +8,7 @@ Item {
     height: row.height + Theme.xsSpacing
 
     property bool hovered: false
-    property int currentIndex: 0
+    property alias currentIndex: lv.currentIndex
     required property var model
 
     Row {
@@ -19,7 +19,7 @@ Item {
         DsLabel {
             id: periodSelector
             fontSize: Theme.smFontSize
-            text: root.model[root.currentIndex]
+            text: root.currentIndex>=0 ? root.model[root.currentIndex] : ''
             color: Theme.txtPrimaryColor
             isUnderlined: root.hovered || popup.opened
             anchors.verticalCenter: parent.verticalCenter
@@ -49,8 +49,7 @@ Item {
             clip: true
             implicitHeight: contentHeight
             model: root.model
-            currentIndex: root.currentIndex
-            onCurrentIndexChanged: root.currentIndex=currentIndex
+            currentIndex: 0
 
             // Show scrollbars where necessary
             ScrollIndicator.vertical: ScrollIndicator { }

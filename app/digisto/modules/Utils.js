@@ -1,4 +1,13 @@
 
+function isUndefined(val) {
+    if(typeof(val) === 'undefined') return true
+    return false
+}
+
+function isNullOrUndefined(val) {
+    return isUndefined(val) || val===null
+}
+
 function isValidDate(date) {
     // Check if it's an instance of Date and not an invalid date
     return date instanceof Date && !isNaN(date.getTime());
@@ -161,7 +170,7 @@ function last3Months() {
     const result = [];
     const today = new Date();
     const startDate = new Date();
-    startDate.setMonth(today.getMonth() - 2); // Start from 3 months ago
+    startDate.setMonth(today.getMonth() - 3); // Start from 3 months ago
 
     let lastMonth = null; // Ensure the first month always has a prefix
 
@@ -195,5 +204,48 @@ function last3Months() {
     }
 
     return result;
+}
+
+
+function last7DaysDates() {
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    const fourteenDaysAgo = new Date();
+
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    fourteenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return {
+        'current': sevenDaysAgo,
+        'previous': fourteenDaysAgo
+    }
+}
+
+function last30DaysDates() {
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    const sixtyDaysAgo = new Date();
+
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    sixtyDaysAgo.setDate(today.getDate() - 60);
+
+    return {
+        'current': thirtyDaysAgo,
+        'previous': sixtyDaysAgo
+    }
+}
+
+function last3MonthsDates() {
+    const today = new Date();
+    const threeMonthsAgo = new Date();
+    const sixMonthsAgo = new Date();
+
+    threeMonthsAgo.setMonth(today.getMonth() - 3);
+    sixMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    return {
+        'current': threeMonthsAgo,
+        'previous': sixMonthsAgo
+    }
 }
 

@@ -27,9 +27,16 @@ Rectangle {
     property string value: ''
     property real deviation: 0
     property string description: ''
+    property string period: '7days'
     property alias deviationShown: devtRow.visible
     property alias trendIconShown: trendico.visible
     property int mode: DsDashboardPillValue.Mode.NULL
+
+    readonly property var pillSelectionModel: {
+        '7days': 0,
+        '30days': 1,
+        '3months': 2
+    }
 
     QtObject {
         id: internal
@@ -40,6 +47,7 @@ Rectangle {
     }
 
     signal clicked()
+    signal currentIndexChanged(index: int, label: string)
 
     onModeChanged: checkMode()
     Component.onCompleted: checkMode()
@@ -68,7 +76,19 @@ Rectangle {
 
             DsDashboardPillSelector {
                 model: [qsTr("Last 7 Days"), qsTr("Last 30 Days"), qsTr("Last 3 Months")]
-                onCurrentIndexChanged: {}
+                currentIndex: pillSelectionModel[period]
+                onCurrentIndexChanged: root.currentIndexChanged(currentIndex, labelFromIndex(currentIndex))
+
+                function labelFromIndex(currentIndex) {
+                    if(currentIndex === 2)
+                        return '3months'
+
+                    if(currentIndex === 1)
+                        return '30days'
+
+                    else // 7days
+                        return '7days'
+                }
             }
         }
 
@@ -86,7 +106,7 @@ Rectangle {
 
                 DsLabel {
                     visible: internal.deviationsShown
-                    text: `${root.deviation}%`
+                    text: root.deviation >= 1000 ? `999+%` : `${root.deviation}%`
                     fontSize: Theme.baseFontSize
                     color: internal.deviationColor
                     anchors.baseline: parent.bottom
