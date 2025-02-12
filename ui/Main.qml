@@ -13,6 +13,9 @@ Window {
     visible: true
     color: Theme.bodyColor
 
+    // Hold Current Date/Time
+    property var currentDateTime: new Date()
+
     // Store Object
     property Store store: Store{}
 
@@ -82,6 +85,13 @@ Window {
         dsController.token = ''
         store.userLoggedIn = checkIfLoggedIn()
         toast.info(qsTr("Logout Success!"))
+    }
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: true
+        onTriggered: currentDateTime = new Date()
     }
 
     Component.onCompleted: {

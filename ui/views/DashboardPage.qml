@@ -3,16 +3,27 @@ import QtQuick.Layouts
 import app.digisto.modules
 
 import "../controls"
+import "../js/dashboard.js" as Djs
 
 DsPage {
     id: root
     title: qsTr("Dashboard Page")
     headerShown: false
 
-    property var currentDateTime: new Date()
-    property var greeting: getGreeting(currentDateTime)
+    // Greeting object; { text: '', icon: ''}
+    property var greeting: Djs.getGreeting(mainApp.currentDateTime, IconType)
+
+    // Model to hold last 10 sales data
     property ListModel salesModel: ListModel {}
+
+    // Model to hold the top pill data
     property ListModel gridModel: ListModel {}
+
+    // Flag set if there is a running request
+    property bool dashboardRequestRunning: fetchSalesTotalsRequest.running ||
+                                           fetchCompletedSalesRequest.running ||
+                                           fetchStockStatusRequest.running ||
+                                           fetchLowStockStatsRequest.running
 
     DsSettingsStackPage {
         spacing: Theme.baseSpacing
@@ -52,6 +63,46 @@ DsPage {
                         text: `${greeting.text}, ${dsController.loggedUser.name.split(' ')[0]}`
                         anchors.verticalCenter: parent.verticalCenter
                     }
+                }
+            }
+
+            Row {
+                spacing: Theme.xsSpacing
+                Layout.alignment: Qt.AlignBottom
+
+                Column {
+                    spacing: Theme.btnRadius
+                    // anchors.verticalCenter: parent.verticalCenter
+
+                    DsLabel {
+                        color: Theme.txtHintColor
+                        fontSize: Theme.baseFontSize
+                        text: Qt.formatDateTime(mainApp.currentDateTime, 'hh:mm AP')
+                        anchors.right: parent.right
+                    }
+
+                    DsLabel {
+                        color: Theme.txtPrimaryColor
+                        fontSize: Theme.baseFontSize
+                        text: Qt.formatDateTime(mainApp.currentDateTime, 'ddd dd MMM, yyyy')
+                        anchors.right: parent.right
+                    }
+                }
+
+                // Reload button
+                DsIconButton {
+                    busy: root.dashboardRequestRunning
+                    iconType: IconType.refresh
+                    height: Theme.btnHeight
+                    width: height
+                    radius: height/2
+                    bgColor: Theme.shadowColor
+                    iconColor: Theme.txtPrimaryColor
+                    bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                    bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                    toolTip: qsTr("Reload")
+
+                    onClicked: fetchDashboardData()
                 }
             }
         }
@@ -264,17 +315,8 @@ DsPage {
         baseUrl: dsController.baseUrl
     }
 
-    function getGreeting(date) {
-        var hours = date.getHours()
-        if(hours < 12)
-            return { text: qsTr("Good Morning"), icon : IconType.sunset2}
-        else if(hours < 16)
-            return { text: qsTr("Good Afternoon"), icon : IconType.sun}
-        else
-            return { text: qsTr("Good Evening"), icon : IconType.moonStars}
-    }
 
-    Component.onCompleted: {
+    function populateGridModel() {
         // Populate the gridModel with default data
         gridModel.clear()   // Reset model if we have any data
         gridModel.append({
@@ -310,77 +352,53 @@ DsPage {
                          })
 
         // Fetch total sale amount for selected period
-        fetchDashboardTotalSalesSum()
+        // fetchDashboardTotalSalesSum()
     }
 
     function fetchDataForPillIndex(index) {
         switch(index) {
         case 0: { // Total Sales
-            fetchDashboardTotalSalesSum()
+            Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest, root.gridModel)
             break;
         }
 
         case 1: { // Number of Sales
-            fetchDashboardCompletedSales()
+            Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest, root.gridModel)
             break;
         }
 
         case 2: { // Stock Status
-            fetchDashboardStockStatus()
+            Djs.fetchDashboardStockStatus(fetchStockStatusRequest, root.gridModel)
             break;
         }
 
         case 3: { // Low Stock Products
-            fetchDashboardLowStockStats()
+            Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest, root.gridModel)
             break;
         }
         }
     }
 
-    function fetchDashboardCompletedSales() {
-        // fetchCompletedSalesRequest
+    // Fetch all dashboard data
+    function fetchDashboardData() {
+        Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest, root.gridModel)
+        Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest, root.gridModel)
+        Djs.fetchDashboardStockStatus(fetchStockStatusRequest, root.gridModel)
+        Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest, root.gridModel)
     }
 
-    function fetchDashboardStockStatus() {
-        // fetchStockStatusRequest
+    Timer {
+        id: fetchDataTimer
+        interval: 2000
+        repeat: false
+        onTriggered: fetchDashboardData()
     }
 
-    function fetchDashboardLowStockStats() {
-
-    }
-
-    function fetchDashboardTotalSalesSum() {
-        const totalSales = root.gridModel.get(0) // Fetch model at index 0
-
-        // Fetch current and previous date cycle. i.e, past 7 days and 7 days before that
-        var date = null
-        if(totalSales.period === '3months')
-            date = Utils.last3MonthsDates()
-
-        else if(totalSales.period === '30days')
-            date = Utils.last30DaysDates()
-
-        else // 7days
-            date = Utils.last7DaysDates()
-
-        // Format date
-        const currentDateCycleStart = Qt.formatDateTime(date.current, "yyyy-MM-dd 00:00:00.000Z")
-        const previousDateCycleStart = Qt.formatDateTime(date.previous, "yyyy-MM-dd 00:00:00.000Z")
-        const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
-
-        // Create and send GET request
-        fetchSalesTotalsRequest.clear()
-        fetchSalesTotalsRequest.path = `/fn/dashboard/total-sales/${endpoint}`
-        var res = fetchSalesTotalsRequest.send();
-
-        if(res.status===200) {
-            var data = res.data;
-            root.gridModel.setProperty(0, 'refValue', data.old_value)
-            root.gridModel.setProperty(0, 'value', data.value)
-        }
-
-        else {
-            toast.error(res.data.message)
-        }
+    // ------------------------------------------ //
+    // On Completed, Do ...                       //
+    // ------------------------------------------ //
+    Component.onCompleted: {
+        populateGridModel()         // Clear and add grid model data
+        fetchDataTimer.restart()    // Restart the timer
     }
 }

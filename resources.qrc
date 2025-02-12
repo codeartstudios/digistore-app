@@ -107,6 +107,7 @@
         <file>ui/chartjs/Chart.js</file>
         <file>ui/chartjs/Chart.qml</file>
         <file>ui/chartjs/README.md</file>
+        <file>ui/js/dashboard.js</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>
