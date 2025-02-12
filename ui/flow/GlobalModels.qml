@@ -30,6 +30,79 @@ Item {
     property ListModel sideMenu: ListModel{}
     property ListModel sideMenuExtras: ListModel{}
 
+    // Model to hold the top pill data
+    property ListModel gridModel: ListModel {
+        ListElement {
+            period: '7days'
+            label: qsTr("Total Sales")
+            description: qsTr("Revenue generated within the selected period")
+            refValue: 0
+            value: 0
+            deviationShown: true
+            trendIconShown: true
+            periodSelectorShown: true
+            calculateFunc: (n,o) => calculateFunc1(n,o)
+        }
+
+        ListElement {
+            period: '7days'
+            label: qsTr("No. of Sales")
+            description: qsTr("Sales transactions completed")
+            refValue: 0
+            value: 0
+            deviationShown: true
+            trendIconShown: true
+            periodSelectorShown: true
+            calculateFunc: (n,o) => calculateFunc1(n,o)
+        }
+
+        ListElement {
+            period: '7days'
+            label: qsTr("Stock Status")
+            description: qsTr("Current stock available for sale")
+            refValue: 0
+            value: 0
+            deviationShown: true
+            trendIconShown: false
+            periodSelectorShown: false
+            calculateFunc: (n,o) => calculateFunc2(n,o)
+        }
+
+        ListElement {
+            period: '7days'
+            label: qsTr("Low Stock Products")
+            description: qsTr("Number of products with critically low stock")
+            value: 0
+            refValue: 0
+            deviationShown: true
+            trendIconShown: false
+            periodSelectorShown: false
+            calculateFunc: (n,o) => calculateFunc1(n,o)
+        }
+    }
+
+    function calculateFunc1(_new, _old) {
+        if(_old===null) return 0
+
+        // Catch when _old is zero
+        if(_old === _new && _old === 0) return 0
+
+        // Calculate deviation
+        var devt = 0
+        if(_old===0)
+            devt = _new * 100   // We can't divide by 0
+        else
+            devt = (_new - _old)/_old * 100
+
+        // Return deviation percentage
+        return devt%1 === 0 ? devt : devt.toFixed(1)
+    }
+
+    function calculateFunc2(val, tot) {
+        if(tot === 0) return val*100
+        else return ((val/tot) * 100).toFixed(1)
+    }
+
     function populateSideMenuModel() {
         sideMenu.clear()
         sideMenuExtras.clear()

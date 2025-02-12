@@ -16,9 +16,6 @@ DsPage {
     // Model to hold last 10 sales data
     property ListModel salesModel: ListModel {}
 
-    // Model to hold the top pill data
-    property ListModel gridModel: ListModel {}
-
     // Flag set if there is a running request
     property bool dashboardRequestRunning: fetchSalesTotalsRequest.running ||
                                            fetchCompletedSalesRequest.running ||
@@ -186,45 +183,25 @@ DsPage {
             height: cellHeight // Same as the delegates
             width: parent.width
             spacing: Theme.baseSpacing
-            model: root.gridModel   //
+            model: globalModels.gridModel
             orientation: ListView.Horizontal
             anchors.horizontalCenter: parent.horizontalCenter
             delegate: DsDashboardPillValue {
                 width: salePillListview.cellWidth
-                label: model.label
-                value: model.value
-                deviation: getDeviation(model.value, model.refValue)
-                deviationShown: Utils.isNullOrUndefined(model.deviationShown) ? true : model.deviationShown
-                description: model.description
-                trendIconShown: true // Utils.isNullOrUndefined(model.trendIconShown) ? true : model.trendIconShown
-                // TODO, fix above
+                label:              model.label
+                value:              model.value
+                ref_value:          model.refValue
+                deviationShown:     model.deviationShown
+                description:        model.description
+                trendIconShown:     model.trendIconShown
+                periodSelectorShown: model.periodSelectorShown
+                deviation:          model.calculateFunc(model.value, model.refValue)
 
+                // Slot connections
                 onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
-                onCurrentIndexChanged: (cindex, lbl) => {
-                                           root.gridModel.setProperty(index, 'period', lbl )
-                                           fetchDataForPillIndex(index)
-                                       }
-
-                function getDeviation(_new, _old) {
-                    if(_old===null) return 0
-
-                    // Set the mode value
-                    mode = _old===_new ? DsDashboardPillValue.Mode.FLAT :
-                                         _new > _old ? DsDashboardPillValue.Mode.UP :
-                                                       DsDashboardPillValue.Mode.DOWN
-
-                    // Catch wh
-                    if(_old === _new && _old === 0) return 0
-
-                    // Calculate deviation
-                    var devt = 0
-                    if(_old===0)
-                        devt = _new * 100   // We can't divide by 0
-                    else
-                        devt = (_new - _old)/_old * 100
-
-                    // Return deviation percentage
-                    return devt%1 === 0 ? devt : devt.toFixed(1)
+                onCurrentIndexChanged: function (cindex, lbl) {
+                    globalModels.gridModel.setProperty(index, 'period', lbl )
+                    fetchDataForPillIndex(index)
                 }
             }
         }
@@ -315,65 +292,25 @@ DsPage {
         baseUrl: dsController.baseUrl
     }
 
-
-    function populateGridModel() {
-        // Populate the gridModel with default data
-        gridModel.clear()   // Reset model if we have any data
-        gridModel.append({
-                             period: '7days',
-                             label: qsTr("Total Sales"),
-                             description: qsTr("Revenue generated within the selected period"),
-                             refValue: 0,
-                             value: 0
-                         })
-
-        gridModel.append({
-                             period: '7days',
-                             label: qsTr("No. of Sales"),
-                             description: qsTr("Sales transactions completed"),
-                             refValue: 0,
-                             value: 0
-                         })
-
-        gridModel.append({
-                             period: '7days',
-                             label: qsTr("Stock Status"),
-                             description: qsTr("Current stock available for sale"),
-                             refValue: 12,
-                             value: 22,
-                             trendIconShown: false
-                         })
-
-        gridModel.append({
-                             period: '7days',
-                             label: qsTr("Low Stock Products"),
-                             description: qsTr("Number of products with critically low stock"),
-                             value: 0
-                         })
-
-        // Fetch total sale amount for selected period
-        // fetchDashboardTotalSalesSum()
-    }
-
     function fetchDataForPillIndex(index) {
         switch(index) {
         case 0: { // Total Sales
-            Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest, root.gridModel)
+            Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest,    globalModels.gridModel)
             break;
         }
 
         case 1: { // Number of Sales
-            Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest, root.gridModel)
+            Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest, globalModels.gridModel)
             break;
         }
 
         case 2: { // Stock Status
-            Djs.fetchDashboardStockStatus(fetchStockStatusRequest, root.gridModel)
+            Djs.fetchDashboardStockStatus(fetchStockStatusRequest,      globalModels.gridModel)
             break;
         }
 
         case 3: { // Low Stock Products
-            Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest, root.gridModel)
+            Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest,  globalModels.gridModel)
             break;
         }
         }
@@ -381,10 +318,10 @@ DsPage {
 
     // Fetch all dashboard data
     function fetchDashboardData() {
-        Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest, root.gridModel)
-        Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest, root.gridModel)
-        Djs.fetchDashboardStockStatus(fetchStockStatusRequest, root.gridModel)
-        Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest, root.gridModel)
+        Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest,        globalModels.gridModel)
+        Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest,    globalModels.gridModel)
+        Djs.fetchDashboardStockStatus(fetchStockStatusRequest,          globalModels.gridModel)
+        Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest,      globalModels.gridModel)
     }
 
     Timer {
@@ -398,7 +335,6 @@ DsPage {
     // On Completed, Do ...                       //
     // ------------------------------------------ //
     Component.onCompleted: {
-        populateGridModel()         // Clear and add grid model data
         fetchDataTimer.restart()    // Restart the timer
     }
 }

@@ -12,6 +12,33 @@ Rectangle {
     height: col.height + Theme.xsSpacing * 2
     border.width: 1
     border.color: Theme.shadowColor
+    mode: ref_value===value ? DsDashboardPillValue.Mode.FLAT :
+                              value > ref_value ? DsDashboardPillValue.Mode.UP :
+                                                  DsDashboardPillValue.Mode.DOWN
+
+    // Properties
+    property string label: ''
+    property real value: 0
+    property real ref_value: 0
+    property real deviation: 0
+    property string description: ''
+    property string period: '7days'
+    property alias deviationShown: devtRow.visible
+    property alias trendIconShown: trendico.visible
+    property int mode
+    property alias periodSelectorShown: pillselector.visible
+    readonly property var pillSelectionModel: {
+        '7days': 0,
+        '30days': 1,
+        '3months': 2
+    }
+
+    // Control signals
+    signal clicked()
+    signal currentIndexChanged(index: int, label: string)
+
+    onModeChanged: checkMode()
+    Component.onCompleted: checkMode()
 
     // Flag modes, signifying if a value set
     // has incresed/decreased/stagnated from
@@ -23,21 +50,6 @@ Rectangle {
         FLAT    // No change or Zero
     }
 
-    property string label: ''
-    property real value: 0
-    property real deviation: 0
-    property string description: ''
-    property string period: '7days'
-    property alias deviationShown: devtRow.visible
-    property alias trendIconShown: trendico.visible
-    property int mode: DsDashboardPillValue.Mode.NULL
-
-    readonly property var pillSelectionModel: {
-        '7days': 0,
-        '30days': 1,
-        '3months': 2
-    }
-
     QtObject {
         id: internal
 
@@ -45,12 +57,6 @@ Rectangle {
         property string deviationColor: 'transparent'
         property bool deviationsShown: mode!==DsDashboardPillValue.Mode.NULL
     }
-
-    signal clicked()
-    signal currentIndexChanged(index: int, label: string)
-
-    onModeChanged: checkMode()
-    Component.onCompleted: checkMode()
 
     Column {
         id: col
@@ -71,14 +77,20 @@ Rectangle {
                 color: Theme.txtHintColor
                 isBold: true
                 elide: DsLabel.ElideRight
+                verticalAlignment: DsLabel.AlignVCenter
                 Layout.fillWidth: true
+                Layout.preferredHeight: Theme.btnHeight
                 Layout.alignment: Qt.AlignVCenter
             }
 
             DsDashboardPillSelector {
+                id: pillselector
                 model: [qsTr("Last 7 Days"), qsTr("Last 30 Days"), qsTr("Last 3 Months")]
                 currentIndex: pillSelectionModel[period]
                 onCurrentIndexChanged: root.currentIndexChanged(currentIndex, labelFromIndex(currentIndex))
+
+                Layout.preferredHeight: Theme.btnHeight
+                Layout.alignment: Qt.AlignVCenter
 
                 function labelFromIndex(currentIndex) {
                     if(currentIndex === 2)
@@ -153,7 +165,6 @@ Rectangle {
                 anchors.leftMargin: Theme.btnRadius * 2
 
                 DsLabel {
-                    visible: internal.deviationsShown
                     text: root.deviation >= 1000 ? `999+%` : `${root.deviation}%`
                     fontSize: Theme.baseFontSize
                     color: internal.deviationColor
@@ -162,7 +173,6 @@ Rectangle {
 
                 DsIcon {
                     id: trendico
-                    visible: internal.deviationsShown
                     iconColor: internal.deviationColor
                     iconType: internal.deviationIcon
                     iconSize: Theme.lgFontSize
