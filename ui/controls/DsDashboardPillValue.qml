@@ -24,7 +24,7 @@ Rectangle {
     }
 
     property string label: ''
-    property string value: ''
+    property real value: 0
     property real deviation: 0
     property string description: ''
     property string period: '7days'
@@ -54,6 +54,7 @@ Rectangle {
 
     Column {
         id: col
+        clip: true
         spacing: Theme.btnRadius
         width: parent.width - Theme.xsSpacing * 2
         anchors.centerIn: parent
@@ -93,16 +94,63 @@ Rectangle {
         }
 
         DsLabel {
+            id: dslbl
             isBold: true
-            text: root.value
+            text: formattedText
             fontSize: Theme.btnHeight
+            onWidthChanged: updateTimer.restart()
+
+            property string formattedText: computeFormattedText()
+
+            Connections {
+                target: root
+                function onValueChanged() { updateTimer.restart() }
+            }
+
+            Connections {
+                target: col
+                function onWidthChanged() { updateTimer.restart() }
+            }
+
+            Timer {
+                id: updateTimer
+                interval: 50
+                repeat: false
+                onTriggered: dslbl.formattedText = dslbl.computeFormattedText();
+            }
+
+            function computeFormattedText() {
+                var totalWidth = implicitWidth + devtRow.implicitWidth + Theme.btnRadius * 2
+                if(col.width <= totalWidth) {
+                    if(root.value>=1000000000) { // Billions
+                        var b = root.value/1000000000
+                        return `${Utils.commafy(b.toFixed(1))}B`
+                    }
+
+                    else if(root.value>=1000000) { // Millions
+                        let b = root.value/1000000
+                        return `${Utils.commafy(b.toFixed(1))}M`
+                    }
+
+                    else if(root.value>=1000) { // Thousands
+                        let b = root.value/1000
+                        return `${Utils.commafy(b.toFixed(1))}K`
+                    }
+
+                    else { // Less than a thousand ...
+                        return `${Utils.commafy(root.value.toFixed(1))}`
+                    }
+                } else {
+                    return `${Utils.commafy(root.value)}`
+                }
+            }
 
             Row {
                 id: devtRow
                 spacing: Theme.btnRadius
                 anchors.bottom: parent.baseline
                 anchors.left: parent.right
-                anchors.leftMargin: Theme.btnRadius
+                anchors.leftMargin: Theme.btnRadius * 2
 
                 DsLabel {
                     visible: internal.deviationsShown

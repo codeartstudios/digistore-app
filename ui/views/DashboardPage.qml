@@ -141,7 +141,7 @@ DsPage {
             delegate: DsDashboardPillValue {
                 width: salePillListview.cellWidth
                 label: model.label
-                value: `${Utils.commafy(model.value)}`
+                value: model.value
                 deviation: getDeviation(model.value, model.refValue)
                 deviationShown: Utils.isNullOrUndefined(model.deviationShown) ? true : model.deviationShown
                 description: model.description
@@ -151,7 +151,7 @@ DsPage {
                 onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
                 onCurrentIndexChanged: (cindex, lbl) => {
                                            root.gridModel.setProperty(index, 'period', lbl )
-                                           fetchDashboardTotalSalesSum()
+                                           fetchDataForPillIndex(index)
                                        }
 
                 function getDeviation(_new, _old) {
@@ -203,6 +203,7 @@ DsPage {
             border.color: Theme.shadowColor
             Layout.fillWidth: true
             Layout.fillHeight: true
+
             Column {
                 anchors.fill: parent
                 anchors.margins: Theme.xsSpacing
@@ -234,6 +235,33 @@ DsPage {
                 }
             }
         }
+    }
+
+    // --------------------------------------- //
+    // REQUEST Objects                         //
+    // --------------------------------------- //
+    Requests {
+        id: fetchSalesTotalsRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+    }
+
+    Requests {
+        id: fetchCompletedSalesRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+    }
+
+    Requests {
+        id: fetchStockStatusRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+    }
+
+    Requests {
+        id: fetchLowStockStatsRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
     }
 
     function getGreeting(date) {
@@ -285,11 +313,40 @@ DsPage {
         fetchDashboardTotalSalesSum()
     }
 
-    // Fetch total sales
-    Requests {
-        id: fetchSalesTotalsRequest
-        token: dsController.token
-        baseUrl: dsController.baseUrl
+    function fetchDataForPillIndex(index) {
+        switch(index) {
+        case 0: { // Total Sales
+            fetchDashboardTotalSalesSum()
+            break;
+        }
+
+        case 1: { // Number of Sales
+            fetchDashboardCompletedSales()
+            break;
+        }
+
+        case 2: { // Stock Status
+            fetchDashboardStockStatus()
+            break;
+        }
+
+        case 3: { // Low Stock Products
+            fetchDashboardLowStockStats()
+            break;
+        }
+        }
+    }
+
+    function fetchDashboardCompletedSales() {
+        // fetchCompletedSalesRequest
+    }
+
+    function fetchDashboardStockStatus() {
+        // fetchStockStatusRequest
+    }
+
+    function fetchDashboardLowStockStats() {
+
     }
 
     function fetchDashboardTotalSalesSum() {
