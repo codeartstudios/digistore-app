@@ -1,3 +1,12 @@
+function maybeJson(val) {
+    if(!val) return '{}'
+    try {
+        var r = JSON.stringify(val)
+        return r
+    } catch(e) {
+        return '!{}'
+    }
+}
 
 function isUndefined(val) {
     if(typeof(val) === 'undefined') return true

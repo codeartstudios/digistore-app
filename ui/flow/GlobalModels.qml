@@ -35,7 +35,7 @@ Item {
         ListElement {
             period: '7days'
             label: qsTr("Total Sales")
-            description: qsTr("Revenue generated within the selected period")
+            description: ''
             refValue: 0
             value: 0
             deviationShown: true
@@ -174,5 +174,6 @@ Item {
 
     Component.onCompleted: {
         populateSideMenuModel()
+        gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${dsController.organization.settings.currency.toUpperCase()}`)
     }
 }

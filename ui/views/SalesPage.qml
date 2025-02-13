@@ -311,11 +311,18 @@ DsPage {
                                                                                     hour: '2-digit',
                                                                                     minute: '2-digit'
                                                                                 });
-                                var payments_methods = []
-                                const keys = Object.keys(p.payments)
+
+                                                      var payments_methods = []
+
+                                // Some embedded keys may be null, handle that situation
+                                const keys = p.payments ? Object.keys(p.payments) : []
                                 for(var i=0; i<keys.length; i++) {
-                                    if(p.payments[keys[i]].amount > 0) {
-                                        payments_methods.push(p.payments[keys[i]].label.toString())
+                                    var a = p.payments[keys[i]]  // Maybe NULL
+                                    const amount =  (a && a.amount) ? a : 0
+                                    if(amount > 0) {
+                                        var q = p.payments[keys[i]]
+                                        q = (q && q.label) ? q : '?'
+                                        payments_methods.push(q.toString())
                                     }
                                 }
 
