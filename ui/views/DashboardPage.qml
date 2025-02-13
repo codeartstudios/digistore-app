@@ -238,7 +238,6 @@ DsPage {
             Column {
                 id: recentSalesCol
                 width: parent.width
-                spacing: Theme.btnRadius
                 anchors.centerIn: parent
 
                 property var flexValues: [3, 1, 2, 2]
@@ -251,7 +250,6 @@ DsPage {
                         var tw = width - (Theme.btnRadius*(flexValues.length-1))
                         var mult = (flexValues[i] / ts)
                         colWidths[i] = tw * mult
-                        console.log(`${i} ${ts} ${mult} ${colWidths[i]}`)
                     }
                     colWidths = colWidths
                 }
