@@ -20,7 +20,8 @@ DsPage {
     property bool dashboardRequestRunning: fetchSalesTotalsRequest.running ||
                                            fetchCompletedSalesRequest.running ||
                                            fetchStockStatusRequest.running ||
-                                           fetchLowStockStatsRequest.running
+                                           fetchLowStockStatsRequest.running ||
+                                           chartCard.fetchSalesDataBusy
 
     DsSettingsStackPage {
         spacing: Theme.baseSpacing
@@ -97,7 +98,8 @@ DsPage {
                     iconColor: Theme.txtPrimaryColor
                     bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                     bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
-                    toolTip: qsTr("Reload")
+                    toolTip: qsTr("Reload dashboard data")
+                    toolTipSide: DsToolTip.Side.Bottom
 
                     onClicked: fetchDashboardData()
                 }
@@ -214,6 +216,7 @@ DsPage {
             property real colWidth: (width-(spacing*3))/4
 
             DsChartCard {
+                id: chartCard
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
@@ -229,35 +232,261 @@ DsPage {
             color: Theme.baseColor
             border.width: 1
             border.color: Theme.shadowColor
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            width: parent.width
+            height: recentSalesCol.height + Theme.smSpacing
 
             Column {
-                anchors.fill: parent
-                anchors.margins: Theme.xsSpacing
+                id: recentSalesCol
+                width: parent.width
                 spacing: Theme.btnRadius
+                anchors.centerIn: parent
 
-                DsLabel {
-                    width: parent.width
-                    text: qsTr("Last 10 Sales")
-                    fontSize: Theme.xlFontSize
+                property var flexValues: [3, 1, 2, 2]
+                property var colWidths: [0,0,0,0]
+
+                onWidthChanged: {
+                    var ts = 0
+                    flexValues.forEach(v => ts+=v )
+                    for(var i=0; i<flexValues.length; i++) {
+                        var tw = width - (Theme.btnRadius*(flexValues.length-1))
+                        var mult = (flexValues[i] / ts)
+                        colWidths[i] = tw * mult
+                        console.log(`${i} ${ts} ${mult} ${colWidths[i]}`)
+                    }
+                    colWidths = colWidths
+                }
+
+                // Header labela and sync button
+                RowLayout {
+                    spacing: Theme.smSpacing
+                    width: parent.width - 2*Theme.xsSpacing
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    DsLabel {
+                        text: qsTr("Last 10 Sales")
+                        fontSize: Theme.xlFontSize
+                        color: Theme.txtHintColor
+                        isBold: true
+                        elide: DsLabel.ElideRight
+                        bottomPadding: Theme.xsSpacing
+                        topPadding: Theme.xsSpacing
+                        leftPadding: Theme.xsSpacing/2
+                        rightPadding: Theme.xsSpacing/2
+
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    DsLabel {
+                        id: syncdateLabel
+                        color: Theme.txtHintColor
+                        fontSize: Theme.smFontSize
+                        text: `Last Sync: ${formatDate}`
+                        Layout.alignment: Qt.AlignVCenter
+
+                        property var syncDate: null
+                        property string formatDate: syncDate===null ? '--' : Qt.formatDateTime(syncDate, 'hh:mm:ss AP')
+
+                        Connections {
+                            target: fetchLast10SalesDataRequest
+
+                            function onRunningChanged() {
+                                if(!fetchLast10SalesDataRequest.running) {
+                                    syncdateLabel.syncDate = new Date()
+                                }
+                            }
+                        }
+                    }
+
+                    // Reload button
+                    DsIconButton {
+                        busy: fetchLast10SalesDataRequest.running
+                        iconType: IconType.refresh
+                        height: Theme.btnHeight
+                        width: height
+                        radius: height/2
+                        bgColor: Theme.shadowColor
+                        iconColor: Theme.txtPrimaryColor
+                        bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                        bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                        toolTip: qsTr("Reload sales")
+                        toolTipSide: DsToolTip.Side.Bottom
+                        Layout.alignment: Qt.AlignVCenter
+
+                        onClicked: Djs.fetchDashboardLast10Sales(fetchLast10SalesDataRequest, root.salesModel)
+                    }
+                }
+
+                // Table header
+                Rectangle {
                     height: Theme.btnHeight
-                    color: Theme.txtHintColor
-                    isBold: true
-                    elide: DsLabel.ElideRight
-                    bottomPadding: Theme.xsSpacing
+                    color: Theme.shadowColor
+                    width: parent.width
+
+                    RowLayout {
+                        spacing: Theme.btnRadius
+                        anchors.fill: parent
+                        anchors.leftMargin: Theme.xsSpacing
+                        anchors.rightMargin: Theme.xsSpacing
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        DsLabel {
+                            text: qsTr('Date')
+                            fontSize: Theme.baseFontSize
+                            color: Theme.txtPrimaryColor
+                            verticalAlignment: DsLabel.AlignVCenter
+                            horizontalAlignment: DsLabel.AlignLeft
+                            leftPadding: Theme.xsSpacing/2
+                            rightPadding: Theme.xsSpacing/2
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: recentSalesCol.colWidths[0]
+                        }
+
+                        DsLabel {
+                            text: qsTr('Amount')
+                            fontSize: Theme.baseFontSize
+                            color: Theme.txtPrimaryColor
+                            verticalAlignment: DsLabel.AlignVCenter
+                            horizontalAlignment: DsLabel.AlignLeft
+                            leftPadding: Theme.xsSpacing/2
+                            rightPadding: Theme.xsSpacing/2
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: recentSalesCol.colWidths[1]
+                        }
+
+                        DsLabel {
+                            text: qsTr('Teller')
+                            fontSize: Theme.baseFontSize
+                            color: Theme.txtPrimaryColor
+                            verticalAlignment: DsLabel.AlignVCenter
+                            horizontalAlignment: DsLabel.AlignLeft
+                            leftPadding: Theme.xsSpacing/2
+                            rightPadding: Theme.xsSpacing/2
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: recentSalesCol.colWidths[2]
+                        }
+
+                        DsLabel {
+                            text: qsTr("Payments")
+                            fontSize: Theme.baseFontSize
+                            color: Theme.txtPrimaryColor
+                            verticalAlignment: DsLabel.AlignVCenter
+                            horizontalAlignment: DsLabel.AlignLeft
+                            leftPadding: Theme.xsSpacing/2
+                            rightPadding: Theme.xsSpacing/2
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: recentSalesCol.colWidths[3]
+                        }
+                    }
+
+                }
+
+                Item {
+                    height: 100
+                    width: parent.width
+                    visible: root.salesModel.count === 0
+
+                    DsLabel {
+                        text: qsTr("Nothing here yet!")
+                        fontSize: Theme.xlFontSize
+                        color: Theme.txtHintColor
+                        isBold: true
+                        elide: DsLabel.ElideRight
+                        bottomPadding: Theme.xsSpacing
+                        topPadding: Theme.xsSpacing
+                        anchors.centerIn: parent
+                    }
                 }
 
                 Repeater {
                     id: rp
                     width: parent.width
                     model: salesModel
-                    delegate: RowLayout {
-                        width: rp.width
-                        spacing: Theme.btnRadius
+                    delegate: Rectangle {
+                        color: hovered ? withOpacity(Theme.baseAlt1Color, 0.8) : Theme.baseColor
+                        height: Theme.btnHeight
+                        width: recentSalesCol.width
 
-                        DsLabel {
-                            text: name
+                        property bool hovered: false
+
+                        // Bottom margin line
+                        Rectangle {
+                            height: 1
+                            width: parent.width
+                            color: Theme.shadowColor
+                            anchors.bottom: parent.bottom
+                        }
+
+                        // Top margin line
+                        Rectangle {
+                            height: 1
+                            width: parent.width
+                            visible: index === 0
+                            color: Theme.shadowColor
+                            anchors.top: parent.top
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onEntered: parent.hovered=true
+                            onExited: parent.hovered=false
+                        }
+
+                        RowLayout {
+                            spacing: Theme.btnRadius
+                            anchors.fill: parent
+                            anchors.leftMargin: Theme.xsSpacing
+                            anchors.rightMargin: Theme.xsSpacing
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            DsLabel {
+                                text: model.date
+                                fontSize: Theme.baseFontSize
+                                color: Theme.txtPrimaryColor
+                                verticalAlignment: DsLabel.AlignVCenter
+                                horizontalAlignment: DsLabel.AlignLeft
+                                leftPadding: Theme.xsSpacing/2
+                                rightPadding: Theme.xsSpacing/2
+                                Layout.fillHeight: true
+                                Layout.preferredWidth: recentSalesCol.colWidths[0]
+                            }
+
+                            DsLabel {
+                                text: `${dsController.organization.settings.currency.toUpperCase()} ${model.totals}`
+                                fontSize: Theme.baseFontSize
+                                color: Theme.txtPrimaryColor
+                                verticalAlignment: DsLabel.AlignVCenter
+                                horizontalAlignment: DsLabel.AlignLeft
+                                leftPadding: Theme.xsSpacing/2
+                                rightPadding: Theme.xsSpacing/2
+                                Layout.fillHeight: true
+                                Layout.preferredWidth: recentSalesCol.colWidths[1]
+                            }
+
+                            DsLabel {
+                                text: (model.teller && model.teller!=='') ? model.teller : qsTr('N/A')
+                                fontSize: Theme.baseFontSize
+                                color: Theme.txtPrimaryColor
+                                verticalAlignment: DsLabel.AlignVCenter
+                                horizontalAlignment: DsLabel.AlignLeft
+                                leftPadding: Theme.xsSpacing/2
+                                rightPadding: Theme.xsSpacing/2
+                                Layout.fillHeight: true
+                                Layout.preferredWidth: recentSalesCol.colWidths[2]
+                            }
+
+                            DsLabel {
+                                text: model.payments
+                                fontSize: Theme.baseFontSize
+                                color: Theme.txtPrimaryColor
+                                verticalAlignment: DsLabel.AlignVCenter
+                                horizontalAlignment: DsLabel.AlignLeft
+                                leftPadding: Theme.xsSpacing/2
+                                rightPadding: Theme.xsSpacing/2
+                                Layout.fillHeight: true
+                                Layout.preferredWidth: recentSalesCol.colWidths[3]
+                            }
                         }
                     }
                 }
@@ -292,6 +521,15 @@ DsPage {
         baseUrl: dsController.baseUrl
     }
 
+    Requests {
+        id: fetchLast10SalesDataRequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+        path: "/api/collections/sales_view/records"
+    }
+
+    // ------------------------------------------------------- //
+
     function fetchDataForPillIndex(index) {
         switch(index) {
         case 0: { // Total Sales
@@ -322,6 +560,7 @@ DsPage {
         Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest,    globalModels.gridModel)
         Djs.fetchDashboardStockStatus(fetchStockStatusRequest,          globalModels.gridModel)
         Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest,      globalModels.gridModel)
+        Djs.fetchDashboardLast10Sales(fetchLast10SalesDataRequest,      root.salesModel)
     }
 
     Timer {

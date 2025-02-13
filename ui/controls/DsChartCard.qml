@@ -14,6 +14,8 @@ Rectangle {
     border.color: Theme.shadowColor
 
     property string label: qsTr("Sales summary")
+    property bool isProcessingData: false
+    property bool fetchSalesDataBusy: fetchSalesChartRequest.running || isProcessingData
 
     ColumnLayout {
         id: col
@@ -40,7 +42,7 @@ Rectangle {
             DsDashboardPillSelector {
                 id: pillSelector
                 model: [qsTr("Last 7 Days"), qsTr("Last 30 Days"), qsTr("Last 3 Months")]
-                onCurrentIndexChanged: durationChanged()
+                onCurrentIndexChanged: onDurationChanged()
             }
         }
 
@@ -49,12 +51,22 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Component.onCompleted: durationChanged()
+            function loadTableData() {
+                const today = new Date();
+                const date = new Date();
+                date.setDate(today.getDate() - 6); // 7 days ago
+                var xdata = Utils.last7Days()
+                salesChart.xAxisLabels = xdata
+                salesChart.yAxisData = Array(xdata.length).fill(0);
+                salesChart.chart.animateToNewData();
+            }
+
+            Component.onCompleted: loadTableData()
         }
     }
 
     // Repopulate the x-axis model
-    function durationChanged() {
+    function onDurationChanged() {
         var today = new Date()
 
         switch(pillSelector.currentIndex) {
@@ -67,27 +79,31 @@ Rectangle {
             fetchSalesDataFromDate(date, xdata.length)
             break
         }
+
         case 1: {
             salesChart.xAxisLabels = Utils.last30Days()
             const date = new Date();
             date.setDate(today.getDate() - 29); // 30 days ago
-            xdata= Utils.last7Days()
+            xdata= Utils.last30Days()
             salesChart.xAxisLabels = xdata
             salesChart.yAxisData = Array(xdata.length).fill(0);
             fetchSalesDataFromDate(date, xdata.length)
             break
         }
+
         case 2: {
             salesChart.xAxisLabels = Utils.last3Months()
             const startDate = new Date();
-            startDate.setMonth(today.getMonth() - 2); // Start from 3 months ago
-            xdata= Utils.last7Days()
+            startDate.setMonth(today.getMonth() - 3); // Start from 3 months ago
+            xdata= Utils.last3Months()
             salesChart.xAxisLabels = xdata
             salesChart.yAxisData = Array(xdata.length).fill(0);
-            fetchSalesDataFromDate(date, xdata.length)
+            fetchSalesDataFromDate(startDate, xdata.length)
             break
         }
         }
+
+        salesChart.chart.animateToNewData();
     }
 
     function fetchSalesDataFromDate(date, count) {
@@ -101,7 +117,7 @@ Rectangle {
         var startDateUTC = Qt.formatDateTime(date, 'yyyy-MM-dd 00:00:00.0Z')
 
         var query = {
-            perPage: 100000,
+            perPage: 1000000,
             sort: '+created',
             filter: `organization = '${dsController.workspaceId}' && created >= '${startDateUTC}'`,
             skipTotal: true,
@@ -136,6 +152,8 @@ Rectangle {
 
     // Iterate over each API data and generate y-data for the chart
     function processDataFor(type, apiData, start, numDays=0) {
+        isProcessingData = true // Processing Starts
+
         const yData = Array(numDays).fill(0); // Initialize array with zeros
 
         if(type==='salesChart') {
@@ -150,5 +168,18 @@ Rectangle {
         }
 
         salesChart.yAxisData = yData
+
+        isProcessingData = false // Processing Ends
     }
+
+    // ----------------------------------------------------------------------- //
+
+    Timer {
+        id: fetchChartTimer
+        repeat: false
+        interval: 2000
+        onTriggered: onDurationChanged()
+    }
+
+    Component.onCompleted: fetchChartTimer.restart()
 }

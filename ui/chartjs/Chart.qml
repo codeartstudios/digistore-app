@@ -29,7 +29,8 @@ Canvas {
     function animateToNewData()
     {
         chartAnimationProgress = 0.1;
-        jsChart.update();
+        if(jsChart)
+            jsChart.update();
         chartAnimator.restart();
     }
 

@@ -74,7 +74,7 @@ Item {
             description: qsTr("Number of products with critically low stock")
             value: 0
             refValue: 0
-            deviationShown: true
+            deviationShown: false
             trendIconShown: false
             periodSelectorShown: false
             calculateFunc: (n,o) => calculateFunc1(n,o)

@@ -130,3 +130,67 @@ function fetchDashboardTotalSalesSum(request, model) {
     }
 }
 
+function fetchDashboardLast10Sales(request, model) {
+    var query = {
+        page: 1,
+        perPage: 200,
+        sort: `-created`,
+        filter: `organization='${dsController.workspaceId}'`
+    }
+
+    request.clear()
+    request.query = query;
+    var res = request.send();
+
+    console.log(res, JSON.stringify(res))
+
+    if(res.status===200) {
+        model.clear()
+        var data = res.data.items;
+        var items = []
+
+        try {
+            data.forEach(
+                        function(p, index) {
+                            var obj = {}
+                            obj['date'] =  p.created ? new Date(p.created).toLocaleString('en-US', {
+                                                                                  year: 'numeric',
+                                                                                  month: '2-digit',
+                                                                                  day: '2-digit',
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit'
+                                                                              }) : qsTr('n.d');
+                            var payments = []
+                            const keys = Object.keys(p.payments)
+                            for(var i=0; i<keys.length; i++) {
+                                if(p.payments[keys[i]].amount > 0) {
+                                    payments.push(p.payments[keys[i]].label.toString())
+                                }
+                            }
+
+                            obj['payments'] = payments.length>0 ? payments.join(', ') : qsTr('N/A')
+                            obj['teller']   = p.teller ? p.teller : ''
+                            obj['totals']   = p.totals ? p.totals : 0
+                            obj['items']    = 0
+                            model.append(obj)
+                        });
+        }
+
+        catch(err) {
+            console.log("Failed to parse response data: ", err)
+            toast.warning("Failed to parse response data!");
+        }
+    }
+
+    else if(res.status === 0) {
+        toast.error(qsTr("Could not connect to the server, something is'nt right!"))
+    }
+
+    else if(res.status === 403) {
+        toast.error(qsTr("You don't seem to have access rights to perform this action."))
+    }
+
+    else {
+        toast.error(res.message ? res.message : qsTr("Yuck! Something not right here!"))
+    }
+}
