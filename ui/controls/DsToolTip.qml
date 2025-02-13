@@ -57,7 +57,7 @@ ToolTip {
         // Upward pointing arrow
         DsIcon {
             iconType: IconType.triangleFilled
-            color: parent.color
+            iconColor: parent.color
             iconSize: Theme.h3
             rotation: 0
             visible: side===DsToolTip.Bottom
@@ -70,7 +70,7 @@ ToolTip {
         // Downward pointing indicator
         DsIcon {
             iconType: IconType.triangleFilled
-            color: parent.color
+            iconColor: parent.color
             iconSize: Theme.h3
             rotation: 180
             visible: side===DsToolTip.Top
@@ -82,7 +82,7 @@ ToolTip {
         // Right pointing arrow
         DsIcon {
             iconType: IconType.triangleFilled
-            color: parent.color
+            iconColor: parent.color
             iconSize: Theme.h3
             rotation: 90
             visible: side===DsToolTip.Left
@@ -93,7 +93,7 @@ ToolTip {
 
         DsIcon {
             iconType: IconType.triangleFilled
-            color: parent.color
+            iconColor: parent.color
             iconSize: Theme.h3
             rotation: -90
             visible: side===DsToolTip.Right

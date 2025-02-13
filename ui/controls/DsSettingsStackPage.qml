@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls.Basic
 import app.digisto.modules
 
@@ -12,6 +13,7 @@ Item {
 
     default property alias contentItem: col.children
     property alias spacing: col.spacing
+    property real columnHorizontalMargin: 0 // X-Axis margin (left and right independently)
 
     // Paddings
     property alias leftPadding: col.leftPadding
@@ -23,10 +25,25 @@ Item {
         id: scrollview
         anchors.fill: parent
 
-        Column {
-            id: col
-            width: root.width
-            spacing: Theme.xsSpacing
+        RowLayout {
+            spacing: 0
+
+            Item {
+                Layout.preferredWidth: root.columnHorizontalMargin
+                height: 1
+            }
+
+            Column {
+                id: col
+                width: root.width - 2*root.columnHorizontalMargin
+                spacing: Theme.xsSpacing
+                Layout.fillWidth: true
+            }
+
+            Item {
+                Layout.preferredWidth: root.columnHorizontalMargin
+                height: 1
+            }
         }
     }
 }

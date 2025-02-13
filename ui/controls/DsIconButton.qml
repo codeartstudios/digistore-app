@@ -14,12 +14,19 @@ Button {
     property bool busy: false
     property string iconType
     property alias iconSize: ico.iconSize
+    property alias iconColor: ico.iconColor
+
+    // Border
     property alias radius: bg.radius
     property real borderWidth: 0
     property string borderColor: Theme.txtPrimaryColor
+
+    // Tooltip
     property alias toolTip: tooltip.text
     property alias toolTipSide: tooltip.side
     property bool toolTipShown: true
+
+    // Icon & Background Color
     property string textColor: Theme.baseColor
     property string bgColor: Theme.primaryColor
     property string bgHover: withOpacity(bgColor, 0.8)
@@ -40,11 +47,11 @@ Button {
         DsIcon {
             id: ico
             opacity: control.enabled ? 1 : 0.4
-            width: visible ? 0 : iconSize
             visible: iconType!==undefined || iconType!==""
-            iconType: busy ? IconType.loader2 : control.iconType===null ? "" : control.iconType
+            iconType: busy ? IconType.loader2 : control.iconType===null ?
+                                 "" : control.iconType
             iconSize: 19
-            color: control.textColor
+            iconColor: control.textColor
             anchors.centerIn: parent
         }
     }

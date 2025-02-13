@@ -3,19 +3,25 @@ import QtQuick.Controls
 import app.digisto.modules
 
 Item {
+    id: root
+    clip: true
     implicitHeight: iconSize
     implicitWidth: iconSize
 
+    // Alias of the icon size in `px`
     property real iconSize: Theme.xlFontSize
-    required property string iconType
-    property string color: Theme.txtPrimaryColor
-    property alias label: lbl
+
+    // Icon to be displayed, string expected from font icon
+    property string iconType: ''
+
+    // Icon color
+    property string iconColor: Theme.txtPrimaryColor
 
     Label {
         id: lbl
-        color: parent.color
-        text: iconType
-        font.pixelSize: iconSize
+        color: root.iconColor
+        text: root.iconType
+        font.pixelSize: root.iconSize
         font.family: tablerIconsFontLoader.name
         verticalAlignment: Label.AlignVCenter
         horizontalAlignment: Label.AlignHCenter

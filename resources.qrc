@@ -98,6 +98,16 @@
         <file>ui/controls/DsSettingsRowTextInput.qml</file>
         <file>ui/popups/DsUserProfileContextPopup.qml</file>
         <file>assets/imgs/no-profile.jpg</file>
+        <file>ui/controls/DsDashboardPillSelector.qml</file>
+        <file>ui/controls/DsDashboardQuickLinksDelegate.qml</file>
+        <file>ui/controls/DsSidebarMenuItem.qml</file>
+        <file>ui/controls/DsChartCard.qml</file>
+        <file>ui/controls/DsDashboardQuickLinks.qml</file>
+        <file>ui/controls/DsCharts.qml</file>
+        <file>ui/chartjs/Chart.js</file>
+        <file>ui/chartjs/Chart.qml</file>
+        <file>ui/chartjs/README.md</file>
+        <file>ui/js/dashboard.js</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

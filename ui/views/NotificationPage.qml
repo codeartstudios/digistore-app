@@ -64,7 +64,7 @@ DsPage {
                 DsIcon {
                     iconType: IconType.clearAll
                     iconSize: 100
-                    color: Theme.txtHintColor
+                    iconColor: Theme.txtHintColor
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 

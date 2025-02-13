@@ -60,9 +60,10 @@ Button {
             DsIcon {
                 id: ico
                 visible: leftIconShown
-                iconType: busy ? IconType.loader2 : control.iconType ? control.iconType : ""
+                iconType: busy ? IconType.loader2 : control.iconType ?
+                                     control.iconType : ""
                 iconSize: control.fontSize * 1.2
-                color: control.textColor
+                iconColor: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -78,7 +79,7 @@ Button {
                 iconType: ""
                 visible: endIcon
                 iconSize: control.fontSize * 1.2
-                color: control.textColor
+                iconColor: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
             }
         }

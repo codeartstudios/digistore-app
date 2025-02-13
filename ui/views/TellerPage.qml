@@ -94,8 +94,7 @@ DsPage {
 
             DsButton {
                 enabled: cartModel.count > 0 &&
-                         loggedUserPermissions.canSellProducts // TODO &&
-                         // !loggedUserPermissions.isAdmin
+                         loggedUserPermissions.canSellProducts
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
@@ -163,162 +162,166 @@ DsPage {
             }
         }
 
-        DsTable {
-            id: table
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            headerModel: ListModel{ id: headermodel }
-            dataModel: cartModel
-            busy: searchitemrequest.running
-            headerAcionIconType: IconType.eraser
-            delegateActionIconType: IconType.shoppingBagEdit
 
-            onHeaderActionButtonSelected: {
-                table.currentIndex = -1
-                cartModel.clear()
-                calculateTotals()
-            }
-
-            onDelegateActionButtonSelected: function(index, model) {
-                currentIndex=index;
-                selectionChanged(index, model);
-            }
-
-            onCurrentIndexChanged: if(table.currentIndex===-1)
-                                       selectedObjectItem.selectedObject=null
-
-            onSelectionChanged: function(_, obj) {
-                selectedObjectItem.selectedObject={
-                    id: obj.id,
-                    collectionId: obj.collectionId,
-                    fullname: `${obj.unit} ${obj.name}`,
-                    name: obj.name,
-                    unit: obj.unit,
-                    barcode: obj.barcode,
-                    buying_price: obj.buying_price,
-                    selling_price: obj.selling_price,
-                    stock: obj.stock,
-                    thumbnail: obj.thumbnail,
-                    organization: obj.organization,
-                    quantity: obj.quantity,
-                    subtotal: obj.quantity * obj.selling_price
-                }
-            }
-
-            // Build headers
-            Component.onCompleted: addheaders()
-        }
-
-        Rectangle {
-            id: selectedObjectItem
-            color: Theme.shadowColor
-            radius: Theme.btnRadius
-            visible: selectedObject
-            implicitHeight: selectedObject ? Theme.lgBtnHeight : 0
-            Layout.fillWidth: true
-            Layout.leftMargin: Theme.smSpacing
-            Layout.rightMargin: Theme.smSpacing
-            Layout.bottomMargin: Theme.baseSpacing
-
-            Behavior on implicitHeight { NumberAnimation {} }
-
-            property var selectedObject: null
-
-            DsBusyIndicator {
-                width: Theme.btnHeight
-                height: Theme.btnHeight
-                running: searchitemrequest.running
-                visible: running
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-            }
-
-            RowLayout {
-                spacing: Theme.btnRadius
+            DsTable {
+                id: table
+                headerModel: ListModel{ id: headermodel }
+                dataModel: cartModel
+                busy: searchitemrequest.running
+                headerAcionIconType: IconType.eraser
+                delegateActionIconType: IconType.shoppingBagEdit
                 anchors.fill: parent
-                anchors.rightMargin: Theme.xsSpacing/2
-                anchors.leftMargin: Theme.xsSpacing/2
 
-                property alias obj: selectedObjectItem.selectedObject
-
-                DsIconButton {
-                    enabled: !searchitemrequest.running
-                    iconType: IconType.x
-                    textColor: Theme.dangerColor
-                    bgColor: "transparent"
-                    bgHover: withOpacity(Theme.dangerAltColor, 0.8)
-                    bgDown: withOpacity(Theme.dangerAltColor, 0.6)
-                    radius: height/2
-                    Layout.alignment: Qt.AlignVCenter
-
-                    onClicked: table.currentIndex=-1
+                onHeaderActionButtonSelected: {
+                    table.currentIndex = -1
+                    cartModel.clear()
+                    calculateTotals()
                 }
 
-                DsLabel {
-                    text: qsTr("Name")
-                    color: Theme.txtHintColor
-                    fontSize: Theme.lgFontSize
-                    rightPadding: Theme.smSpacing
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.leftMargin: Theme.smSpacing
+                onDelegateActionButtonSelected: function(index, model) {
+                    currentIndex=index;
+                    selectionChanged(index, model);
                 }
 
-                DsLabel {
-                    text: parent.obj ? `${parent.obj.unit} ${parent.obj.name}` : ""
-                    color: Theme.txtPrimaryColor
-                    fontSize: Theme.lgFontSize
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
-                }
+                onCurrentIndexChanged: if(table.currentIndex===-1)
+                                           selectedObjectItem.selectedObject=null
 
-                DsLabel {
-                    text: qsTr("Quantity")
-                    color: Theme.txtHintColor
-                    fontSize: Theme.lgFontSize
-                    rightPadding: Theme.smSpacing
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                QQCB.SpinBox {
-                    id: qtysbox
-                    Layout.preferredHeight: Theme.btnHeight
-                    Layout.preferredWidth: 200
-                    value: parent.obj ? parent.obj.quantity : 1
-                    from: 1
-                    editable: true
-                }
-
-                Item { height: 1; Layout.preferredWidth: 50 }
-
-                DsButton {
-                    text: qsTr("Update")
-                    iconType: IconType.circleCheck
-
-                    onClicked: {
-                        var index = table.currentIndex
-                        var qty = qtysbox.value
-                        var sp = parent.obj.selling_price
-
-                        cartModel.set(index, { quantity: qty, subtotal: qty*sp })
-                        calculateTotals()
-
-                        table.currentIndex=-1
+                onSelectionChanged: function(_, obj) {
+                    selectedObjectItem.selectedObject={
+                        id: obj.id,
+                        collectionId: obj.collectionId,
+                        fullname: `${obj.unit} ${obj.name}`,
+                        name: obj.name,
+                        unit: obj.unit,
+                        barcode: obj.barcode,
+                        buying_price: obj.buying_price,
+                        selling_price: obj.selling_price,
+                        stock: obj.stock,
+                        thumbnail: obj.thumbnail,
+                        organization: obj.organization,
+                        quantity: obj.quantity,
+                        subtotal: obj.quantity * obj.selling_price
                     }
                 }
 
-                DsButton {
-                    text: qsTr("Remove")
-                    iconType: IconType.trashX
-                    textColor: Theme.dangerColor
-                    bgColor: "transparent"
-                    bgHover: withOpacity(Theme.dangerAltColor, 0.8)
-                    bgDown: withOpacity(Theme.dangerAltColor, 0.6)
-                    borderColor: Theme.dangerColor
-                    borderWidth: 1
+                // Build headers
+                Component.onCompleted: addheaders()
+            }
 
-                    onClicked: {
-                        cartModel.remove(table.currentIndex);
-                        calculateTotals();
+            Rectangle {
+                id: selectedObjectItem
+                color: Theme.shadowColor
+                radius: Theme.btnRadius
+                visible: selectedObject
+                implicitHeight: selectedObject ? Theme.lgBtnHeight : 0
+                Layout.fillWidth: true
+                Layout.leftMargin: Theme.smSpacing
+                Layout.rightMargin: Theme.smSpacing
+                Layout.bottomMargin: Theme.baseSpacing
+
+                Behavior on implicitHeight { NumberAnimation {} }
+
+                property var selectedObject: null
+
+                DsBusyIndicator {
+                    width: Theme.btnHeight
+                    height: Theme.btnHeight
+                    running: searchitemrequest.running
+                    visible: running
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                }
+
+                RowLayout {
+                    spacing: Theme.btnRadius
+                    anchors.fill: parent
+                    anchors.rightMargin: Theme.xsSpacing/2
+                    anchors.leftMargin: Theme.xsSpacing/2
+
+                    property alias obj: selectedObjectItem.selectedObject
+
+                    DsIconButton {
+                        enabled: !searchitemrequest.running
+                        iconType: IconType.x
+                        textColor: Theme.dangerColor
+                        bgColor: "transparent"
+                        bgHover: withOpacity(Theme.dangerAltColor, 0.8)
+                        bgDown: withOpacity(Theme.dangerAltColor, 0.6)
+                        radius: height/2
+                        Layout.alignment: Qt.AlignVCenter
+
+                        onClicked: table.currentIndex=-1
+                    }
+
+                    DsLabel {
+                        text: qsTr("Name")
+                        color: Theme.txtHintColor
+                        fontSize: Theme.lgFontSize
+                        rightPadding: Theme.smSpacing
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.leftMargin: Theme.smSpacing
+                    }
+
+                    DsLabel {
+                        text: parent.obj ? `${parent.obj.unit} ${parent.obj.name}` : ""
+                        color: Theme.txtPrimaryColor
+                        fontSize: Theme.lgFontSize
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.fillWidth: true
+                    }
+
+                    DsLabel {
+                        text: qsTr("Quantity")
+                        color: Theme.txtHintColor
+                        fontSize: Theme.lgFontSize
+                        rightPadding: Theme.smSpacing
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    QQCB.SpinBox {
+                        id: qtysbox
+                        Layout.preferredHeight: Theme.btnHeight
+                        Layout.preferredWidth: 200
+                        value: parent.obj ? parent.obj.quantity : 1
+                        from: 1
+                        editable: true
+                    }
+
+                    Item { height: 1; Layout.preferredWidth: 50 }
+
+                    DsButton {
+                        text: qsTr("Update")
+                        iconType: IconType.circleCheck
+
+                        onClicked: {
+                            var index = table.currentIndex
+                            var qty = qtysbox.value
+                            var sp = parent.obj.selling_price
+
+                            cartModel.set(index, { quantity: qty, subtotal: qty*sp })
+                            calculateTotals()
+
+                            table.currentIndex=-1
+                        }
+                    }
+
+                    DsButton {
+                        text: qsTr("Remove")
+                        iconType: IconType.trashX
+                        textColor: Theme.dangerColor
+                        bgColor: "transparent"
+                        bgHover: withOpacity(Theme.dangerAltColor, 0.8)
+                        bgDown: withOpacity(Theme.dangerAltColor, 0.6)
+                        borderColor: Theme.dangerColor
+                        borderWidth: 1
+
+                        onClicked: {
+                            cartModel.remove(table.currentIndex);
+                            calculateTotals();
+                        }
                     }
                 }
             }

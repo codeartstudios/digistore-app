@@ -59,7 +59,7 @@ Button {
                 id: endicon
                 iconType: IconType.caretDown
                 iconSize: control.fontSize * 1.2
-                color: control.textColor
+                iconColor: control.textColor
                 Layout.alignment: Qt.AlignVCenter
             }
         }
@@ -115,7 +115,7 @@ Button {
                             visible: lv.currentIndex===index
                             iconType: IconType.circleCheck
                             iconSize: control.fontSize * 1.2
-                            color: control.textColor
+                            iconColor: control.textColor
                             Layout.alignment: Qt.AlignVCenter
                         }
                     }

@@ -13,6 +13,9 @@ Window {
     visible: true
     color: Theme.bodyColor
 
+    // Hold Current Date/Time
+    property var currentDateTime: new Date()
+
     // Store Object
     property Store store: Store{}
 
@@ -20,7 +23,7 @@ Window {
     property alias tablerIconsFontLoader: tablerIconsFontLoader
 
     // Application Flow
-    property alias appFlow: appFlow
+    // property alias appFlow: appFlow
     property alias toast: toast
 
     // Create UserPermission object: Manage all user permissions centrally
@@ -82,5 +85,16 @@ Window {
         dsController.token = ''
         store.userLoggedIn = checkIfLoggedIn()
         toast.info(qsTr("Logout Success!"))
+    }
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: true
+        onTriggered: currentDateTime = new Date()
+    }
+
+    Component.onCompleted: {
+        // For quick tests ...
     }
 }

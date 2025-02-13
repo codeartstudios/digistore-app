@@ -97,7 +97,8 @@ Rectangle {
                 }
             }
 
-            ScrollView {
+            // Removed Scrollview
+            Item {
                 id: c_sv
                 z: 1
                 Layout.fillHeight: true

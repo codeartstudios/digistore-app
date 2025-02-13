@@ -55,7 +55,7 @@ ComboBox {
 
         DsIcon {
             iconSize: Theme.smFontSize
-            color: Theme.txtPrimaryColor;
+            iconColor: Theme.txtPrimaryColor;
             iconType: IconType.caretUpDown
             anchors.verticalCenter: parent.verticalCenter
         }
