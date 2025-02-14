@@ -77,6 +77,11 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
+            function popAllAndPush(file, props = {}) {
+                stack.pop(null, StackView.Immediate)
+                stack.push(file, props, StackView.Immediate)
+            }
+
             onCurrentItemChanged:  {
                 currentItem.navigationStack = stack
                 headerShown = currentItem.headerShown

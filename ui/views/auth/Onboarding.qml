@@ -102,7 +102,7 @@ DsPage {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: navigationStack.push(
-                                   "qrc:/ui/views/auth/CreateAccount.qml",
+                                   "qrc:/ui/views/auth/CreateAccount.qml", { stack: navigationStack },
                                    StackView.Immediate
                                    )
                 }
@@ -130,6 +130,7 @@ DsPage {
             clearInputs();
             navigationStack.push("qrc:/ui/views/auth/Login.qml",
                                  {
+                                     stack: navigationStack,
                                      organization: dsController.organization
                                  }, StackView.Immediate)
         }
@@ -165,6 +166,7 @@ DsPage {
                     dsController.organization = org;
                     navigationStack.push("qrc:/ui/views/auth/Login.qml",
                                          {
+                                             stack: navigationStack,
                                              organization: org
                                          }, StackView.Immediate)
                 }
