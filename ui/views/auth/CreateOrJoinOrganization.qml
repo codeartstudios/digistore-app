@@ -141,6 +141,8 @@ DsPage {
                 color: Theme.txtHintColor
                 width: parent.width
                 wrapMode: DsLabel.WordWrap
+                topPadding: Theme.btnHeight
+                bottomPadding: Theme.btnHeight
                 horizontalAlignment: DsLabel.AlignHCenter
             }
 
@@ -154,7 +156,7 @@ DsPage {
                 busy: createOrgRequest.running
 
                 onClicked: orgModeSelection.isCreatingNewOrg ?
-                               createNewOrganization() : toast.info(qstr('...'));
+                               createNewOrganization() : toast.info(qsTr('...'));
             }
         }
     }
@@ -164,7 +166,7 @@ DsPage {
         method: "POST"
         token: dsController.token
         baseUrl: dsController.baseUrl
-        path: "/api/collections/organization/records"
+        path: "/fn/create-organization"
     }
 
     function createNewOrganization() {
@@ -192,16 +194,30 @@ DsPage {
         createOrgRequest.clear()
         createOrgRequest.body = body;
         var res = createOrgRequest.send();
+
         console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            // clearInputs()
-            // switchToEmailConfirmation(email)
-            // console.log("Account Created")
-            // navigationStack.pop()
-        } else {
+            var userData = res.data
+            var token = userData.token
+            var user = userData.record
+            var org = (userData.record.organization==='' && userData.expand.organization) ?
+                        null : userData.expand.organization
+
+            dsController.loggedUser = user;
+            dsController.organization = org ? org : {};
+            dsController.workspaceId = org ? org.id : '';
+
+            // All checks fine, lets then check if we can log in finally!
+            store.userLoggedIn = checkIfLoggedIn()
+
+            // Show toast message
+            toast.success(qsTr("Login Success!"))
+        }
+
+        else {
             // User creation failed
-            messageBox.showMessage(qsTr("Create Account Error"),
+            showMessage(qsTr("Create Account Error"),
                                    res.data.message
                                    )
 

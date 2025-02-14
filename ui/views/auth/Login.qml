@@ -12,7 +12,6 @@ DsPage {
     title: qsTr("Login Page")
     headerShown: false
 
-    required property var organization
     required property  var stack
 
     Item {
@@ -154,7 +153,8 @@ DsPage {
             var userData = res.data
             var token = userData.token
             var user = userData.record
-            var org = userData.record.organization==='' ? null : expand.organization
+            var org = (userData.record.organization==='' || !(userData.expand && userData.expand.organization)) ?
+                        null : userData.expand.organization
 
             dsController.token = token;
             dsController.loggedUser = user;
