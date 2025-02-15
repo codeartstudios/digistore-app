@@ -25,11 +25,13 @@ Item {
         id: scrollview
         anchors.fill: parent
 
-        RowLayout {
+        // RowLayout causes width issues
+        Row{
             spacing: 0
+            width: parent.width
 
             Item {
-                Layout.preferredWidth: root.columnHorizontalMargin
+                width: root.columnHorizontalMargin
                 height: 1
             }
 
@@ -37,11 +39,18 @@ Item {
                 id: col
                 width: root.width - 2*root.columnHorizontalMargin
                 spacing: Theme.xsSpacing
-                Layout.fillWidth: true
+
+                function logDims0() { console.log(`COL > ${width}x${height}`) }
+
+                onWidthChanged: logDims0()
+                onHeightChanged: logDims0()
+                onImplicitWidthChanged: logDims0()
+                onImplicitHeightChanged: logDims0()
+
             }
 
             Item {
-                Layout.preferredWidth: root.columnHorizontalMargin
+                width: root.columnHorizontalMargin
                 height: 1
             }
         }

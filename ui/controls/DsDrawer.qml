@@ -41,7 +41,6 @@ Drawer {
     background: Rectangle {
         id: bg
         color: Theme.bodyColor
-        // radius: Theme.btnRadius
 
         Rectangle {
             id: clsbtn

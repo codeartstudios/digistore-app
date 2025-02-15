@@ -17,6 +17,8 @@ DsPage {
     title: qsTr("Password Reset")
     headerShown: false
 
+    required property  var stack
+
     Item {
         width: 400
         height: col.height + 2*Theme.baseSpacing

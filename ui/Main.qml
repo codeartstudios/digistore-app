@@ -97,4 +97,14 @@ Window {
     Component.onCompleted: {
         // For quick tests ...
     }
+
+    // Lets monitor the token changes,
+    // TODO remove this before production
+    Connections {
+        target: dsController
+
+        function onTokenChanged() {
+            console.log("Token changed to: '", dsController.token, "'")
+        }
+    }
 }
