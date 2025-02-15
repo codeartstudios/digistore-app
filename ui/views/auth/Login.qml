@@ -150,13 +150,15 @@ DsPage {
 
         if(res.status===200) {
             // Extract response data ...
-            var userData = res.data
-            var token = userData.token
-            var user = userData.record
+            var data = res.data
+            var token = data.token
+            var user = data.record
             var orgDataExists = user.hasOwnProperty('expand') &&
                     user.expand.hasOwnProperty('organization')
             var org = (user.organization==='' || !orgDataExists) ?
                         null : user.expand.organization
+
+            console.log("Token: ", token)
 
             dsController.token = token;
             dsController.loggedUser = user;
@@ -214,13 +216,5 @@ DsPage {
                                        {
                                            stack: navigationStack
                                        }, StackView.Immediate)
-    }
-
-    Component.onCompleted: {
-        // TODO remove after done with testing ...
-        emailinput.input.text = "john@doe.com"
-        passwordinput.input.text = "123456789"
-        // signIn()
-
     }
 }
