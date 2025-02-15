@@ -9,10 +9,10 @@ import "../../popups"
 
 DsPage {
     id: loginPage
-    title: qsTr("Login Page")
+    title: qsTr("Changed Password Page")
     headerShown: false
 
-    required property  var stack
+    required property var stack
 
     Item {
         width: 400
@@ -25,59 +25,53 @@ DsPage {
             spacing: Theme.xsSpacing
             anchors.centerIn: parent
 
-            Image {
-                height: 50
-                source: "qrc:/assets/imgs/logo-nobg.png"
-                fillMode: Image.PreserveAspectFit
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-
             DsLabel {
                 topPadding: Theme.baseSpacing
                 bottomPadding: Theme.smSpacing
-                text: qsTr("User Sign in")
+                text: qsTr("Let's set a new password for you!")
                 fontSize: Theme.h2
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
             DsInputWithLabel {
-                id: emailinput
+                id: oldpasswordInput
                 width: parent.width
-                mandatory: true
-                label: qsTr("Email/Username")
-                errorString: qsTr("Invalid email or username")
-                input.placeholderText: qsTr("user@example.com")
-            }
-
-            DsInputWithLabel {
-                id: passwordinput
-                width: parent.width
-                mandatory: true
                 isPasswordInput: true
-                label: qsTr("Password")
+                mandatory: true
+                label: qsTr("Old Password")
                 input.placeholderText: qsTr("********")
                 errorString: qsTr("Empty or short password")
             }
 
-            DsLabel {
-                fontSize: Theme.smFontSize
-                text: qsTr("Forgot password?")
+            DsInputWithLabel {
+                id: newpasswordInput
+                width: parent.width
+                isPasswordInput: true
+                mandatory: true
+                label: qsTr("New Password")
+                input.placeholderText: qsTr("********")
+                errorString: qsTr("Empty or short password")
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/PasswordReset.qml", { stack: navigationStack })
-                }
+            DsInputWithLabel {
+                id: cnewpasswordInput
+                width: parent.width
+                isPasswordInput: true
+                mandatory: true
+                label: qsTr("Confirm New Password")
+                input.placeholderText: qsTr("********")
+                errorString: qsTr("Empty or short password")
             }
 
             Item { height: 1; width: 1}
 
             DsButton {
-                busy: loginrequest.running
+                busy: changepasswordRequest.running
                 height: Theme.lgBtnHeight
                 fontSize: Theme.xlFontSize
                 width: parent.width
-                text: qsTr("Login")
-                onClicked: signIn()
+                text: qsTr("Change Password")
+                onClicked: changePassword()
             }
 
             // Pop this page to go back to login page
@@ -92,75 +86,77 @@ DsPage {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/CreateAccount.qml", { stack: navigationStack })
+                    onClicked: navigationStack.push("qrc:/ui/views/auth/CreateAccount.qml")
                 }
             }
         }
     }
 
     Requests {
-        id: loginrequest
+        id: changepasswordRequest
         baseUrl: dsController.baseUrl
-        path: "/api/collections/tellers/auth-with-password"
-        method: "POST"
+        token: dsController.token
+        method: "PATCH"
     }
 
-    DsMessageBox {
-        id: messageBox
-        x: (loginPage.width-width)/2
-        y: (loginPage.height-height)/2
+    function changePassword() {
+        var oldpassword = oldpasswordInput.input.text.trim()
+        var newpassword = newpasswordInput.input.text.trim()
+        var cnewpassword = cnewpasswordInput.input.text.trim()
 
-        function showMessage(title="", info="") {
-            messageBox.title = title
-            messageBox.info = info
-            messageBox.open()
-        }
-    }
-
-    function signIn() {
-        var identity = emailinput.input.text.trim()
-        var password = passwordinput.input.text.trim()
-
-        // TODO Accepted username chars?
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(identity) || identity.length < 4 ) {
-            emailinput.hasError = true;
+        if(oldpassword<=4) {
+            oldpasswordInput.hasError = true;
+            oldpasswordInput.errorString = qsTr("Old password is too short!")
             return;
         }
 
-        if(password.length < 4) {
-            passwordinput.hasError = true;
-            passwordinput.errorString = qsTr("Password is too short!")
+        if(newpassword.length <= 4) {
+            newpasswordInput.hasError = true;
+            newpasswordInput.errorString = qsTr("New password is too short!")
             return;
         }
 
-        // Create a search query
+        if(newpassword !== cnewpassword) {
+            toast.warning(qsTr("New passwords do not match!"))
+            return;
+        }
+
+        if(newpassword === oldpassword) {
+            toast.error(qsTr("Old password cannot be set as a new password!"))
+            return;
+        }
+
+        var body = {
+            password:                   newpassword,
+            passwordConfirm:            cnewpassword,
+            oldPassword:                oldpassword,
+            name:                       dsController.loggedUser.name,
+            permissions:                dsController.loggedUser.permissions,
+            mobile:                     dsController.loggedUser.mobile,
+            reset_password_on_login:    false,
+        }
+
         var query = {
             expand: "organization"
         }
 
-        var body = {
-            identity,
-            password
-        }
+        changepasswordRequest.clear()
+        changepasswordRequest.query = query;
+        changepasswordRequest.body = body;
+        changepasswordRequest.path = `/api/collections/tellers/records/${dsController.loggedUser.id}`
+        var res = changepasswordRequest.send();
 
-        loginrequest.clear()
-        loginrequest.query = query;
-        loginrequest.body = body;
-        var res = loginrequest.send();
+        console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            // Extract response data ...
-            var data = res.data
-            var token = data.token
-            var user = data.record
+            // Extract data
+            var user = res.data            
             var orgDataExists = user.hasOwnProperty('expand') &&
                     user.expand.hasOwnProperty('organization')
             var org = (user.organization==='' || !orgDataExists) ?
                         null : user.expand.organization
 
-            console.log("Token: ", token)
-
-            dsController.token = token;
+            // Set new values to settings
             dsController.loggedUser = user;
             dsController.organization = org ? org : {};
             dsController.workspaceId = org ? org.id : '';
@@ -169,14 +165,14 @@ DsPage {
 
             // Check if user should reset password first ...
             if(user.reset_password_on_login) {
-                toast.success(qsTr("Before you go, you are required to set a new password!"))
+                toast.warning(qsTr("Before you go, you are required to set a new password!"))
                 mandatoryResetPassword()
             }
 
             // Check if user is part of an organization,
             // if not so, go to create organization.
             else if(!org || !org.id || (org && org.id==='')) {
-                toast.success(qsTr("We couldn't find any organization for you!"))
+                toast.warning(qsTr("We couldn't find any organization for you!"))
                 mandatoryCreateOrGetOrganization()
             }
 
@@ -191,7 +187,7 @@ DsPage {
             // console.log(JSON.stringify(res))
             // User creation failed
             messageBox.showMessage(
-                        qsTr("Login Failed"),
+                        qsTr("Change Password Failed"),
                         res.data.message ?
                             res.data.message : res.error ?
                                 res.error : qsTr("We couldn't complete this request, please try again later.")
@@ -200,8 +196,9 @@ DsPage {
     }
 
     function clearInputs() {
-        emailinput.input.clear()
-        passwordinput.input.clear()
+        oldpasswordInput.input.clear()
+        newpasswordInput.input.clear()
+        cnewpasswordInput.input.clear()
     }
 
     function mandatoryResetPassword() {

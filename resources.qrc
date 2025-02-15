@@ -108,6 +108,9 @@
         <file>ui/chartjs/Chart.qml</file>
         <file>ui/chartjs/README.md</file>
         <file>ui/js/dashboard.js</file>
+        <file>ui/views/auth/ChangePassword.qml</file>
+        <file>ui/views/auth/CreateOrJoinOrganization.qml</file>
+        <file>ui/controls/DsMouseArea.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

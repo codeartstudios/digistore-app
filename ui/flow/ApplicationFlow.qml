@@ -10,8 +10,10 @@ import "../popups"
 import "../views/auth"
 
 Item {
+    id: root
     anchors.fill: parent
 
+    // Flag to hold whether sidebar is visible
     property bool sidebarShown: true
 
     ColumnLayout {
@@ -64,7 +66,9 @@ Item {
         AppStackLayout {
             id: appStackLayout
 
-            Component.onCompleted: appStackLayout.dashboardLoader.active=true;
+            Component.onCompleted: {
+                appStackLayout.dashboardLoader.active=true;
+            }
 
             function overrideActiveTab() {
                 sideBar.currentSideBarMenu = "inventory"
