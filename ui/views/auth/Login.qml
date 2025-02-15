@@ -153,8 +153,10 @@ DsPage {
             var userData = res.data
             var token = userData.token
             var user = userData.record
-            var org = (userData.record.organization==='' || !(userData.expand && userData.expand.organization)) ?
-                        null : userData.expand.organization
+            var orgDataExists = user.hasOwnProperty('expand') &&
+                    user.expand.hasOwnProperty('organization')
+            var org = (user.organization==='' || !orgDataExists) ?
+                        null : user.expand.organization
 
             dsController.token = token;
             dsController.loggedUser = user;

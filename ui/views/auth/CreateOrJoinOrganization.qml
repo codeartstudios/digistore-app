@@ -195,14 +195,14 @@ DsPage {
         createOrgRequest.body = body;
         var res = createOrgRequest.send();
 
-        console.log(JSON.stringify(res))
-
         if(res.status===200) {
             var userData = res.data
             var token = userData.token
             var user = userData.record
-            var org = (userData.record.organization==='' && userData.expand.organization) ?
-                        null : userData.expand.organization
+            var orgDataExists = user.hasOwnProperty('expand') &&
+                    user.expand.hasOwnProperty('organization')
+            var org = (user.organization==='' || !orgDataExists) ?
+                        null : user.expand.organization
 
             dsController.loggedUser = user;
             dsController.organization = org ? org : {};

@@ -150,8 +150,11 @@ DsPage {
 
         if(res.status===200) {
             // Extract data
-            var user = res.data
-            var org = user.organization === '' ? null : user.expand.organization
+            var user = res.data            
+            var orgDataExists = user.hasOwnProperty('expand') &&
+                    user.expand.hasOwnProperty('organization')
+            var org = (user.organization==='' || !orgDataExists) ?
+                        null : user.expand.organization
 
             // Set new values to settings
             dsController.loggedUser = user;

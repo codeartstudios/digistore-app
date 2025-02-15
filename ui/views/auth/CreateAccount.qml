@@ -127,18 +127,6 @@ DsPage {
         baseUrl: dsController.baseUrl
     }
 
-    DsMessageBox {
-        id: messageBox
-        x: (root.width-width)/2
-        y: (root.height-height)/2
-
-        function showMessage(title="", info="") {
-            messageBox.title = title
-            messageBox.info = info
-            messageBox.open()
-        }
-    }
-
     function createUserAccount() {
         var email = emailinput.input.text.trim()
         var name = fullnameinput.input.text.trim()
@@ -158,13 +146,13 @@ DsPage {
         }
 
         if(!mobileinput.selectedCountry) {
-            messageBox.showMessage(qsTr("Create Account Error"),
+            showMessage(qsTr("Create Account Error"),
                                    qsTr("Country code for your mobile number not selected!"))
             return;
         }
 
         if(mobileno < 10000000) {
-            messageBox.showMessage(qsTr("Create Account Error"),
+            showMessage(qsTr("Create Account Error"),
                                    qsTr("Mobile number is not valid!"))
             return;
         }
@@ -181,49 +169,28 @@ DsPage {
             return;
         }
 
-        var permissions = {
-            can_add_stock: false,
-            can_manage_stock: false,
-            can_sell_products: false,
-            can_add_products: false,
-            can_manage_products: false,
-            can_add_suppliers: false,
-            can_manage_suppliers: false,
-            can_manage_sales: false,
-            can_manage_inventory: false,
-            can_manage_org: false,
-            can_manage_users: false,
-        }
-
         var body = {
             email,
             password,
             passwordConfirm,
             name,
-            permissions,
+            permissions: mainApp.globalModels.userPermissonsTemplate,
             mobile: {
                 dial_code: mobileinput.selectedCountry.dial_code,
                 number: `${mobileno}`
             }
         }
 
-        if(dsController.organization) {
-            body['organization'] = dsController.organization.id
-        }
-
         createAccountRequest.clear()
         createAccountRequest.body = body;
         var res = createAccountRequest.send();
-        console.log(JSON.stringify(res))
 
         if(res.status===200) {
-            // clearInputs()
-            // switchToEmailConfirmation(email)
-            // console.log("Account Created")
             navigationStack.pop()
+            toast.info(qsTr("Account created, let's now login."))
         } else {
             // User creation failed
-            messageBox.showMessage(qsTr("Create Account Error"),
+            showMessage(qsTr("Create Account Error"),
                                    res.data.message
                                    )
 
