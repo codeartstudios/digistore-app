@@ -1,4 +1,5 @@
 module app.digisto.modules
 singleton IconType 1.0 IconType.qml
 singleton Theme 1.0 Theme.qml
+singleton StaticModels 1.0 DsModels.qml
 Utils 1.0 Utils.js

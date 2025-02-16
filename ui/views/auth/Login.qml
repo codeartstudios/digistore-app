@@ -6,6 +6,7 @@ import app.digisto.modules
 
 import "../../controls"
 import "../../popups"
+import "../../js/main.js" as Djs
 
 DsPage {
     id: loginPage
@@ -182,7 +183,7 @@ DsPage {
 
             else {
                 // All checks fine, lets then check if we can log in finally!
-                store.userLoggedIn = checkIfLoggedIn()
+                store.userLoggedIn = Djs.checkIfLoggedIn()
 
                 // Show toast message
                 toast.success(qsTr("Login Success!"))

@@ -284,6 +284,10 @@ DsSettingsStackPage {
         title: qsTr("Delete Account")
         desc: qsTr("This removes user account data and some associated actions. This can't be undone.")
 
+        property bool orgAllowsDeletingAccount: (dsController.organization &&
+                                                dsController.organization.settings &&
+                                                dsController.organization.settings.users_can_delete_own_accounts) ? true : false
+
         DsButton {
             bgColor: Theme.dangerAltColor
             textColor: Theme.dangerColor

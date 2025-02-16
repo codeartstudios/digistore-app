@@ -21,6 +21,12 @@ Item {
         'can_manage_users': false
     }
 
+    readonly property var orgSettingsTemplate: {
+        'currency': 'usd',
+        'screen_timeout_enabled': true,
+        'users_can_delete_own_accounts': false
+    }
+
     // Email Regex Validator
     readonly property RegularExpressionValidator emailRegex: RegularExpressionValidator { // Email Regex
         regularExpression: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/

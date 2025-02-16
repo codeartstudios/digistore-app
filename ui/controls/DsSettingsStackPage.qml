@@ -39,14 +39,6 @@ Item {
                 id: col
                 width: root.width - 2*root.columnHorizontalMargin
                 spacing: Theme.xsSpacing
-
-                function logDims0() { console.log(`COL > ${width}x${height}`) }
-
-                onWidthChanged: logDims0()
-                onHeightChanged: logDims0()
-                onImplicitWidthChanged: logDims0()
-                onImplicitHeightChanged: logDims0()
-
             }
 
             Item {
