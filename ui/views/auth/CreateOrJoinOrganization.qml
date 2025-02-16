@@ -209,7 +209,7 @@ DsPage {
             dsController.workspaceId = org ? org.id : '';
 
             // All checks fine, lets then check if we can log in finally!
-            store.userLoggedIn = checkIfLoggedIn()
+            dsController.isLoggedIn = checkIfLoggedIn()
 
             // Show toast message
             toast.success(qsTr("Login Success!"))

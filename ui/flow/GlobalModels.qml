@@ -21,6 +21,12 @@ Item {
         'can_manage_users': false
     }
 
+    readonly property var orgSettingsTemplate: {
+        'currency': 'usd',
+        'screen_timeout_enabled': true,
+        'users_can_delete_own_accounts': false
+    }
+
     // Email Regex Validator
     readonly property RegularExpressionValidator emailRegex: RegularExpressionValidator { // Email Regex
         regularExpression: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
@@ -172,8 +178,17 @@ Item {
                               })
     }
 
+    Connections {
+        target: dsController
+
+        // Update model only when user logs in
+        function onIsLoggedInChanged() {
+            if(dsController.isLoggedIn)
+                gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${dsController.organization.settings.currency.toUpperCase()}`)
+        }
+    }
+
     Component.onCompleted: {
         populateSideMenuModel()
-        gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${dsController.organization.settings.currency.toUpperCase()}`)
     }
 }

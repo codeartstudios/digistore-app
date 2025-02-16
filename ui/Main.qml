@@ -2,9 +2,10 @@ import QtQuick
 import app.digisto.modules
 
 import "controls"
-import "store"
 import "flow"
 import "popups"
+
+import "js/main.js" as Djs
 
 Window {
     id: mainApp
@@ -15,9 +16,6 @@ Window {
 
     // Hold Current Date/Time
     property var currentDateTime: new Date()
-
-    // Store Object
-    property Store store: Store{}
 
     // Expose the tabler icons font loader
     property alias tablerIconsFontLoader: tablerIconsFontLoader
@@ -59,34 +57,6 @@ Window {
         return Utils.withOpacity(color, opacity)
     }
 
-    // Logic to check if the user is actually logged in or not
-    // Checks for token validity, organization validity and
-    // logged in user validity.
-    function checkIfLoggedIn() {
-        // Check if JWT is valid
-        var tokenIsValid = dsController.validateToken();
-
-        // Check if logged in user is structurally valid
-        var loggedUserIsValid = dsController.loggedUser &&
-                dsController.loggedUser.id && dsController.loggedUser.id!=="" &&
-                dsController.loggedUser.name && dsController.loggedUser.name!==""
-
-        // Check if organization structure is valid
-        var orgIsValid = dsController.organization &&
-                dsController.organization.name && dsController.organization.name!=="" &&
-                dsController.organization.id && dsController.organization.id!==""
-
-        // console.log(tokenIsValid, loggedUserIsValid, orgIsValid)
-        return tokenIsValid===true && loggedUserIsValid===true && orgIsValid===true
-    }
-
-    function logout() {
-        // Clear token
-        dsController.token = ''
-        store.userLoggedIn = checkIfLoggedIn()
-        toast.info(qsTr("Logout Success!"))
-    }
-
     Timer {
         interval: 1000
         repeat: true
@@ -96,5 +66,27 @@ Window {
 
     Component.onCompleted: {
         // For quick tests ...
+        // var obj = StaticModels.findMobileFromModel('+254', 'dial_code')
+        // if(obj) {
+        //     console.log(JSON.stringify(obj))
+        // }
+
+        // obj = StaticModels.findMobileFromModel('254', 'dial_code', (model_val, val) => {
+        //                                            return model_val.includes(val)
+        //                                        })
+
+        // if(obj) {
+        //     console.log(JSON.stringify(obj))
+        // }
+    }
+
+    // Lets monitor the token changes,
+    // TODO remove this before production
+    Connections {
+        target: dsController
+
+        function onTokenChanged() {
+            console.log("Token changed to: '", dsController.token, "'")
+        }
     }
 }

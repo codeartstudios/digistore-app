@@ -11,7 +11,7 @@ Item {
     required property string title
     //required property string icon
 
-    default property alias contentItem: col.children
+    default property alias contentItem: col.data
     property alias spacing: col.spacing
     property real columnHorizontalMargin: 0 // X-Axis margin (left and right independently)
 
@@ -25,11 +25,13 @@ Item {
         id: scrollview
         anchors.fill: parent
 
-        RowLayout {
+        // RowLayout causes width issues
+        Row{
             spacing: 0
+            width: parent.width
 
             Item {
-                Layout.preferredWidth: root.columnHorizontalMargin
+                width: root.columnHorizontalMargin
                 height: 1
             }
 
@@ -37,11 +39,10 @@ Item {
                 id: col
                 width: root.width - 2*root.columnHorizontalMargin
                 spacing: Theme.xsSpacing
-                Layout.fillWidth: true
             }
 
             Item {
-                Layout.preferredWidth: root.columnHorizontalMargin
+                width: root.columnHorizontalMargin
                 height: 1
             }
         }

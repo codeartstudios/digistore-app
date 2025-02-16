@@ -6,13 +6,14 @@ import app.digisto.modules
 
 import "../../controls"
 import "../../popups"
+import "../../js/main.js" as Djs
 
 DsPage {
     id: loginPage
     title: qsTr("Login Page")
     headerShown: false
 
-    required property  var stack
+    required property var stack
 
     Item {
         width: 400
@@ -65,7 +66,7 @@ DsPage {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: navigationStack.push("qrc:/ui/views/auth/PasswordReset.qml", { stack: navigationStack })
+                    onClicked: stack.push("qrc:/ui/views/auth/PasswordReset.qml", { stack: navigationStack })
                 }
             }
 
@@ -182,7 +183,7 @@ DsPage {
 
             else {
                 // All checks fine, lets then check if we can log in finally!
-                store.userLoggedIn = checkIfLoggedIn()
+                dsController.isLoggedIn = Djs.checkIfLoggedIn()
 
                 // Show toast message
                 toast.success(qsTr("Login Success!"))

@@ -152,7 +152,7 @@ DsDrawer {
                         id: orgmobileinput
                         text: getNumber(dsController.organization.mobile)
                         color: Theme.bodyColor
-                        input.placeholderText: qsTr("700123456")
+                        input.placeholderText: qsTr("7xx xxx xxx")
                         labelShown: false
                         Layout.minimumWidth: 300
 
@@ -161,10 +161,10 @@ DsDrawer {
 
                         function getNumber(mobile) {
                             // Set mobile number
-                            text = mobile.number ? mobile.number : ''
+                            text = (mobile && mobile.number) ? mobile.number : ''
 
                             // Set Dial Code
-                            if(mobile.dial_code)
+                            if(mobile && mobile.dial_code)
                                 orgmobileinput.findAndSetCountryByDialCode(mobile.dial_code)
                         }
 
@@ -201,7 +201,7 @@ DsDrawer {
                         labelShown: false
                         text: dsController.organization.workspace
                         color: Theme.bodyColor
-                        input.placeholderText: qsTr("xxxx.digisto.app")
+                        input.placeholderText: qsTr("https://digisto.app/co/__")
                         Layout.minimumWidth: 300
 
                         onTextChanged: setKey('workspace', text)
@@ -342,7 +342,7 @@ DsDrawer {
         internal.loaded = false
 
         if(internal.orgDetailsEdited)
-            toast.warning("All changes were discarded!")
+            toast.warning("All pending changes were discarded!")
 
         // Reset orgDetailsEdited Flag
         internal.orgDetailsEdited = false
@@ -352,12 +352,15 @@ DsDrawer {
     function setKey(key, value) {
         if(!internal.loaded) return // Update only when loaded is set
 
+        console.log('Setting key: ', key, value)
+
         internal.orgDetailsEdited = true
         internal.orgUpdatedObj[key] = value
         internal.orgUpdatedObj = internal.orgUpdatedObj
     }
 
     function updateOrganization() {
+        console.log('Updating organization')
         if(!loggedUserPermissions.canEditOrganization)
             toast.error(qsTr("You don't have permissions to perform this task, contact org. admin for help."))
 

@@ -11,6 +11,8 @@ DsPage {
     title: qsTr("Sign Up Page")
     headerShown: false
 
+    required property  var stack
+
     DsCard {
         width: 400
         height: col.height + 2*Theme.baseSpacing

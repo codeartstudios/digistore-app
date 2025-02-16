@@ -1,4 +1,5 @@
 import QtQuick
+import app.digisto.modules
 
 import "../../controls"
 
@@ -18,6 +19,8 @@ DsPage {
     id: root
     title: qsTr("Password Reset")
     headerShown: false
+
+    required property var stack
 
     Item {
         width: 400
@@ -56,6 +59,7 @@ DsPage {
             }
 
             DsInputWithLabel {
+                id: emailInput
                 width: parent.width
                 label: qsTr("Email")
                 input.placeholderText: qsTr("user@example.com")
@@ -68,7 +72,9 @@ DsPage {
                 fontSize: Theme.xlFontSize
                 width: parent.width
                 iconType: IconType.mailForward
-                text: qsTr("Send recovery link")
+                text: qsTr("Send Reset Link")
+
+                onClicked: sendResetLink()
             }
 
             // Pop this page to go back to login page
@@ -86,6 +92,35 @@ DsPage {
                     onClicked: navigationStack.pop()
                 }
             }
+        }
+    }
+
+    // Page resources
+    Requests {
+        id: resetpasswordRequest
+        baseUrl: dsController.baseUrl
+        method: "POST"
+        path: '/api/collections/tellers/request-password-reset'
+    }
+
+    function sendResetLink() {
+        const email = emailInput.text.trim()
+
+        // Check for valid user email before we proceed
+        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            toast.error(qsTr("Invalid user email entered."))
+            return
+        }
+
+        resetpasswordRequest.clear()
+        resetpasswordRequest.body = { email }
+        const res = resetpasswordRequest.send()
+
+        if(res.status===204) {
+            toast.success(qsTr("Request submitted, check your email."))
+            stack.pop()
+        } else {
+            toast.error(res.data.message)
         }
     }
 }

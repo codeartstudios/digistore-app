@@ -17,6 +17,24 @@ DsSettingsStackPage {
         title: qsTr("Organization")
         desc: qsTr("Organization information.")
 
+        actions: [
+            DsIconButton {
+                height: Theme.btnHeight
+                width: height
+                iconType: IconType.pencil
+                radius: height/2
+                textColor: hovered ? Theme.txtPrimaryColor : Theme.txtHintColor
+                bgColor: 'transparent'
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                toolTip: qsTr("Edit Organization")
+                toolTipSide: DsToolTip.Side.Bottom
+                anchors.verticalCenter: parent.verticalCenter
+
+                onClicked: openDrawer(1)
+            }
+        ]
+
         DsSettingsRowLabel {
             label: qsTr("Org. Name")
             value: dsController.organization.name
@@ -58,6 +76,24 @@ DsSettingsStackPage {
         title: qsTr("Workspace")
         desc: qsTr("Organization workspace details.")
 
+        actions: [
+            DsIconButton {
+                height: Theme.btnHeight
+                width: height
+                iconType: IconType.pencil
+                radius: height/2
+                textColor: hovered ? Theme.txtPrimaryColor : Theme.txtHintColor
+                bgColor: 'transparent'
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                toolTip: qsTr("Edit Organization")
+                toolTipSide: DsToolTip.Side.Bottom
+                anchors.verticalCenter: parent.verticalCenter
+
+                onClicked: openDrawer(1)
+            }
+        ]
+
         // Workspace
         DsSettingsRowLabel {
             label: qsTr("Workspace Name")
@@ -80,6 +116,24 @@ DsSettingsStackPage {
         width: parent.width
         title: qsTr("Preferences")
         desc: qsTr("Organization defined settings.")
+
+        actions: [
+            DsIconButton {
+                height: Theme.btnHeight
+                width: height
+                iconType: IconType.pencil
+                radius: height/2
+                textColor: hovered ? Theme.txtPrimaryColor : Theme.txtHintColor
+                bgColor: 'transparent'
+                bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
+                bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+                toolTip: qsTr("Edit Organization")
+                toolTipSide: DsToolTip.Side.Bottom
+                anchors.verticalCenter: parent.verticalCenter
+
+                onClicked: openDrawer(1)
+            }
+        ]
 
         // Currency
         DsSettingsRowLabel {
