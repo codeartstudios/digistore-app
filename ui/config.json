@@ -1,12 +1,12 @@
 {
     "title": "Digisto POS",
-    "versioncode": 1,
-    "versionname": "1.0.0",
+    "versioncode": 250216,
+    "versionname": "0.25.0216",
     "codename": "",
-    "release_date": "2025-01-17",
-    "build": 1,
+    "release_date": "2025-02-16",
+    "build": 137,
     "organization_name": "Koaley Group Ltd.",
-    "organization_domain": "digisto.koaleygroup.com",
+    "organization_domain": "www.digisto.app",
     "encryption_key":"",
     "encryption_salt":""
 }
