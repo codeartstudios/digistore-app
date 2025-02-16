@@ -2,7 +2,6 @@ import QtQuick
 import app.digisto.modules
 
 import "controls"
-import "store"
 import "flow"
 import "popups"
 
@@ -17,9 +16,6 @@ Window {
 
     // Hold Current Date/Time
     property var currentDateTime: new Date()
-
-    // Store Object
-    property Store store: Store{}
 
     // Expose the tabler icons font loader
     property alias tablerIconsFontLoader: tablerIconsFontLoader

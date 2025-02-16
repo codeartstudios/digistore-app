@@ -20,6 +20,9 @@ public:
     explicit DsController(QObject *parent = nullptr);
     ~DsController();
 
+    // Bool if user has logged in
+    Q_PROPERTY(bool isLoggedIn MEMBER m_isLoggedIn NOTIFY isLoggedInChanged FINAL)
+
     // Domains
     Q_PROPERTY(QString baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged FINAL)
 
@@ -95,6 +98,8 @@ signals:
 
     void baseUrlChanged();
 
+    void isLoggedInChanged();
+
 private:
     // -------------------------------- |
     //  METHODS
@@ -116,6 +121,7 @@ private:
     QString m_token;
     QVariantMap m_organization;
     QString m_baseUrl;
+    bool m_isLoggedIn;
 };
 
 #endif // DSCONTROLLER_H

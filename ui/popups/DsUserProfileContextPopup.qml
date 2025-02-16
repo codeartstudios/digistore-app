@@ -3,6 +3,7 @@ import QtQuick.Controls.Basic
 import app.digisto.modules
 
 import "../controls"
+import "../js/main.js" as DsMain
 
 DsPopup {
     id: root
@@ -49,7 +50,7 @@ DsPopup {
 
                 onClicked: {
                     root.close()
-                    mainApp.logout()
+                    DsMain.logout()
                 }
             }
         }

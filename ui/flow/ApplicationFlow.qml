@@ -28,8 +28,8 @@ Item {
 
             DsSideBar {
                 id: sideBar
-                visible: store.userLoggedIn
-                Layout.preferredWidth: store.userLoggedIn && sidebarShown ?
+                visible: dsController.isLoggedIn
+                Layout.preferredWidth: dsController.isLoggedIn && sidebarShown ?
                                            Theme.appSidebarWidth : 0
                 Layout.fillHeight: true
             }
@@ -37,7 +37,7 @@ Item {
             Loader {
                 id: applicationLoader
                 active: true
-                sourceComponent: store.userLoggedIn ? postAuthComponent : preAuthComponent
+                sourceComponent: dsController.isLoggedIn ? postAuthComponent : preAuthComponent
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }

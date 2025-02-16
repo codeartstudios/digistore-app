@@ -58,8 +58,15 @@ DsPage {
                     DsLabel {
                         color: Theme.txtPrimaryColor
                         fontSize: Theme.baseFontSize
-                        text: `${greeting.text}, ${dsController.loggedUser.name.split(' ')[0]}`
+                        text: getGreetings(greeting.text, dsController.loggedUser)
                         anchors.verticalCenter: parent.verticalCenter
+
+                        // Create greeting string
+                        function getGreetings() {
+                            if(!dsController.isLoggedIn || !(dsController.loggedUser && dsController.loggedUser.name))
+                                return `${greeting.text}`
+                            return `${greeting.text}, ${dsController.loggedUser.name.split(' ')[0]}`
+                        }
                     }
                 }
             }

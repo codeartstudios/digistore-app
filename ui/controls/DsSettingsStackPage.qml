@@ -11,7 +11,7 @@ Item {
     required property string title
     //required property string icon
 
-    default property alias contentItem: col.children
+    default property alias contentItem: col.data
     property alias spacing: col.spacing
     property real columnHorizontalMargin: 0 // X-Axis margin (left and right independently)
 

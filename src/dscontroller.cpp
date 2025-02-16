@@ -7,7 +7,8 @@ DsController::DsController(QObject *parent)
     m_baseUrl(""),
     m_isDarkTheme(false),
     m_startWindowMaximized(false),
-    m_platform(QSysInfo::productType())
+    m_platform(QSysInfo::productType()),
+    m_isLoggedIn(false)
 {
     QFile file(QStringLiteral(":/ui/config.json"));
     Q_ASSERT(file.open(QIODevice::ReadOnly));
@@ -37,7 +38,7 @@ DsController::DsController(QObject *parent)
     // Get/Restore last log off time
     QVariant logOffTimeStr=getValue("logOffAt","string");
     QDateTime logOffTime = logOffTimeStr.isNull() ?
-        QDateTime::currentDateTimeUtc() : QDateTime::fromString(logOffTimeStr.toString(), "yyyy-MM-ddThh:mm:ss.zzzZ");
+                               QDateTime::currentDateTimeUtc() : QDateTime::fromString(logOffTimeStr.toString(), "yyyy-MM-ddThh:mm:ss.zzzZ");
 
     // Get/Restore application theme
     QVariant isDarkTheme=getValue("isDarkTheme","bool");
@@ -51,7 +52,7 @@ DsController::DsController(QObject *parent)
     QVariant token=getValue("token","string");
     m_token= token.isNull() ?
                   "" : validateToken(token.toString()) ?
-                                    token.toString() : "";
+                                   token.toString() : "";
 
     // Get/Restore loggedUser JSON
     auto user = getValue("loggedUser", "json");
