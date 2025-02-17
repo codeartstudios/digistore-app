@@ -66,18 +66,6 @@ Window {
 
     Component.onCompleted: {
         // For quick tests ...
-        // var obj = StaticModels.findMobileFromModel('+254', 'dial_code')
-        // if(obj) {
-        //     console.log(JSON.stringify(obj))
-        // }
-
-        // obj = StaticModels.findMobileFromModel('254', 'dial_code', (model_val, val) => {
-        //                                            return model_val.includes(val)
-        //                                        })
-
-        // if(obj) {
-        //     console.log(JSON.stringify(obj))
-        // }
     }
 
     // Lets monitor the token changes,

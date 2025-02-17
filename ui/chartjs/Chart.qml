@@ -107,7 +107,8 @@ Canvas {
     }
 
     onPaint: {
-        if(root.getContext('2d') !== null && memorizedContext !== root.getContext('2d') || memorizedData !== root.chartData || memorizedOptions !== root.chartOptions) {
+        if(root.getContext('2d') !== null && memorizedContext !== root.getContext('2d') ||
+                memorizedData !== root.chartData || memorizedOptions !== root.chartOptions) {
             var ctx = root.getContext('2d');
 
             jsChart = new Chart.build(ctx, {

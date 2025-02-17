@@ -73,31 +73,35 @@ Rectangle {
         case 0: {
             const date = new Date();
             date.setDate(today.getDate() - 6); // 7 days ago
+
             var xdata = Utils.last7Days()
             salesChart.xAxisLabels = xdata
             salesChart.yAxisData = Array(xdata.length).fill(0);
+
             fetchSalesDataFromDate(date, xdata.length)
             break
         }
 
         case 1: {
-            salesChart.xAxisLabels = Utils.last30Days()
             const date = new Date();
             date.setDate(today.getDate() - 29); // 30 days ago
+
             xdata= Utils.last30Days()
             salesChart.xAxisLabels = xdata
             salesChart.yAxisData = Array(xdata.length).fill(0);
+
             fetchSalesDataFromDate(date, xdata.length)
             break
         }
 
         case 2: {
-            salesChart.xAxisLabels = Utils.last3Months()
             const startDate = new Date();
             startDate.setMonth(today.getMonth() - 3); // Start from 3 months ago
+
             xdata= Utils.last3Months()
             salesChart.xAxisLabels = xdata
             salesChart.yAxisData = Array(xdata.length).fill(0);
+
             fetchSalesDataFromDate(startDate, xdata.length)
             break
         }
@@ -114,7 +118,7 @@ Rectangle {
         }
 
         // Convert to UTC, midnght string
-        var startDateUTC = Qt.formatDateTime(date, 'yyyy-MM-dd 00:00:00.0Z')
+        var startDateUTC = Utils.startDateUTC(date)
 
         var query = {
             perPage: 1000000,
@@ -151,20 +155,26 @@ Rectangle {
     }
 
     // Iterate over each API data and generate y-data for the chart
-    function processDataFor(type, apiData, start, numDays=0) {
+    function processDataFor(type, apiData, startDate, numDays=0) {
         isProcessingData = true // Processing Starts
 
         const yData = Array(numDays).fill(0); // Initialize array with zeros
 
+        // Ensure we zero to the start of the day to avoid -ve values for the same day
+        const start = new Date(Utils.startDateUTC(startDate))
+
         if(type==='salesChart') {
-            apiData.forEach(entry => {
-                                const createdDate = new Date(entry.created); // Parse UTC created date
+            apiData.forEach(
+                        entry => {
+                            const createdDate = new Date(entry.created); // Parse UTC created date
+                            if(createdDate) {
                                 const diffDays = Math.floor((createdDate - start) / (1000 * 60 * 60 * 24)); // Days from start
 
                                 if (diffDays >= 0 && diffDays < numDays) {
                                     yData[diffDays] += entry.totals; // Sum totals for the same day
                                 }
-                            });
+                            }
+                        });
         }
 
         salesChart.yAxisData = yData

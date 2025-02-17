@@ -8,7 +8,6 @@ import "../controls"
 DsDrawer {
     id: root
     width: 500
-    topCloseButtonShown: false
 
     property var dataModel: null
 
@@ -203,23 +202,6 @@ DsDrawer {
                             }
                         }
                     }
-                }
-            }
-
-            Row {
-                Layout.preferredHeight: Theme.btnHeight
-                Layout.alignment: Qt.AlignRight
-                Layout.leftMargin: Theme.baseSpacing
-                Layout.rightMargin: Theme.baseSpacing
-                Layout.bottomMargin: Theme.xsSpacing
-
-                DsButton {
-                    text: qsTr("Close")
-                    bgColor: Theme.primaryColor
-                    textColor: Theme.baseColor
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    onClicked: root.close()
                 }
             }
         }

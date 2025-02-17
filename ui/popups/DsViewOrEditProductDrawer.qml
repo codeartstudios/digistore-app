@@ -10,7 +10,6 @@ import "../controls"
 DsDrawer {
     id: root
     width: 500
-    topCloseButtonShown: false
 
     property var dataModel: null
 
@@ -163,17 +162,6 @@ DsDrawer {
                                                       }
                                                   }
                                               }
-                    }
-
-                    DsIconButton {
-                        iconType: IconType.x
-                        textColor: Theme.dangerColor
-                        bgColor: Theme.dangerAltColor
-                        bgHover: withOpacity(Theme.dangerAltColor, 0.8)
-                        bgDown: withOpacity(Theme.dangerAltColor, 0.6)
-                        radius: height/2
-
-                        onClicked: root.close()
                     }
                 }
 

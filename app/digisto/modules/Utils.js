@@ -22,29 +22,46 @@ function isValidDate(date) {
     return date instanceof Date && !isNaN(date.getTime());
 }
 
-// Converts a local date to UTC equivalent
-function dateToUTC(date, flag="zero") {
-    // Check that date is valid
-    if(!isValidDate(date)) return ""
+function startDateUTC(date=null) {
+    if(!isValidDate(date)) date = new Date(Date.now())
 
-    switch(flag) {
-    case "zero": { // Zeroes seconds/milliseconds
-        date.setSeconds(0)
-        date.setMilliseconds(0)
-        break;
-    }
-    case "max": { // Sets seconds/milliseconds to Max value
-        date.setSeconds(59)
-        date.setMilliseconds(999)
-        break;
-    }
-    default: {
-        // Use date as is
-    }
-    }
+    // Day starts at midnight, so, lets zero the hours, minutes, seconds and Milliseconds values
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0)
 
-    return date.toISOString().replace("T", " ")
+    return dateToUTCString(date)
 }
+
+function endDateUTC(date=null) {
+    if(!isValidDate(date)) date = new Date(Date.now())
+
+    // Day starts at midnight, so, lets zero the hours, minutes, seconds and Milliseconds values
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999)
+
+    return dateToUTCString(date)
+}
+
+function dateToUTCString(date) {
+    var dt = ''
+    dt += date.getUTCFullYear().toString()
+    dt += "-"
+    dt += (date.getUTCMonth() + 1) < 10 ? `0${date.getUTCMonth() + 1}` : (date.getUTCMonth() + 1).toString()
+    dt += "-"
+    dt += date.getUTCDate() < 10 ? `0${date.getUTCDate()}` : date.getUTCDate().toString()
+    dt += " "
+    dt += date.getUTCHours() < 10 ? `0${date.getUTCHours()}` : date.getUTCHours().toString()
+    dt += ":"
+    dt += date.getUTCMinutes() < 10 ? `0${date.getUTCMinutes()}` : date.getUTCMinutes().toString()
+    dt += ":"
+    dt += date.getUTCSeconds() < 10 ? `0${date.getUTCSeconds()}` : date.getUTCSeconds().toString()
+    dt += "."
+    dt += date.getUTCMilliseconds() < 10 ?
+                `00${date.getUTCMilliseconds()}` : date.getUTCMilliseconds() < 100 ?
+                    `0${date.getUTCMilliseconds()}` : date.getUTCMilliseconds().toString()
+    dt += "Z"
+
+    return dt
+}
+
 
 function withOpacity(color, opacity) {
     var r, g, b;
@@ -225,8 +242,8 @@ function last7DaysDates() {
     fourteenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     return {
-        'current': sevenDaysAgo,
-        'previous': fourteenDaysAgo
+        'current': startDateUTC(sevenDaysAgo),
+        'previous': startDateUTC(fourteenDaysAgo)
     }
 }
 
@@ -239,8 +256,8 @@ function last30DaysDates() {
     sixtyDaysAgo.setDate(today.getDate() - 60);
 
     return {
-        'current': thirtyDaysAgo,
-        'previous': sixtyDaysAgo
+        'current': startDateUTC(thirtyDaysAgo),
+        'previous': startDateUTC(sixtyDaysAgo)
     }
 }
 
@@ -253,8 +270,8 @@ function last3MonthsDates() {
     sixMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
     return {
-        'current': threeMonthsAgo,
-        'previous': sixMonthsAgo
+        'current': startDateUTC(threeMonthsAgo),
+        'previous': startDateUTC(sixMonthsAgo)
     }
 }
 

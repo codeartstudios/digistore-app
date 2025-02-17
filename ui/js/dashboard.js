@@ -31,8 +31,8 @@ function fetchDashboardCompletedSales(request, model) {
         date = Utils.last7DaysDates()
 
     // Format date
-    const currentDateCycleStart = Qt.formatDateTime(date.current, "yyyy-MM-dd 00:00:00.000Z")
-    const previousDateCycleStart = Qt.formatDateTime(date.previous, "yyyy-MM-dd 00:00:00.000Z")
+    const currentDateCycleStart = date.current
+    const previousDateCycleStart = date.previous
     const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
 
     // Create and send GET request
@@ -110,8 +110,8 @@ function fetchDashboardTotalSalesSum(request, model) {
         date = Utils.last7DaysDates()
 
     // Format date
-    const currentDateCycleStart = Qt.formatDateTime(date.current, "yyyy-MM-dd 00:00:00.000Z")
-    const previousDateCycleStart = Qt.formatDateTime(date.previous, "yyyy-MM-dd 00:00:00.000Z")
+    const currentDateCycleStart = date.current
+    const previousDateCycleStart = date.previous
     const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
 
     // Create and send GET request
