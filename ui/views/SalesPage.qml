@@ -92,7 +92,7 @@ DsPage {
             DsDateRangeSelector {
                 id: durationSelector
                 enabled: !getsalesrequest.running
-                model: ["Today", "This Week", "Last Week", "This Month", "This Year", "Custom"]
+                model: ["Today", "This Week", "Last 7 Days", "Last Week", "This Month", "This Year", "Custom"]
             }
         }
 
@@ -245,10 +245,11 @@ DsPage {
 
         onRangeSelected: {
             // Update internal dates for filters
-            internal.startDateTimeUTC = Utils.dateToUTC(filterStartDate, "zero")
-            internal.endDateTimeUTC = Utils.dateToUTC(filterEndDate, "max")
+            internal.startDateTimeUTC = Utils.startDateUTC(filterStartDate)
+            internal.endDateTimeUTC = Utils.endDateUTC(filterEndDate)
 
             // Update the top label string
+            // DO NOT FORMAT TO UTC, this is only used on the UI
             salesDateRange = qsTr("Custom") +
                     `: (${Qt.formatDateTime(filterStartDate, "yyyy-MM-dd hh:mm ap")}) to (${Qt.formatDateTime(filterEndDate, "yyyy-MM-dd hh:mm ap")})`
 
@@ -274,6 +275,8 @@ DsPage {
     }
 
     function getSales() {
+        if(!internal.pageLoaded) return
+
         var txt = dsSearchInput.text.trim()
 
         var dateQuery = `created >= '${internal.startDateTimeUTC}' && created <= '${internal.endDateTimeUTC}'`
@@ -286,13 +289,9 @@ DsPage {
                     + ` && ${dateQuery}`
         }
 
-        // console.log(JSON.stringify(query))
-
         getsalesrequest.clear()
         getsalesrequest.query = query;
         var res = getsalesrequest.send();
-
-        // console.log(res, JSON.stringify(res))
 
         if(res.status===200) {
             var data = res.data;
@@ -300,6 +299,8 @@ DsPage {
             totalPages=data.totalPages
             totalItems=data.totalItems
             var items = data.items;
+
+            datamodel.clear()   // Clear model
 
             try {
                 items.forEach(
@@ -312,7 +313,7 @@ DsPage {
                                                                                     minute: '2-digit'
                                                                                 });
 
-                                                      var payments_methods = []
+                                var payments_methods = []
 
                                 // Some embedded keys may be null, handle that situation
                                 const keys = p.payments ? Object.keys(p.payments) : []
@@ -329,50 +330,31 @@ DsPage {
                                 var payment_lbl = payments_methods.length === 0 ? "--" : payments_methods.join(', ')
                                 p["payments_label"] = payment_lbl
                                 items[index] = p
+                                datamodel.append(items[index])
                             });
             }
             catch(err) {
-                console.log("Sales Page: ", err)
-                toast.warning("Failed to parse response data!");
-            }
-
-            datamodel.clear()
-
-            for(var i=0; i<items.length; i++) {
-                datamodel.append(items[i])
+                console.log("> Sales Page: ", err)
+                toast.warning("Failed to parse full response data!");
             }
         }
 
         else if(res.status === 0) {
-            showMessage(
-                        qsTr("Connection Refused"),
-                        qsTr("Could not connect to the server, something is'nt right!")
-                        )
-        }
-
-        else if(res.status === 403) {
-            showMessage(
-                        qsTr("Authentication Error"),
-                        qsTr("You don't seem to have access rights to perform this action.")
-                        )
+            toast.error(qsTr("Could not connect to the server, something is'nt right!"))
         }
 
         else {
-            showMessage(
-                        qsTr("Error Occured"),
-                        res.message ? res.message : qsTr("Yuck! Something not right here!")
-                        )
+            toast.error(res.data.message ? res.data.message : qsTr("Yuck! Something not right here!"))
         }
     }
-
-    Component.onCompleted: getSales()
 
     // Internal Object for holding date states for filtering
     QtObject {
         id: internal
 
-        property string startDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 00:00:00.000Z")
-        property string endDateTimeUTC: Qt.formatDateTime(new Date(), "yyyy-MM-dd 23:59:59.999Z")
+        property bool pageLoaded: false
+        property string startDateTimeUTC: Utils.startDateUTC()
+        property string endDateTimeUTC: Utils.endDateUTC()
         property string selectedDuration: durationSelector.model[durationSelector.currentIndex]
 
         onSelectedDurationChanged: findStartAndEndDatesInUTC()
@@ -385,8 +367,8 @@ DsPage {
             case "Today": {
                 var now = new Date() // Current Date & Time
 
-                internal.startDateTimeUTC = Qt.formatDateTime(now, "yyyy-MM-dd 00:00:00.000Z")
-                internal.endDateTimeUTC = Qt.formatDateTime(now, "yyyy-MM-dd 23:59:59.999Z")
+                internal.startDateTimeUTC = Utils.startDateUTC(now)
+                internal.endDateTimeUTC = Utils.endDateUTC(now)
 
                 salesDateRange = qsTr("Today")
                 getSales()
@@ -406,14 +388,29 @@ DsPage {
                 const endDate = new Date(startDate);
                 endDate.setDate(startDate.getDate() + 6); // Add 6 days to get Saturday
 
-                internal.startDateTimeUTC = Qt.formatDateTime(startDate, "yyyy-MM-dd 00:00:00.000Z")
-                internal.endDateTimeUTC = Qt.formatDateTime(endDate, "yyyy-MM-dd 23:59:59.999Z")
+                internal.startDateTimeUTC = Utils.startDateUTC(startDate)
+                internal.endDateTimeUTC = Utils.endDateUTC(endDate)
 
                 salesDateRange = qsTr("This Week")
                 getSales()
 
                 break;
             }
+
+            // Find start and end date for the current week
+            case "Last 7 Days": {
+                const now = new Date();
+                var date = Utils.last7DaysDates()
+
+                internal.startDateTimeUTC = date.current
+                internal.endDateTimeUTC = Utils.endDateUTC(now)
+
+                salesDateRange = qsTr("Last 7 Days")
+                getSales()
+
+                break;
+            }
+
 
             case "Last Week": {
                 const now = new Date();
@@ -430,8 +427,8 @@ DsPage {
                 const lastWeekStart = new Date(lastWeekEnd);
                 lastWeekStart.setDate(lastWeekEnd.getDate() - 6); // Go back 6 days for the previous week's start
 
-                internal.startDateTimeUTC = Qt.formatDateTime(lastWeekStart, "yyyy-MM-dd 00:00:00.000Z")
-                internal.endDateTimeUTC = Qt.formatDateTime(lastWeekEnd, "yyyy-MM-dd 23:59:59.999Z")
+                internal.startDateTimeUTC = Utils.startDateUTC(lastWeekStart)
+                internal.endDateTimeUTC = Utils.endDateUTC(lastWeekEnd)
 
                 salesDateRange = qsTr("Last Week")
                 getSales()
@@ -450,8 +447,8 @@ DsPage {
                 const sd = new Date(year, month, 1);
                 const ed = new Date(year, month + 1, 0); // 0th day of the next month = last day of current month
 
-                internal.startDateTimeUTC = Qt.formatDateTime(sd, "yyyy-MM-dd 00:00:00.000Z")
-                internal.endDateTimeUTC = Qt.formatDateTime(ed, "yyyy-MM-dd 23:59:59.999Z")
+                internal.startDateTimeUTC = Utils.startDateUTC(sd)
+                internal.endDateTimeUTC = Utils.endDateUTC(ed)
 
                 salesDateRange = qsTr("This Month")
                 getSales()
@@ -466,8 +463,11 @@ DsPage {
                 // Get current year
                 let year = now.getUTCFullYear()
 
-                internal.startDateTimeUTC = `${year}-01-01 00:00:00.000Z`
-                internal.endDateTimeUTC = `${year}-12-31 23:59:59.999Z`
+                const jan = new Date(year, 0)       // Jan, 1st this year
+                const dec = new Date(year, 11, 31)  // Dec, 31st at midnight
+
+                internal.startDateTimeUTC = Utils.startDateUTC(jan)
+                internal.endDateTimeUTC = Utils.endDateUTC(dec)
 
                 salesDateRange = qsTr("This Year") + `: (${year})`
                 getSales()
@@ -484,5 +484,19 @@ DsPage {
             }
         }
     } // QtObject
+
+    // Delay item fetch
+    Timer {
+        id: fetchSalesTimer
+        repeat: false
+        interval: 3000
+        onTriggered: getSales()
+
+    }
+
+    Component.onCompleted: {
+        fetchSalesTimer.restart()
+        internal.pageLoaded = true
+    }
 }
 
