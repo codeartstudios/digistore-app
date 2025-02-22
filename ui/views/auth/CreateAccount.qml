@@ -92,7 +92,7 @@ DsPage {
                 fontSize: Theme.xlFontSize
                 width: parent.width
                 text: qsTr("Register")
-                busy: createAccountRequest.running || emailVerificationRequest.running
+                busy: createAccountRequest.running
 
                 onClicked: createUserAccount();
             }
@@ -192,9 +192,7 @@ DsPage {
             toast.info(qsTr("Account created, let's now login."))
         } else {
             // User creation failed
-            showMessage(qsTr("Create Account Error"),
-                                   res.data.message
-                                   )
+            showMessage(qsTr("Create Account Error"), Utils.error(res))
 
         }
     }

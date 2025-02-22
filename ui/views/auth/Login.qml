@@ -159,8 +159,6 @@ DsPage {
             var org = (user.organization==='' || !orgDataExists) ?
                         null : user.expand.organization
 
-            console.log("Token: ", token)
-
             dsController.token = token;
             dsController.loggedUser = user;
             dsController.organization = org ? org : {};
@@ -192,11 +190,7 @@ DsPage {
             // console.log(JSON.stringify(res))
             // User creation failed
             messageBox.showMessage(
-                        qsTr("Login Failed"),
-                        res.data.message ?
-                            res.data.message : res.error ?
-                                res.error : qsTr("We couldn't complete this request, please try again later.")
-                        )
+                        qsTr("Login Failed"), Utils.error(res))
         }
     }
 

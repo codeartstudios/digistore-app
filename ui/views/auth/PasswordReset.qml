@@ -120,7 +120,7 @@ DsPage {
             toast.success(qsTr("Request submitted, check your email."))
             stack.pop()
         } else {
-            toast.error(res.data.message)
+            toast.error(Utils.error(res))
         }
     }
 }

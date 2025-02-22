@@ -6,6 +6,7 @@ import app.digisto.modules
 
 import "../../controls"
 import "../../popups"
+import "../../js/main.js" as Djs
 
 DsPage {
     id: root
@@ -209,7 +210,7 @@ DsPage {
             dsController.workspaceId = org ? org.id : '';
 
             // All checks fine, lets then check if we can log in finally!
-            dsController.isLoggedIn = checkIfLoggedIn()
+            dsController.isLoggedIn = Djs.checkIfLoggedIn()
 
             // Show toast message
             toast.success(qsTr("Login Success!"))
@@ -217,9 +218,7 @@ DsPage {
 
         else {
             // User creation failed
-            showMessage(qsTr("Create Account Error"),
-                                   res.data.message
-                                   )
+            showMessage(qsTr("Create Account Error"), Utils.error(res))
 
         }
     }

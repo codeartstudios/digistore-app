@@ -1,4 +1,12 @@
-function maybeJson(val) {
+function error(obj) {
+    if(!obj) return qsTr("Unknown Error!")
+    if(Object.keys(obj.data).includes('message')) {
+        return obj.data.message
+    }
+    return obj.error
+}
+
+function maybeJSON(val) {
     if(!val) return '{}'
     try {
         var r = JSON.stringify(val)
