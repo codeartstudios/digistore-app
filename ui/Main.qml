@@ -66,6 +66,22 @@ Window {
 
     Component.onCompleted: {
         // For quick tests ...
+        // var j = {
+        //     data: {
+        //         data: {},
+        //         message: "Failed to authenticate.",
+        //         status: 400
+        //     },
+        //     error:"Error transferring http://127.0.0.1:3000/api/collections/tellers/auth-with-password?expand=organization - server replied: Bad Request",
+        //     status:400
+        // }
+
+        // console.log(Utils.error(j))
+    }
+
+    // Convert response object to error string
+    function toErrorString(resObj) {
+        return Utils.error(resObj)
     }
 
     // Lets monitor the token changes,

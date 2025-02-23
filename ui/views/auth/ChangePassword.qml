@@ -187,11 +187,7 @@ DsPage {
             // console.log(JSON.stringify(res))
             // User creation failed
             messageBox.showMessage(
-                        qsTr("Change Password Failed"),
-                        res.data.message ?
-                            res.data.message : res.error ?
-                                res.error : qsTr("We couldn't complete this request, please try again later.")
-                        )
+                        qsTr("Change Password Failed"), Utils.error(res))
         }
     }
 

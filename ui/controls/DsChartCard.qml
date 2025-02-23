@@ -142,7 +142,7 @@ Rectangle {
         else {
             showMessage(
                         qsTr("Error fetching sales data"),
-                        `${res.data.message}`
+                        `${toErrorString(res)}`
                         )
         }
     }

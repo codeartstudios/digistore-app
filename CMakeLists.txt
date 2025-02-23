@@ -20,6 +20,7 @@ qt_add_executable(digisto
     src/dscontroller.cpp src/dscontroller.h
     src/requests.cpp src/requests.h
     src/qaesencryption.h src/qaesencryption.cpp
+    # src/localserver.h src/localserver.cpp
     resources.qrc
 )
 

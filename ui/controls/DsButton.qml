@@ -59,7 +59,7 @@ Button {
 
             DsIcon {
                 id: ico
-                visible: leftIconShown
+                visible: leftIconShown || busy
                 iconType: busy ? IconType.loader2 : control.iconType ?
                                      control.iconType : ""
                 iconSize: control.fontSize * 1.2

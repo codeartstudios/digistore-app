@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     DsController dsController;
 
     // Set default server URL, override where applicable
-    dsController.setBaseUrl("http://127.0.0.1:8090");
+    dsController.setBaseUrl("http://127.0.0.1:3000");
 
     QQmlApplicationEngine engine;
 
