@@ -33,11 +33,15 @@ function fetchDashboardCompletedSales(request, model) {
     // Format date
     const currentDateCycleStart = date.current
     const previousDateCycleStart = date.previous
-    const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
 
     // Create and send GET request
     request.clear()
-    request.path = `/fn/dashboard/completed-sales/${endpoint}`
+    request.path = `/fn/dashboard/completed-sales`
+    request.query = {
+        old_start: previousDateCycleStart,
+        new_start: currentDateCycleStart
+    }
+
     var res = request.send();
 
     if(res.status===200) {
@@ -47,17 +51,16 @@ function fetchDashboardCompletedSales(request, model) {
     }
 
     else {
-        toast.error(res.data.message)
+        toast.error(toErrorString(res))
     }
 }
 
 function fetchDashboardStockStatus(request, model) {
     var modelIndex = 2;     // Index of the model item to be modified
-    const endpoint = `${dsController.workspaceId}`
 
     // Create and send GET request
     request.clear()
-    request.path = `/fn/dashboard/stock-status/${endpoint}`
+    request.path = `/fn/dashboard/stock-status`
     var res = request.send();
 
     if(res.status===200) {
@@ -69,7 +72,7 @@ function fetchDashboardStockStatus(request, model) {
     }
 
     else {
-        toast.error(res.data.message)
+        toast.error(toErrorString(res))
     }
 }
 
@@ -77,11 +80,13 @@ function fetchDashboardLowStockStats(request, model) {
     var modelIndex = 3;     // Index of the model item to be modified
     var thresholdQty = 5    // Qty to check below it ...
 
-    const endpoint = `${dsController.workspaceId}/${thresholdQty}`
-
     // Create and send GET request
     request.clear()
-    request.path = `/fn/dashboard/low-stock/${endpoint}`
+    request.path = `/fn/dashboard/low-stock`
+    request.query = {
+        threshold: thresholdQty
+    }
+
     var res = request.send();
 
     if(res.status===200) {
@@ -90,7 +95,7 @@ function fetchDashboardLowStockStats(request, model) {
     }
 
     else {
-        toast.error(res.data.message)
+        toast.error(toErrorString(res))
     }
 }
 
@@ -112,11 +117,15 @@ function fetchDashboardTotalSalesSum(request, model) {
     // Format date
     const currentDateCycleStart = date.current
     const previousDateCycleStart = date.previous
-    const endpoint = `${dsController.workspaceId}/${previousDateCycleStart}/${currentDateCycleStart}`
 
     // Create and send GET request
     request.clear()
-    request.path = `/fn/dashboard/total-sales/${endpoint}`
+    request.path = `/fn/dashboard/total-sales`
+    request.query = {
+        old_start: previousDateCycleStart,
+        new_start: currentDateCycleStart
+    }
+
     var res = request.send();
 
     if(res.status===200) {
@@ -126,7 +135,7 @@ function fetchDashboardTotalSalesSum(request, model) {
     }
 
     else {
-        toast.error(res.data.message)
+        toast.error(toErrorString(res))
     }
 }
 
@@ -193,6 +202,6 @@ function fetchDashboardLast10Sales(request, model) {
     }
 
     else {
-        toast.error(res.message ? res.message : qsTr("Yuck! Something not right here!"))
+        toast.error(toErrorString(res))
     }
 }

@@ -79,6 +79,11 @@ Window {
         // console.log(Utils.error(j))
     }
 
+    // Convert response object to error string
+    function toErrorString(resObj) {
+        return Utils.error(resObj)
+    }
+
     // Lets monitor the token changes,
     // TODO remove this before production
     Connections {
