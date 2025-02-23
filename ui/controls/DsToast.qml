@@ -151,6 +151,7 @@ Rectangle {
         timeout = _timeout
         timer.restart()
         opened = true
+        console.log('Opening toast, message -> ', _message)
     }
 
     function info(_message, _timeout = DsToast.Timeout.SHORT) {
@@ -171,6 +172,7 @@ Rectangle {
 
     function close() {
         opened = false
+        console.log('Closing ...')
     }
 
     function clear() {

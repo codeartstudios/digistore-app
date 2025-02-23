@@ -15,28 +15,8 @@ Drawer {
     property alias bgrect: bg
     property alias topCloseButtonShown: clsbtn.visible
     property alias toast : toast
-
-    property Requests request: Requests {
-        token: dsController.token
-        baseUrl: dsController.baseUrl
-    }
-
-    property DsMessageBox messageBox: DsMessageBox{ // TODO
-        x: (root.width-width)/2 // - root.mapToGlobal(0, 0).x
-        y: (root.height-height)/2 // - root.mapToGlobal(0, 0).y
-
-        function showMessage(title="", info="") {
-            console.log(opened, width, height)
-            messageBox.title = title
-            messageBox.info = info
-            open()
-            console.log(opened, width, height)
-        }
-    }
-
-    function showMessage(title="", info="") {
-        messageBox.showMessage(title, info)
-    }
+    property alias messageBox: messageBox
+    property alias request: r
 
     background: Rectangle {
         id: bg
@@ -70,9 +50,32 @@ Drawer {
         }
     }
 
+    DsMessageBox{ // TODO
+        id: messageBox
+        x: (root.width - width)/2 // - root.mapToGlobal(0, 0).x
+        y: (root.height - height)/2 // - root.mapToGlobal(0, 0).y
+        z: root.z + 5
+
+        function showMessage(title="", info="") {
+            title = title
+            info = info
+            open()
+        }
+    }
+
     DsToast{
         id: toast
-        x: (root.width - width)/2
-        width: root.width * 0.7
+        x: (parent.width - width)/2
+        width: 300
+    }
+
+    Requests {
+        id: r
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+    }
+
+    function showMessage(title="", info="") {
+        messageBox.showMessage(title, info)
     }
 }
