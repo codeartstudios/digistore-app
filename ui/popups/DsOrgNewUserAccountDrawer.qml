@@ -139,6 +139,7 @@ DsDrawer {
     }
 
     function addUser() {
+        toast.error("Error!")
         var email = emailfield.input.text.trim()
         var name = namefield.input.text.trim()
         var mobileno = parseInt(mobilefield.input.text.trim()) ? parseInt(mobilefield.input.text.trim()) : 0
@@ -202,18 +203,62 @@ DsDrawer {
                         )
         }
 
-        else if(res.status === 403) {
-            showMessage(
-                        qsTr("Authentication Error"),
-                        qsTr("You don't seem to have access rights to perform this action.")
-                        )
+        else if(res.status === 400) {
+            if(res.data && res.data.data) {
+                var obj = res.data.data
+                var keys = Object.keys(obj)
+
+                if(keys.includes('name')) {
+                    console.log('name: ', obj.name.message)
+                    toast.error(`Name: ${obj.name.message}`)
+                    showMessage(
+                                qsTr("New Account Error"),
+                                `Name: ${obj.name.message}`
+                                )
+                }
+
+                else if(keys.includes('email')) {
+                    console.log('email: ', obj.email.message)
+                    toast.error(`Email: ${obj.email.message}`)
+                    showMessage(
+                                qsTr("New Account Error"),
+                                `Email: ${obj.email.message}`
+                                )
+                }
+
+                else if(keys.includes('mobile')) {
+                    console.log('mobile: ', obj.mobile.message)
+                    toast.error(`Mobile: ${obj.mobile.message}`)
+                    showMessage(
+                                qsTr("New Account Error"),
+                                `Mobile: ${obj.mobile.message}`
+                                )
+                }
+
+                else {
+                    console.log('err: ', Utils.error(res))
+                    toast.error(Utils.error(res))
+                    showMessage(
+                                qsTr("New Account Error"),
+                                Utils.error(res)
+                                )
+                }
+            }
+
+            else {
+                console.log('if else: ', Utils.error(res))
+                toast.error(Utils.error(res))
+                showMessage(
+                            qsTr("New Account Error"),
+                            Utils.error(res)
+                            )
+            }
         }
 
         else {
-            showMessage(
-                        qsTr("Error Occured"),
-                        res.message ? res.message : qsTr("Yuck! Something not right here!")
-                        )
+            console.log('else: ', Utils.error(res))
+            showMessage(qsTr("Error Occured"), Utils.error(res))
+            toast.error(Utils.error(res))
         }
     }
 }

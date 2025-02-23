@@ -229,3 +229,14 @@ void DsController::setBaseUrl(const QString &newBaseUrl)
     m_baseUrl = newBaseUrl;
     emit baseUrlChanged();
 }
+
+QVariantMap DsController::organization() const
+{
+    return m_organization;
+}
+
+void DsController::setOrganization(const QVariantMap &newOrganization)
+{
+    m_organization = newOrganization;
+    emit organizationChanged();
+}

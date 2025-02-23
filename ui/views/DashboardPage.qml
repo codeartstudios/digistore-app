@@ -458,7 +458,7 @@ DsPage {
                             }
 
                             DsLabel {
-                                text: `${dsController.organization.settings.currency.toUpperCase()} ${model.totals}`
+                                text: `${orgCurrency.symbol} ${model.totals}`
                                 fontSize: Theme.baseFontSize
                                 color: Theme.txtPrimaryColor
                                 verticalAlignment: DsLabel.AlignVCenter

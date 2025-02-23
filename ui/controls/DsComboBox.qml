@@ -13,6 +13,7 @@ ComboBox {
     property alias radius: bg.radius
     property alias bgColor: bg.color
     property bool alignLeft: true
+    property var formattingFunc: null
 
     delegate: DsButton {
         id: btndlgt
@@ -29,7 +30,8 @@ ComboBox {
         textColor: Theme.txtPrimaryColor
         width: control.width
         fontSize: Theme.smFontSize
-        text: btndlgt.model[control.textRole]
+        text: control.formattingFunc ?
+                  control.formattingFunc(model) : model
 
         contentItem: Item {
             DsLabel {
@@ -65,7 +67,7 @@ ComboBox {
         leftPadding: Theme.xsSpacing
         rightPadding: control.indicator.width + control.spacing
 
-        text: control.displayText
+        text: formattingFunc ? formattingFunc(model[control.currentIndex]) : control.displayText
         fontSize: Theme.smFontSize
         color: Theme.txtPrimaryColor
         verticalAlignment: Text.AlignVCenter

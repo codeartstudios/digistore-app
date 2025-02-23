@@ -225,7 +225,7 @@ Item {
 
                         DsLabel {
                             id: pricelbl
-                            text: `KES. ${model.selling_price}`
+                            text: `${orgCurrency.symbol} ${model.selling_price}`
                             fontSize: Theme.lgFontSize
                             elide: DsLabel.ElideRight
                             anchors.verticalCenter: parent.verticalCenter

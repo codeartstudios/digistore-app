@@ -26,17 +26,17 @@ Drawer {
         y: (root.height-height)/2 // - root.mapToGlobal(0, 0).y
 
         function showMessage(title="", info="") {
+            console.log(opened, width, height)
             messageBox.title = title
             messageBox.info = info
-            messageBox.open()
+            open()
+            console.log(opened, width, height)
         }
     }
 
     function showMessage(title="", info="") {
         messageBox.showMessage(title, info)
     }
-
-    DsToast{ id: toast}
 
     background: Rectangle {
         id: bg
@@ -68,5 +68,11 @@ Drawer {
                 onClicked: root.close()
             }
         }
+    }
+
+    DsToast{
+        id: toast
+        x: (root.width - width)/2
+        width: root.width * 0.7
     }
 }

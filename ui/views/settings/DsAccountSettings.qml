@@ -405,7 +405,7 @@ DsSettingsStackPage {
         changepasswordRequest.path = `/api/collections/tellers/records/${dsController.loggedUser.id}`
         var res = changepasswordRequest.send();
 
-        console.log(JSON.stringify(res))
+        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             // Extract data
