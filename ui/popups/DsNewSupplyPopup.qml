@@ -90,7 +90,7 @@ Popup {
                         DsInputWithLabel {
                             id: amountinput
                             mandatory: true
-                            label: qsTr("Total Cost")
+                            label: qsTr("Total Cost in") + ` ${orgCurrency.symbol}`
                             input.placeholderText: qsTr("0.0")
                             width: (parent.width-parent.spacing*2)/3
                         }
@@ -263,7 +263,7 @@ Popup {
 
                                 // Quantity & price
                                 DsLabel {
-                                    text: `${model.quantity} x KES. ${model.buying_price}`
+                                    text: `${model.quantity} x ${symbol.currency} ${model.buying_price}`
                                     color: Theme.txtPrimaryColor
                                     fontSize: Theme.baseFontSize
                                     Layout.alignment: Qt.AlignVCenter

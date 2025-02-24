@@ -143,6 +143,8 @@ function fetchDashboardLast10Sales(request, model) {
     var query = {
         page: 1,
         perPage: 10,
+        expand: "teller",
+        fields: "*,expand.teller.name",
         sort: `-created`, // DESC newest -> oldest
         filter: `organization='${dsController.workspaceId}'`
     }
@@ -160,27 +162,22 @@ function fetchDashboardLast10Sales(request, model) {
             data.forEach(
                         function(p, index) {
                             var obj = {}
-                            obj['date'] =  p.created ? new Date(p.created).toLocaleString('en-US', {
-                                                                                  year: 'numeric',
-                                                                                  month: '2-digit',
-                                                                                  day: '2-digit',
-                                                                                  hour: '2-digit',
-                                                                                  minute: '2-digit'
-                                                                              }) : qsTr('n.d');
+                            obj['date'] =  p.created ? Qt.formatDateTime(new Date(p.created), 'ddd MMM d, yyyy hh:mm AP') : qsTr('n.d')
+
                             var payments = []
                             const keys = p.payments ? Object.keys(p.payments) : []
                             for(var i=0; i<keys.length; i++) {
                                 var a = p.payments[keys[i]]  // Maybe NULL
-                                const amount =  (a && a.amount) ? a : 0
+                                const amount =  (a && a.amount) ? a.amount : 0
                                 if(amount > 0) {
                                     var q = p.payments[keys[i]]
-                                    q = (q && q.label) ? q : '?'
+                                    q = (q && q.label) ? q.label : qsTr("<?>")
                                     payments.push(q.toString())
                                 }
                             }
 
                             obj['payments'] = payments.length>0 ? payments.join(', ') : qsTr('N/A')
-                            obj['teller']   = p.teller ? p.teller : ''
+                            obj['teller']   = (p.teller && p.expand) ? p.expand.teller.name : ''
                             obj['totals']   = p.totals ? p.totals : 0
                             obj['items']    = 0
                             model.append(obj)
@@ -188,13 +185,12 @@ function fetchDashboardLast10Sales(request, model) {
         }
 
         catch(err) {
-            console.log("Failed to parse response data: ", err)
-            toast.warning("Failed to parse response data!");
+            toast.warning(qsTr("We encountered an error!") + '\n' + err);
         }
     }
 
     else if(res.status === 0) {
-        toast.error(qsTr("Could not connect to the server, something is'nt right!"))
+        toast.error(qsTr("Could not connect to the server, something isn't right!"))
     }
 
     else if(res.status === 403) {
@@ -202,6 +198,6 @@ function fetchDashboardLast10Sales(request, model) {
     }
 
     else {
-        toast.error(toErrorString(res))
+        toast.error(Utils.error(res))
     }
 }

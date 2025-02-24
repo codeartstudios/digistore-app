@@ -56,7 +56,7 @@ Popup {
                 DsLabel {
                     fontSize: Theme.h1
                     color: Theme.txtHintColor
-                    text: qsTr("Checkout / Payments") + ` / KES ${root.totals}`
+                    text: qsTr("Checkout / Payments") + ` / ${orgCurrency.symbol} ${root.totals}`
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                 }

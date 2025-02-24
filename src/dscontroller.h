@@ -39,7 +39,7 @@ public:
     Q_PROPERTY(QString workspaceId MEMBER m_workspaceId NOTIFY workspaceIdChanged FINAL)
     Q_PROPERTY(QVariantMap loggedUser MEMBER m_loggedUser NOTIFY loggedUserChanged FINAL)
     Q_PROPERTY(QString token MEMBER m_token NOTIFY tokenChanged FINAL)
-    Q_PROPERTY(QVariantMap organization MEMBER m_organization NOTIFY organizationChanged FINAL)
+    Q_PROPERTY(QVariantMap organization READ organization WRITE setOrganization NOTIFY organizationChanged FINAL)
 
     // ------------------------------------------ //
     //          DsController Invokables           //
@@ -72,6 +72,9 @@ public:
 
     QString baseUrl() const;
     void setBaseUrl(const QString &newBaseUrl);
+
+    QVariantMap organization() const;
+    void setOrganization(const QVariantMap &newOrganization);
 
 public slots:
     void onTokenChanged();

@@ -249,16 +249,35 @@ DsDrawer {
                         height: Theme.inputHeight + Theme.xsSpacing
                         radius: Theme.btnRadius
                         bgColor: Theme.bodyColor
-                        currentIndex: dsController.organization.settings.currency==='ksh' ? 1 : 0
-                        model: [qsTr("US Dollar ($)"), qsTr("Kenyan Shilling (KSH)")]
+                        currentIndex: getCurrentIndex(orgCurrency)
+                        model: StaticModels.worldCurrencyModel
+                        popupHeight: root.height * 0.6
                         Layout.minimumWidth: 300
+
+                        formattingFunc: (obj) => obj ? `${obj.name} (${obj.symbol})` : '--'
+
+                        function getCurrentIndex(obj) {
+                            try {
+                                const key = 'cc'
+                                for(var i=0; i<StaticModels.worldCurrencyModel.length; i++) {
+                                    var model_i = StaticModels.worldCurrencyModel[i]
+                                    if(model_i[key].toLowerCase() === obj.cc.toLowerCase()) {
+
+                                        currentIndex = i
+                                        return
+                                    }
+                                }
+
+                                currentIndex = 0
+                            } catch(err) {
+                                currentIndex = 0
+                            }
+                        }
 
                         onCurrentIndexChanged: {
                             if(internal.loaded) {
-                                if(currentIndex===0)
-                                    internal.orgSettingsObj['currency'] = 'usd'
-                                else
-                                    internal.orgSettingsObj['currency'] = 'ksh'
+                                const cc = currentIndex >= 0 ? currecycb.model[currentIndex].cc : 'usd'
+                                internal.orgSettingsObj['currency'] = cc
 
                                 // Update edited flag
                                 internal.orgDetailsEdited = true
@@ -352,15 +371,13 @@ DsDrawer {
     function setKey(key, value) {
         if(!internal.loaded) return // Update only when loaded is set
 
-        console.log('Setting key: ', key, value)
-
         internal.orgDetailsEdited = true
         internal.orgUpdatedObj[key] = value
         internal.orgUpdatedObj = internal.orgUpdatedObj
     }
 
     function updateOrganization() {
-        console.log('Updating organization')
+        // console.log('Updating organization')
         if(!loggedUserPermissions.canEditOrganization)
             toast.error(qsTr("You don't have permissions to perform this task, contact org. admin for help."))
 

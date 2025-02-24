@@ -189,8 +189,7 @@ DsPage {
         } else {
             // console.log(JSON.stringify(res))
             // User creation failed
-            messageBox.showMessage(
-                        qsTr("Login Failed"), Utils.error(res))
+            messageBox.showMessage(qsTr("Login Failed"), Utils.error(res))
         }
     }
 
@@ -208,8 +207,28 @@ DsPage {
     function mandatoryCreateOrGetOrganization() {
         stack.pop()
         stack.push("qrc:/ui/views/auth/CreateOrJoinOrganization.qml",
-                                       {
-                                           stack: navigationStack
-                                       }, StackView.Immediate)
+                   {
+                       stack: navigationStack
+                   }, StackView.Immediate)
+    }
+
+    // TODO REMOVE
+    Timer {
+        id: prefillTimer
+        interval: 1000
+        repeat: false
+        triggeredOnStart: true
+        onTriggered: {
+            if(running) {
+                emailinput.text = 'allan@digisto.app'
+                passwordinput.text = '123123123'
+            } else {
+                signIn()
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        prefillTimer.restart()
     }
 }

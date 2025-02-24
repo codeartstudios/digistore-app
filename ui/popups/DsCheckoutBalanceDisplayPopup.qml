@@ -61,7 +61,7 @@ Popup {
                 fontSize: 48
                 isBold: true
                 color: Theme.txtHintColor
-                text: `KES. ${root.balanceDue}`
+                text: `${orgCurrency.symbol} ${root.balanceDue}`
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }

@@ -39,19 +39,7 @@ Window {
 
     DsToast { id: toast }
 
-    Connections {
-        target: dsController
-
-        // Signal handler for window size state change saved in the
-        // application settings.
-        function onStartWindowMaximizedChanged() {
-            if(dsController.startWindowMaximized) {
-                mainApp.showMaximized();    // Maximize the window
-            } else {
-                mainApp.showNormal();       // Show the default size window (1080x720px)
-            }
-        }
-    }
+    property var orgCurrency: ({})
 
     function withOpacity(color, opacity) {
         return Utils.withOpacity(color, opacity)
@@ -89,8 +77,29 @@ Window {
     Connections {
         target: dsController
 
-        function onTokenChanged() {
-            console.log("Token changed to: '", dsController.token, "'")
+        // Signal handler for window size state change saved in the
+        // application settings.
+        function onStartWindowMaximizedChanged() {
+            if(dsController.startWindowMaximized) {
+                mainApp.showMaximized();    // Maximize the window
+            } else {
+                mainApp.showNormal();       // Show the default size window (1080x720px)
+            }
+        }
+
+        function onOrganizationChanged() {
+            if(!dsController.organization) {
+                orgCurrency = {}
+                return
+            }
+
+            var settings = dsController.organization.settings
+            const currency = settings && settings.currency ? settings.currency : 'usd'
+            const currencyObj = StaticModels.findCurrencyFromModel(
+                                  currency, 'cc', (m, v) => {
+                                      return m.toLowerCase()===v.toLowerCase()
+                                  })
+            orgCurrency = currencyObj
         }
     }
 }

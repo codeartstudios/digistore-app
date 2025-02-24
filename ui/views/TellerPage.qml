@@ -81,7 +81,7 @@ DsPage {
                     }
 
                     DsLabel {
-                        text: qsTr("KES ") + `${checkoutTotals}`
+                        text: `${orgCurrency.symbol} ${checkoutTotals}`
                         fontSize: Theme.h1
                         color: Theme.txtPrimaryColor
                         isBold: true

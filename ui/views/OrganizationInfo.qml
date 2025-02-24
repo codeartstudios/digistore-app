@@ -138,9 +138,9 @@ DsSettingsStackPage {
         // Currency
         DsSettingsRowLabel {
             label: qsTr("Default currency")
-            value: dsController.organization.settings &&
-                   dsController.organization.settings.currency ?
-                       dsController.organization.settings.currency.toUpperCase() : "--"
+            value: orgCurrency &&
+                   orgCurrency.cc ?
+                       `${orgCurrency.name} (${orgCurrency.symbol})` : "--"
         }
 
         // Lock timeout

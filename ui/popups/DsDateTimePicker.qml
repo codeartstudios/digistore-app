@@ -81,6 +81,9 @@ Popup {
                     // Year selection combobox
                     DsComboBox {
                         id: yearcb
+                        radius: Theme.btnRadius
+                        borderWidth: 1
+                        borderColor: Theme.shadowColor
                         model: yearsModel
                         popupHeight: monthgrid.height
                         onCurrentValueChanged: monthgrid.year = currentValue
@@ -89,20 +92,28 @@ Popup {
                     //Month selection Combobox
                     DsComboBox {
                         id: monthcb
+                        radius: Theme.btnRadius
+                        borderWidth: 1
+                        borderColor: Theme.shadowColor
                         popupHeight: monthgrid.height
                         model: ["January", 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-                        onCurrentIndexChanged: monthgrid.month = currentIndex
+                        onCurrentIndexChanged: {
+                            monthgrid.month = currentIndex
+                        }
                     }
 
                     // Select Time Button
-                    // TODO Add dropdown icon
                     DsButton {
-                        bgColor: "transparent"
+                        fontSize: Theme.smFontSize
+                        borderWidth: 1
+                        borderColor: Theme.shadowColor
                         textColor: Theme.txtPrimaryColor
+                        bgColor: Theme.baseColor
                         bgHover: Qt.lighter(Theme.baseAlt1Color, 0.8)
                         bgDown: Qt.lighter(Theme.baseAlt1Color, 0.6)
                         height: Theme.btnHeight
-                        text: Qt.formatTime(selectedDate, "hh:mm") + qsTr(" hrs")
+                        endIcon: IconType.caretUpDown
+                        text: Qt.formatTime(selectedDate, "hh:mm AP")
 
                         onClicked: timeselctorpopup.open()
                     }
@@ -131,8 +142,6 @@ Popup {
                     height: Theme.btnHeight
                     text: shortName
                     fontSize: Theme.smFontSize
-                    opacity: enabled ? 1 : 1
-                    enabled: false
                     bgColor: "transparent"
                     bgHover: "transparent"
                     bgDown: "transparent"

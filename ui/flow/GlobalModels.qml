@@ -184,7 +184,13 @@ Item {
         // Update model only when user logs in
         function onIsLoggedInChanged() {
             if(dsController.isLoggedIn)
-                gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${dsController.organization.settings.currency.toUpperCase()}`)
+                gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${ mainApp.orgCurrency.symbol }`)
+        }
+
+        function onOrganizationChanged() {
+            if(dsController.organization) {
+                gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${ mainApp.orgCurrency.symbol }`)
+            }
         }
     }
 

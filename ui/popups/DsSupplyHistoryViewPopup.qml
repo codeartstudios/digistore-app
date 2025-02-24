@@ -25,8 +25,6 @@ Popup {
     property ListModel datamodel: ListModel{}
     property real xOffset: mapToGlobal(0,0).x
 
-    onXOffsetChanged: console.log("> ", xOffset)
-
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -221,7 +219,7 @@ Popup {
             width: 150
             flex: 1
             value: "amount"
-            formatBy: (amount) => `KES. ${amount}`
+            formatBy: (amount) => `${orgCurrency.symbol} ${amount}`
         }
 
         ListElement {
@@ -246,7 +244,8 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.workspaceId}'` + (txt==='' ? '' : ` && (amount ~ '${txt}' || suppliers ~ '${txt}')`),
+            filter: `organization='${dsController.workspaceId}'` +
+                    (txt==='' ? '' : ` && (amount ~ '${txt}' || suppliers ~ '${txt}')`),
             expand: "suppliers",
             fields: "*,expand.suppliers.name"
         }

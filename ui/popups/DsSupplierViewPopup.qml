@@ -258,7 +258,8 @@ Popup {
             page: pageNo,
             perPage: itemsPerPage,
             sort: `${ sortAsc ? '+' : '-' }${ sortByKey }`,
-            filter: `organization='${dsController.workspaceId}'` + (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
+            filter: `organization='${dsController.workspaceId}'` +
+                    (txt==='' ? '' : ` && (name ~ '${txt}' || mobile ~ '${txt}' || email ~ '${txt}')`)
         }
 
         // console.log(JSON.stringify(query))

@@ -10,6 +10,12 @@ DsDrawer {
     id: root
     width: Math.min(500, mainApp.width * 0.9)
 
+    DsToast{
+        id: toast
+        x: (parent.width - width)/2
+        width: 300
+    }
+
     signal userAdded()
 
     contentItem: Item {
@@ -144,27 +150,23 @@ DsDrawer {
         var mobileno = parseInt(mobilefield.input.text.trim()) ? parseInt(mobilefield.input.text.trim()) : 0
 
         if(name.split(' ')<=1 || name.length < 3) {
-            showMessage(qsTr("Create Account Error"),
-                        qsTr("At least two names required!"))
+            toast.warning(qsTr("At least two names required!"))
             return;
         }
 
         if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            showMessage(qsTr("Create Account Error"),
-                        qsTr("User email is not valid!"))
+            toast.warning(qsTr("User email is not valid!"))
             return;
         }
 
         if(mobilefield.selectedCountry || mobileno >= 10000000) {
             if(!mobilefield.selectedCountry) {
-                showMessage(qsTr("Create Account Error"),
-                            qsTr("Country code for your mobile number not selected!"))
+                toast.warning(qsTr("Country code for your mobile number not selected!"))
                 return;
             }
 
             if(mobileno < 10000000) {
-                showMessage(qsTr("Create Account Error"),
-                            qsTr("Mobile number is not valid!"))
+                toast.warning(qsTr("Mobile number is not valid!"))
                 return;
             }
         }
@@ -196,24 +198,38 @@ DsDrawer {
         }
 
         else if(res.status === 0) {
-            showMessage(
-                        qsTr("Connection Refused"),
-                        qsTr("Could not connect to the server, something is'nt right!")
-                        )
+            toast.error("Could not connect to the server, something is'nt right!")
         }
 
-        else if(res.status === 403) {
-            showMessage(
-                        qsTr("Authentication Error"),
-                        qsTr("You don't seem to have access rights to perform this action.")
-                        )
+        else if(res.status === 400) {
+            if(res.data && res.data.data) {
+                var obj = res.data.data
+                var keys = Object.keys(obj)
+
+                if(keys.includes('name')) {
+                    toast.error(`Name: ${obj.name.message}`)
+                }
+
+                else if(keys.includes('email')) {
+                    toast.error(`Email: ${obj.email.message}`)
+                }
+
+                else if(keys.includes('mobile')) {
+                    toast.error(`Mobile: ${obj.mobile.message}`)
+                }
+
+                else {
+                    toast.error(Utils.error(res))
+                }
+            }
+
+            else {
+                toast.error(Utils.error(res))
+            }
         }
 
         else {
-            showMessage(
-                        qsTr("Error Occured"),
-                        res.message ? res.message : qsTr("Yuck! Something not right here!")
-                        )
+            toast.error(Utils.error(res))
         }
     }
 }
