@@ -35,7 +35,11 @@ DsPage {
             Layout.topMargin: Theme.smSpacing
             spacing: Theme.smSpacing
 
+            // Recalculate the label max width
+            onWidthChanged: _slbl3.getWidth()
+
             DsLabel {
+                id: _slbl1
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
                 text: qsTr("Sales")
@@ -43,6 +47,7 @@ DsPage {
             }
 
             DsLabel {
+                id: _slbl2
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
                 text: qsTr("/")
@@ -50,13 +55,35 @@ DsPage {
             }
 
             DsLabel {
+                id: _slbl3
                 fontSize: Theme.h2
                 color: Theme.txtPrimaryColor
                 text: salesDateRange
+                elide: DsLabel.ElideRight
                 Layout.alignment: Qt.AlignVCenter
+                Layout.maximumWidth: maxWidth
+
+                property real maxWidth: 300
+
+                onWidthChanged: t0.restart()
+
+                Timer {
+                    id: t0; interval: 500
+                    onTriggered: parent.getWidth()
+                }
+
+                function getWidth() {
+                    const w = _slbl3.parent.width
+                    const sw = 7 * _slbl3.parent.spacing + _slbl1.implicitWidth +
+                             _slbl2.implicitWidth + _spacerbtn.implicitWidth +
+                             _editdatebtn.implicitWidth + _reloadsalesbtn.implicitWidth +
+                             durationSelector.width
+                    maxWidth = w - sw
+                }
             }
 
             DsIconButton {
+                id: _editdatebtn
                 visible: durationSelector.currentIndex === durationSelector.model.length - 1
                 enabled: !getsalesrequest.running
                 iconType: IconType.edit
@@ -72,6 +99,7 @@ DsPage {
             }
 
             DsIconButton {
+                id: _reloadsalesbtn
                 enabled: !getsalesrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
@@ -85,6 +113,7 @@ DsPage {
             }
 
             Item {
+                id: _spacerbtn
                 Layout.fillWidth: true
                 height: 1
             }
@@ -212,11 +241,28 @@ DsPage {
         id: headermodel
 
         ListElement {
+            title: qsTr("Day & Time")
+            sortable: true
+            width: 200
+            flex: 1
+            value: "created"
+        }
+
+        ListElement {
             title: qsTr("Total Cost")
             sortable: true
             width: 200
             flex: 2
             value: "totals"
+            formatBy: (data) => `${orgCurrency.symbol} ${Utils.commafy(data)}`
+        }
+
+        ListElement {
+            title: qsTr("Discount")
+            sortable: true
+            width: 150
+            flex: 1
+            value: "discount"
         }
 
         ListElement {
@@ -225,14 +271,6 @@ DsPage {
             width: 300
             flex: 1
             value: "payments_label"
-        }
-
-        ListElement {
-            title: qsTr("Date")
-            sortable: true
-            width: 200
-            flex: 1
-            value: "created"
         }
     }
 
@@ -305,13 +343,7 @@ DsPage {
             try {
                 items.forEach(
                             function(p, index) {
-                                p.created =  new Date(p.created).toLocaleString('en-US', {
-                                                                                    year: 'numeric',
-                                                                                    month: '2-digit',
-                                                                                    day: '2-digit',
-                                                                                    hour: '2-digit',
-                                                                                    minute: '2-digit'
-                                                                                });
+                                p.created =  Qt.formatDateTime(new Date(p.created), 'ddd MMM d, yyyy hh:mm AP');
 
                                 var payments_methods = []
 
@@ -319,10 +351,10 @@ DsPage {
                                 const keys = p.payments ? Object.keys(p.payments) : []
                                 for(var i=0; i<keys.length; i++) {
                                     var a = p.payments[keys[i]]  // Maybe NULL
-                                    const amount =  (a && a.amount) ? a : 0
+                                    const amount =  (a && a.amount) ? a.amount : 0
                                     if(amount > 0) {
                                         var q = p.payments[keys[i]]
-                                        q = (q && q.label) ? q : '?'
+                                        q = (q && q.label) ? q.label : qsTr("<?>")
                                         payments_methods.push(q.toString())
                                     }
                                 }
@@ -334,8 +366,7 @@ DsPage {
                             });
             }
             catch(err) {
-                console.log("> Sales Page: ", err)
-                toast.warning("Failed to parse full response data!");
+                toast.warning(qsTr("We encountered an error!") + '\n' + err);
             }
         }
 
@@ -344,7 +375,7 @@ DsPage {
         }
 
         else {
-            toast.error(res.data.message ? res.data.message : qsTr("Yuck! Something not right here!"))
+            toast.error(Utils.error(res))
         }
     }
 

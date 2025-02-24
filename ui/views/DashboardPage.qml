@@ -336,7 +336,7 @@ DsPage {
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         DsLabel {
-                            text: qsTr('Date')
+                            text: qsTr('Day & Time')
                             fontSize: Theme.baseFontSize
                             color: Theme.txtPrimaryColor
                             verticalAlignment: DsLabel.AlignVCenter
@@ -458,7 +458,7 @@ DsPage {
                             }
 
                             DsLabel {
-                                text: `${orgCurrency.symbol} ${model.totals}`
+                                text: `${orgCurrency.symbol} ${Utils.commafy(model.totals)}`
                                 fontSize: Theme.baseFontSize
                                 color: Theme.txtPrimaryColor
                                 verticalAlignment: DsLabel.AlignVCenter
@@ -469,28 +469,71 @@ DsPage {
                                 Layout.preferredWidth: recentSalesCol.colWidths[1]
                             }
 
-                            DsLabel {
-                                text: (model.teller && model.teller!=='') ? model.teller : qsTr('N/A')
-                                fontSize: Theme.baseFontSize
-                                color: Theme.txtPrimaryColor
-                                verticalAlignment: DsLabel.AlignVCenter
-                                horizontalAlignment: DsLabel.AlignLeft
-                                leftPadding: Theme.xsSpacing/2
-                                rightPadding: Theme.xsSpacing/2
+                            Item {
+                                clip: true
                                 Layout.fillHeight: true
                                 Layout.preferredWidth: recentSalesCol.colWidths[2]
-                            }
 
-                            DsLabel {
-                                text: model.payments
-                                fontSize: Theme.baseFontSize
-                                color: Theme.txtPrimaryColor
-                                verticalAlignment: DsLabel.AlignVCenter
-                                horizontalAlignment: DsLabel.AlignLeft
-                                leftPadding: Theme.xsSpacing/2
-                                rightPadding: Theme.xsSpacing/2
+                                DsLabel {
+                                    text: getTeller(model)
+                                    fontSize: Theme.smFontSize
+                                    color: Theme.txtPrimaryColor
+                                    verticalAlignment: DsLabel.AlignVCenter
+                                    horizontalAlignment: DsLabel.AlignLeft
+                                    leftPadding: Theme.xsSpacing/2
+                                    rightPadding: Theme.xsSpacing/2
+                                    bottomPadding: 4
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    background: Rectangle {
+                                        color: model.teller==='' ? 'transparent' : Theme.baseAlt1Color
+                                        radius: height/2
+                                    }
+
+                                    function getTeller(model) {
+                                        if (!model || model.teller==='')
+                                            return qsTr("<deleted user>")
+
+                                        return model.teller
+                                    }
+                                }
+                            }
+                            Item {
+                                id: paymenttablepills
+                                clip: true
                                 Layout.fillHeight: true
                                 Layout.preferredWidth: recentSalesCol.colWidths[3]
+
+                                property var paymentPillsModel: model.payments.split(',')
+
+                                Row {
+                                    clip: true
+                                    spacing: Theme.btnRadius
+                                    width: parent.width - Theme.xsSpacing
+                                    anchors.centerIn: parent
+
+                                    Repeater {
+                                        model: paymenttablepills.paymentPillsModel
+
+                                        DsLabel {
+                                            text: modelData.trim()
+                                            fontSize: Theme.smFontSize
+                                            color: Theme.txtPrimaryColor
+                                            verticalAlignment: DsLabel.AlignVCenter
+                                            horizontalAlignment: DsLabel.AlignLeft
+                                            leftPadding: implicitHeight/2
+                                            rightPadding: implicitHeight/2
+                                            topPadding: 2
+                                            bottomPadding: 2
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            background: Rectangle {
+                                                color: model.teller==='' ? 'transparent' : Theme.infoAltColor
+                                                radius: height/2
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

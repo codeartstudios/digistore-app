@@ -12,6 +12,8 @@ ComboBox {
     property alias popupHeight: _p.height
     property alias radius: bg.radius
     property alias bgColor: bg.color
+    property alias borderWidth: bg.border.width
+    property alias borderColor: bg.border.color
     property bool alignLeft: true
     property var formattingFunc: null
 
@@ -31,7 +33,7 @@ ComboBox {
         width: control.width
         fontSize: Theme.smFontSize
         text: control.formattingFunc ?
-                  control.formattingFunc(model) : model
+                  control.formattingFunc(model[textRole]) : model[textRole]
 
         contentItem: Item {
             DsLabel {
