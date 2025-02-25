@@ -220,10 +220,10 @@ DsPage {
         triggeredOnStart: true
         onTriggered: {
             if(running) {
-                emailinput.text = 'allan@digisto.app'
-                passwordinput.text = '123123123'
+                emailinput.text = 'john@doe.com'
+                passwordinput.text = '12345678'
             } else {
-                signIn()
+                // signIn()
             }
         }
     }

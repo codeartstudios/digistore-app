@@ -404,7 +404,6 @@ Popup {
         var body = {
             totals: root.totals,
             payments,
-            organization: dsController.workspaceId,
             products
         }
 
@@ -412,7 +411,6 @@ Popup {
         checkoutrequest.body = body
 
         var res = checkoutrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             // If we dont have cash payment, just end the session
@@ -431,8 +429,8 @@ Popup {
         }
 
         else {
-            messageBox.title = qsTr("Checkout failed!")
-            messageBox.info = res.data.message ? res.data.message : qsTr("Checkout process encontered an error, if the issue persists contact admin.")
+            messageBox.title = qsTr("Checkout Error!")
+            messageBox.info = Utils.error(res)
             messageBox.open()
         }
     }

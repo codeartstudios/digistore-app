@@ -22,6 +22,7 @@ qt_add_executable(digisto
     src/qaesencryption.h src/qaesencryption.cpp
     # src/localserver.h src/localserver.cpp
     resources.qrc
+    src/permissionmanager.h src/permissionmanager.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
