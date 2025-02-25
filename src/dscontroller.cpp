@@ -10,7 +10,7 @@ DsController::DsController(QObject *parent)
     m_platform(QSysInfo::productType()),
     m_isLoggedIn(false)
 {
-    QFile file(QStringLiteral(":/ui/config.json"));
+    QFile file(QStringLiteral(":/configs/app-config.json"));
     Q_ASSERT(file.open(QIODevice::ReadOnly));
 
     QVariantMap configurations=QJsonDocument::fromJson(file.readAll()).toVariant().toMap();
@@ -239,4 +239,15 @@ void DsController::setOrganization(const QVariantMap &newOrganization)
 {
     m_organization = newOrganization;
     emit organizationChanged();
+}
+
+QVariantMap DsController::loggedUser() const
+{
+    return m_loggedUser;
+}
+
+void DsController::setLoggedUser(const QVariantMap &newLoggedUser)
+{
+    m_loggedUser = newLoggedUser;
+    emit loggedUserChanged();
 }

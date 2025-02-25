@@ -37,7 +37,7 @@ public:
 
     // Application specific global apps
     Q_PROPERTY(QString workspaceId MEMBER m_workspaceId NOTIFY workspaceIdChanged FINAL)
-    Q_PROPERTY(QVariantMap loggedUser MEMBER m_loggedUser NOTIFY loggedUserChanged FINAL)
+    Q_PROPERTY(QVariantMap loggedUser READ loggedUser WRITE setLoggedUser NOTIFY loggedUserChanged FINAL)
     Q_PROPERTY(QString token MEMBER m_token NOTIFY tokenChanged FINAL)
     Q_PROPERTY(QVariantMap organization READ organization WRITE setOrganization NOTIFY organizationChanged FINAL)
 
@@ -75,6 +75,9 @@ public:
 
     QVariantMap organization() const;
     void setOrganization(const QVariantMap &newOrganization);
+
+    QVariantMap loggedUser() const;
+    void setLoggedUser(const QVariantMap &newLoggedUser);
 
 public slots:
     void onTokenChanged();

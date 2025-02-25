@@ -6,6 +6,7 @@
 // User defined headers
 #include "dscontroller.h"
 #include "requests.h"
+#include "permissionmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
 
     // Create the dscontroller instance
     DsController dsController;
+    PermissionManager pMan{&dsController, &dsController};
 
     // Set default server URL, override where applicable
     dsController.setBaseUrl("http://127.0.0.1:3000");
@@ -23,6 +25,7 @@ int main(int argc, char *argv[])
 
     // Register dscontroller to QML
     engine.rootContext()->setContextProperty("dsController", &dsController);
+    engine.rootContext()->setContextProperty("dsPermissionManager", &pMan);
 
     qmlRegisterType<Requests>("app.digisto.modules", 1, 0, "Requests");
     // qmlRegisterSingletonType(QUrl("qrc:/app/digisto/modules/Theme.qml"), "app.digisto.modules", 1, 0, "Theme");
