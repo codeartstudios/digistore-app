@@ -38,11 +38,11 @@ QtObject {
     //   "can_manage_users": false,
     //   "can_sell_products": false
     //--------------------- INVENTORY ROLES -------------------------//
-    property bool canAddStock: (isAdmin || (dsController.loggedUser!==null &&
-                                            dsController.loggedUser.permissions &&
-                                            dsController.loggedUser.permissions.can_manage_org===true)) ? true : false
+    // property bool canAddStock: (isAdmin || (dsController.loggedUser!==null &&
+    //                                         dsController.loggedUser.permissions &&
+    //                                         dsController.loggedUser.permissions.can_manage_org===true)) ? true : false
 
-    property bool canAddStock: (isAdmin || (dsController.loggedUser!==null &&
-                                            dsController.loggedUser.permissions &&
-                                            dsController.loggedUser.permissions.can_manage_org===true)) ? true : false
+    // property bool canAddStock: (isAdmin || (dsController.loggedUser!==null &&
+    //                                         dsController.loggedUser.permissions &&
+    //                                         dsController.loggedUser.permissions.can_manage_org===true)) ? true : false
 }

@@ -13,10 +13,25 @@ public:
 
     Q_PROPERTY(QVariantMap permissionTemplate READ permissionTemplate CONSTANT FINAL)
 
+    // Check for access permissions given;
+    //  'module' -> Table name
+    //  'action' -> read/write/delete/update/etc
     Q_INVOKABLE bool hasPermission(const QString &module, const QString &action);
-    QVariantMap permissionTemplate() const;
 
-signals:
+    Q_INVOKABLE bool hasOrganizationPermission(const QString &action);
+
+    Q_INVOKABLE bool hasUserAccountsPermission(const QString &action);
+
+    Q_INVOKABLE bool hasSuppliersPermission(const QString &action);
+
+    Q_INVOKABLE bool hasSupplyPermission(const QString &action);
+
+    Q_INVOKABLE bool hasInventoryPermission(const QString &action);
+
+    Q_INVOKABLE bool hasSalesPermission(const QString &action);
+
+    // Getters
+    QVariantMap permissionTemplate() const;
 
 private:
     DsController *m_dsController;

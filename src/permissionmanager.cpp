@@ -8,7 +8,7 @@ PermissionManager::PermissionManager(DsController *dsController, QObject *parent
     m_dsController(dsController)
 {
     // Load permission template from the json file
-    QFile file(QStringLiteral("qrc:/configs/permissions-templ.json"));
+    QFile file(QStringLiteral(":/configs/permissions-templ.json"));
     Q_ASSERT(file.open(QIODevice::ReadOnly));
 
     // Create QVariantMap out of the template json
@@ -43,6 +43,30 @@ bool PermissionManager::hasPermission(const QString &module, const QString &acti
         return true;
 
     return false;
+}
+
+bool PermissionManager::hasOrganizationPermission(const QString &action) {
+    return hasPermission("organization", action);
+}
+
+bool PermissionManager::hasUserAccountsPermission(const QString &action) {
+    return hasPermission("user_accounts", action);
+}
+
+bool PermissionManager::hasSuppliersPermission(const QString &action) {
+    return hasPermission("suppliers", action);
+}
+
+bool PermissionManager::hasSupplyPermission(const QString &action) {
+    return hasPermission("supply", action);
+}
+
+bool PermissionManager::hasInventoryPermission(const QString &action) {
+    return hasPermission("inventory", action);
+}
+
+bool PermissionManager::hasSalesPermission(const QString &action) {
+    return hasPermission("sales", action);
 }
 
 QVariantMap PermissionManager::permissionTemplate() const
