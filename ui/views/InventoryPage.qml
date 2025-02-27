@@ -55,7 +55,7 @@ DsPage {
             }
 
             DsIconButton {
-                enabled: !getproductrequest.running
+                enabled: dsPermissions.canViewInventory && !getproductrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -287,6 +287,11 @@ DsPage {
     }
 
     function getProducts() {
+        if(dsPermissions.canViewInventory) {
+            toast.warning(qsTr("You dont have permission(s) to access this view."))
+            return
+        }
+
         var txt = dsSearchInput.text.trim()
         var query = {
             page: pageNo,

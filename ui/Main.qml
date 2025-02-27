@@ -25,7 +25,7 @@ Window {
     property alias toast: toast
 
     // Create UserPermission object: Manage all user permissions centrally
-    property UserPermissions loggedUserPermissions: UserPermissions{}
+    property UserPermissions dsPermissions: UserPermissions{}
 
     // Add Global Models to the mainApp
     property GlobalModels globalModels: GlobalModels{}

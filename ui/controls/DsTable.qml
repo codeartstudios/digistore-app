@@ -159,6 +159,14 @@ Rectangle {
         }
     }
 
+    Item {
+        visible: dataModel.count === 0
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.top: tableheader.bottom
+    }
+
     ListView {
         id: listview
 
@@ -169,6 +177,7 @@ Rectangle {
         clip: true
         model: dataModel
         currentIndex: -1
+        visible: dataModel.count > 0
         headerPositioning: ListView.OverlayHeader
         anchors.left: parent.left
         anchors.right: parent.right

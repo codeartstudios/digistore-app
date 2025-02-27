@@ -1,9 +1,14 @@
 import QtQuick
 
 QtObject {
+    // Inventory management permissions
+    property bool canViewInventory: dsPermissionManager.hasInventoryPermission('view')
+    property bool canCreateInventory: dsPermissionManager.hasInventoryPermission('create')
+    property bool canUpdateInventory: dsPermissionManager.hasInventoryPermission('update')
+    property bool canDeleteInventory: dsPermissionManager.hasInventoryPermission('delete')
+
     // Is an admin account
-    property bool isAdmin: dsController.loggedUser!==null &&
-                           dsController.loggedUser.is_admin ? true : false
+    property bool isAdmin: dsController.loggedUser.role==='admin'
 
     // User has the  permission to sell products (teller mode)
     property bool canSellProducts: dsController.loggedUser!==null &&
