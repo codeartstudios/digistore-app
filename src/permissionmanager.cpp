@@ -73,3 +73,19 @@ QVariantMap PermissionManager::permissionTemplate() const
 {
     return m_permissionTemplate;
 }
+
+bool PermissionManager::canViewInventory() {
+    return hasOrganizationPermission("view");
+}
+
+bool PermissionManager::canCreateInventory() {
+    return hasOrganizationPermission("create");
+}
+
+bool PermissionManager::canUpdateInventory() {
+    return hasOrganizationPermission("update");
+}
+
+bool PermissionManager::canDeleteInventory() {
+    return hasOrganizationPermission("delete");
+}
