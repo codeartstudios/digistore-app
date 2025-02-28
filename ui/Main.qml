@@ -56,31 +56,20 @@ Window {
         return dsPermissionManager.hasPermission("organization", "write")
     }
 
-    Component.onCompleted: {
-        // For quick tests ...
-        // console.log("organization [write] ? ", dsPermissionManager.hasPermission("organization", "write"))
-        // console.log("organization [view] ? ", dsPermissionManager.hasPermission("organization", "view"))
-        // console.log("organization [update] ? ", dsPermissionManager.hasPermission("organization", "update"))
-        // console.log("inventory [create] ? ", dsPermissionManager.hasPermission("inventory", "create"))
-        // console.log("inventory [view] ? ", dsPermissionManager.hasPermission("inventory", "view"))
-        // console.log("inventory [update] ? ", dsPermissionManager.hasPermission("inventory", "update"))
-        // var j = {
-        //     data: {
-        //         data: {},
-        //         message: "Failed to authenticate.",
-        //         status: 400
-        //     },
-        //     error:"Error transferring http://127.0.0.1:3000/api/collections/tellers/auth-with-password?expand=organization - server replied: Bad Request",
-        //     status:400
-        // }
-
-        // console.log(Utils.error(j))
+    // Show the toast widget
+    function showPermissionDeniedWarning(toastWidget=null) {
+        if(toastWidget) toastWidget.warning(qsTr("Access denied!"))
+        else toast.warning(qsTr("Access denied!"))
     }
 
     // Convert response object to error string
     function toErrorString(resObj) {
         return Utils.error(resObj)
     }
+
+    // ------------------------------------------------------------------------------ //
+    // Connection for dsController signals
+    // ------------------------------------------------------------------------------ //
 
     // Lets monitor the token changes,
     // TODO remove this before production
@@ -111,5 +100,13 @@ Window {
                                   })
             orgCurrency = currencyObj
         }
+    }
+
+    // ------------------------------------------------------------------------------ //
+    // onCompleted signal handler
+    // ------------------------------------------------------------------------------ //
+
+    Component.onCompleted: {
+        // For quick tests ...
     }
 }

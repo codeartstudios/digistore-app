@@ -100,7 +100,8 @@ DsPage {
 
             DsIconButton {
                 id: _reloadsalesbtn
-                enabled: !getsalesrequest.running
+                enabled: !getsalesrequest.running &&
+                         dsPermissionManager.canViewInventory
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -146,6 +147,7 @@ DsPage {
             busy: getsalesrequest.running
             pageNo: root.pageNo - 1
             itemsPerPage: root.itemsPerPage
+            accessAllowed: dsPermissionManager.canViewInventory
 
             onSortBy: function(key) {
                 if(key===sortByKey) {
@@ -314,6 +316,11 @@ DsPage {
 
     function getSales() {
         if(!internal.pageLoaded) return
+
+        if(!dsPermissionManager.canViewInventory) {
+            showPermissionDeniedWarning(toast)
+            return
+        }
 
         var txt = dsSearchInput.text.trim()
 

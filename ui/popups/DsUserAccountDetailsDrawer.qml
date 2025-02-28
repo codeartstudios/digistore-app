@@ -25,8 +25,10 @@ DsDrawer {
         property bool loaded: false
         property string requestType: ""
 
-        // Check if the current current matches the logged user account, a.k.a `myAccount`
-        property bool isMyAccount: userData!==null && userData.id===dsController.loggedUser.id
+        // Check if the current current matches the
+        // logged user account, a.k.a `myAccount`
+        property bool isMyAccount: userData!==null &&
+                                   userData.id===dsController.loggedUser.id
 
         property ListModel fieldsModel: ListModel {}
         property var permissionModel: null
@@ -74,7 +76,8 @@ DsDrawer {
                 }
 
                 DsButton {
-                    visible: !internal.isMyAccount && loggedUserPermissions.canEditPermissions
+                    visible: !internal.isMyAccount &&
+                             dsPermissionManager.canDeleteUserAccounts
                     iconType: IconType.userMinus
                     busy: request.running && internal.requestType==="deleteAccount"
                     enabled: !request.running
@@ -230,7 +233,7 @@ DsDrawer {
                                             checked: root.userData ? root.userData[model.key] : false
                                             enabled: !internal.isMyAccount && model.key!=="verified" &&
                                                      ((root.userData && root.userData.is_admin) ||
-                                                      loggedUserPermissions.canEditPermissions)
+                                                      dsPermissionManager.canUpdateUserAccounts)
                                             Layout.alignment: Qt.AlignVCenter
 
                                             onCheckedChanged: if(internal.loaded && root.userData)
@@ -247,7 +250,7 @@ DsDrawer {
                     Column {
                         width: scrollview.width
                         spacing: Theme.xsSpacing
-                        visible: !internal.accountIsAdmin   // Show for non-admins
+                        visible: !dsPermissionManager.isAdmin   // Show for non-admins
 
                         DsLabel {
                             color: Theme.txtPrimaryColor
@@ -299,7 +302,7 @@ DsDrawer {
                                     // to edit user permissions
                                     DsSwitch {
                                         checked: productlvDelegate.value
-                                        enabled: loggedUserPermissions.canEditPermissions &&
+                                        enabled: dsPermissionManager.canUpdateUserAccounts &&
                                                  !internal.isMyAccount
                                         Layout.alignment: Qt.AlignVCenter
 
@@ -327,7 +330,7 @@ DsDrawer {
             RowLayout {
                 id: bottomRowLayout
                 visible: !internal.isMyAccount && internal.fieldsEdited &&
-                         loggedUserPermissions.canEditPermissions
+                         dsPermissionManager.canUpdateUserAccounts
                 spacing: Theme.xsSpacing/2
                 Layout.preferredHeight: visible ? Theme.btnHeight : 0
                 Layout.alignment: Qt.AlignRight
@@ -379,8 +382,8 @@ DsDrawer {
         internal.fieldsModel.append({ key: "username", label: "Username", type: "label" })
         internal.fieldsModel.append({ key: "email", label: "Email", type: "label" })
         internal.fieldsModel.append({ key: "verified", label: "Is Verfied?", type: "switch" })
-        internal.fieldsModel.append({ key: "approved", label: "Is Approved?", type: "switch" })
-        internal.fieldsModel.append({ key: "is_admin", label: "Is Admin?", type: "switch" })
+        internal.fieldsModel.append({ key: "role", label: "Role", type: "label", fn: function(val) {
+            return val ? `${Utils.toSentenceCase(val)}` : qsTr('<not set>') }})
         internal.fieldsModel.append({ key: "mobile", label: "Mobile", type: "label", fn: function(val) {
             return val ? `(${val.dial_code})${val.number}` : 'None'} })
 
@@ -389,14 +392,14 @@ DsDrawer {
 
             // If user has `permission` obj, use it, else
             // use default permissions template
-            if(userData["permissions"]) {
-                perm = userData["permissions"]
-            } else {
-                perm = globalModels.userPermissonsTemplate
-            }
+            // if(userData["permissions"]) {
+            //     perm = userData["permissions"]
+            // } else {
+            //     perm = globalModels.userPermissonsTemplate
+            // }
 
-            internal.accountPermissions = perm
-            internal.permissionModel = perm
+            internal.accountPermissions = {}
+            internal.permissionModel = {}
         }
 
         // Reset Account Switches
@@ -413,6 +416,11 @@ DsDrawer {
     }
 
     function deleteAccount() {
+        if(dsPermissionManager.canDeleteUserAccounts) {
+            showPermissionDeniedWarning(toast)
+            return
+        }
+
         // Set request type
         internal.requestType = "deleteAccount"
 
@@ -464,6 +472,11 @@ DsDrawer {
     }
 
     function updateUser() {
+        if(dsPermissionManager.canUpdateUserAccounts) {
+            showPermissionDeniedWarning(toast)
+            return
+        }
+
         // Set request type
         internal.requestType = "updateUser"
 

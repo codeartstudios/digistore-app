@@ -9,6 +9,10 @@ function error(obj) {
     return obj.error
 }
 
+function toSentenceCase(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 function maybeJSON(val) {
     if(!val) return '{}'
     try {

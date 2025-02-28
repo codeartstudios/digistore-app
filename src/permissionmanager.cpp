@@ -4,7 +4,7 @@
 #include <QFile>
 
 PermissionManager::PermissionManager(DsController *dsController, QObject *parent)
-    : QObject{parent},
+    : QObject { parent },
     m_dsController(dsController)
 {
     // Load permission template from the json file
@@ -22,18 +22,13 @@ PermissionManager::PermissionManager(DsController *dsController, QObject *parent
 
 bool PermissionManager::hasPermission(const QString &module, const QString &action)
 {
-    // Null check organization object, return false
-    if(!m_dsController) return false;
-
-    // Get organization object
-    const auto user = m_dsController->loggedUser();
-    if(user.isEmpty())
+    if(checkIfUserIsNull())
         return false;
 
     // Get all acceptable roles from the template
     const auto templRoles = m_permissionTemplate.keys();
-    qDebug() << templRoles;
 
+    const auto user = m_dsController->loggedUser();
     const auto role = user.value("role").toString();
     if(!templRoles.contains(role.trimmed().toLower()))
         return false;
@@ -45,6 +40,19 @@ bool PermissionManager::hasPermission(const QString &module, const QString &acti
     const auto overrides = user.value("overrides").toMap();
     p = overrides.value(role.trimmed().toLower()).toMap();
     if(p.value(module.toLower()).toList().contains(action.toLower()))
+        return true;
+
+    return false;
+}
+
+bool PermissionManager::checkIfUserIsNull() {
+    // Null check organization object, return true (its null)
+    if(!m_dsController)
+        return true;
+
+    // Get organization object
+    const auto user = m_dsController->loggedUser();
+    if(user.isEmpty())
         return true;
 
     return false;
@@ -134,6 +142,12 @@ void PermissionManager::setCanDeleteInventory(bool newCanDeleteInventory)
 void PermissionManager::checkPermissions()
 {
     qDebug() << "Checking permissions, user change ...";
+
+    // Check if logged in user is an admin
+    setIsAdmin(
+        checkIfUserIsNull() && // If user is valid, false otherwise
+        m_dsController->loggedUser().value("role").toString() == "admin"
+        );
 
     // Update inventory permissions
     setCanViewInventory(hasInventoryPermission("view"));
@@ -430,4 +444,17 @@ void PermissionManager::setCanDeleteUserAccounts(bool newCanDeleteUserAccounts)
         return;
     m_canDeleteUserAccounts = newCanDeleteUserAccounts;
     emit canDeleteUserAccountsChanged();
+}
+
+bool PermissionManager::isAdmin() const
+{
+    return m_isAdmin;
+}
+
+void PermissionManager::setIsAdmin(bool newIsAdmin)
+{
+    if (m_isAdmin == newIsAdmin)
+        return;
+    m_isAdmin = newIsAdmin;
+    emit isAdminChanged();
 }

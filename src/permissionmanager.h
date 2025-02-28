@@ -16,6 +16,11 @@ public:
     // ------------------------------------------------------------------------------ //
     // Inventory permissions
     // ------------------------------------------------------------------------------ //
+    Q_PROPERTY(bool isAdmin READ isAdmin WRITE setIsAdmin NOTIFY isAdminChanged FINAL)
+
+    // ------------------------------------------------------------------------------ //
+    // Inventory permissions
+    // ------------------------------------------------------------------------------ //
     Q_PROPERTY(bool canViewInventory READ canViewInventory WRITE setCanViewInventory NOTIFY canViewInventoryChanged FINAL)
     Q_PROPERTY(bool canCreateInventory READ canCreateInventory WRITE setCanCreateInventory NOTIFY canCreateInventoryChanged FINAL)
     Q_PROPERTY(bool canUpdateInventory READ canUpdateInventory WRITE setCanUpdateInventory NOTIFY canUpdateInventoryChanged FINAL)
@@ -149,6 +154,9 @@ public:
     bool canDeleteUserAccounts() const;
     void setCanDeleteUserAccounts(bool newCanDeleteUserAccounts);
 
+    bool isAdmin() const;
+    void setIsAdmin(bool newIsAdmin);
+
 signals:
     void canViewInventoryChanged();
     void canCreateInventoryChanged();
@@ -180,6 +188,8 @@ signals:
     void canUpdateUserAccountsChanged();
     void canDeleteUserAccountsChanged();
 
+    void isAdminChanged();
+
 private slots:
     void checkPermissions();
 
@@ -191,6 +201,8 @@ private:
     //  'module' -> Table name
     //  'action' -> read/write/delete/update/etc
     bool hasPermission(const QString &module, const QString &action);
+
+    bool checkIfUserIsNull();
 
     // ------------------------------------------------------------------------------ //
     // Class Member Variables
@@ -227,6 +239,7 @@ private:
     bool m_canCreateUserAccounts;
     bool m_canUpdateUserAccounts;
     bool m_canDeleteUserAccounts;
+    bool m_isAdmin;
 };
 
 #endif // PERMISSIONMANAGER_H

@@ -16,18 +16,6 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    QtObject {
-        id: internal
-        property bool canAddSuppliers: dsController.loggedUser.is_admin ||
-                                       dsController.loggedUser.permissions.can_add_suppliers ||
-                                       dsController.loggedUser.permissions.can_manage_suppliers
-    }
-
-    onOpened: {
-        clearInputs()
-        nameinput.input.forceActiveFocus()
-    }
-
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -123,7 +111,7 @@ Popup {
                     anchors.right: parent.right
 
                     DsButton {
-                        enabled: internal.canAddSuppliers
+                        enabled: dsPermissionManager.canCreateSuppliers
                         busy: addproductrequest.running
                         text: qsTr("Submit")
                         iconType: IconType.playlistAdd
@@ -144,7 +132,7 @@ Popup {
 
     function addSupplier() {
         // Check for permissions before proceeding ...
-        if(!internal.canAddSuppliers) {
+        if(!dsPermissionManager.canCreateSuppliers) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
@@ -213,5 +201,10 @@ Popup {
         emailinput.input.text=""
         mobileinput.input.text=""
         mobileinput.clear()
+    }
+
+    onOpened: {
+        clearInputs()
+        nameinput.input.forceActiveFocus()
     }
 }

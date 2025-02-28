@@ -75,14 +75,6 @@ DsDrawer {
         property alias stock: stockinput.input
         property alias thumbnail: thumbnailinput.file
         property alias tags: categoryinput.dataModel
-
-        // Permissions
-        property bool canAddProducts: dsController.loggedUser.is_admin ||
-                                       dsController.loggedUser.permissions.can_add_products ||
-                                      dsController.loggedUser.permissions.can_manage_products
-        property bool canEditProducts: dsController.loggedUser.is_admin ||
-                                    dsController.loggedUser.permissions.can_manage_products
-
     }
 
     contentItem: Item {
@@ -147,21 +139,33 @@ DsDrawer {
                                              })
                         }
 
-                        onCurrentMenuChanged: (index) => {
-                                                  switch(index) {
-                                                      case 0: {
-                                                          root.isEditing=true
-                                                          break
-                                                      }
+                        onCurrentMenuChanged: (ind) => handleDropDownMenuIndexChange(ind)
 
-                                                      // case 1: is a separator
+                        function handleDropDownMenuIndexChange(index) {
+                            switch(index) {
+                            case 0: {
+                                if(dsPermissionManager.canUpdateInventory) {
+                                    showPermissionDeniedWarning(toast)
+                                    return
+                                }
 
-                                                      case 2: {
-                                                          dialog.open()
-                                                          break
-                                                      }
-                                                  }
-                                              }
+                                root.isEditing=true
+                                break
+                            }
+
+                            // case 1: is a separator
+
+                            case 2: {
+                                if(!dsPermissionManager.canDeleteInventory) {
+                                    showPermissionDeniedWarning(toast)
+                                    return
+                                }
+
+                                dialog.open()
+                                break
+                            }
+                            }
+                        }
                     }
                 }
 
@@ -323,7 +327,7 @@ DsDrawer {
                 busy: updateproductrequest.running
                 text: qsTr("Update Item")
                 iconType: IconType.plus
-                enabled: internal.canEditProducts
+                enabled: dsPermissionManager.canUpdateInventory
                 visible: internal.toEdit && root.dataModel
 
                 onClicked: updateItem()
@@ -334,7 +338,7 @@ DsDrawer {
                 busy: addproductrequest.running
                 text: qsTr("Add Item")
                 iconType: IconType.plus
-                enabled: internal.canAddProducts
+                enabled: dsPermissionManager.canCreateInventory
                 visible: root.isEditing && !root.dataModel
 
                 onClicked: addItem()
@@ -403,7 +407,7 @@ DsDrawer {
 
     function addItem() {
         // Check for permissions before proceeding ...
-        if(!internal.canAddProducts) {
+        if(!dsPermissionManager.canCreateInventory) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
@@ -468,7 +472,7 @@ DsDrawer {
 
     function deleteItem() {
         // Check for permissions before proceeding ...
-        if(!internal.canEditProducts) {
+        if(!dsPermissionManager.canDeleteInventory) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
@@ -501,7 +505,7 @@ DsDrawer {
 
     function updateItem() {
         // Check for permissions before proceeding ...
-        if(!internal.canEditProducts) {
+        if(!dsPermissionManager.canUpdateInventory) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;

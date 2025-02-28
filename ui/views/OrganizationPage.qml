@@ -116,16 +116,31 @@ DsPage {
     function openDrawer(ind) {
         switch(ind) {
         case 3: {
+            if(!dsPermissionManager.isAdmin) {
+                showPermissionDeniedWarning(toast)
+                return
+            }
+
             orgpbadminDrawer.open()
             break;
         }
 
         case 1: {
+            if(!dsPermissionManager.canUpdateOrganization) {
+                showPermissionDeniedWarning(toast)
+                return
+            }
+
             orgsettingsDrawer.open()
             break;
         }
 
         case 0: {
+            if(!dsPermissionManager.canViewUserAccounts) {
+                showPermissionDeniedWarning(toast)
+                return
+            }
+
             orgaccountsDrawer.open()
             break;
         }

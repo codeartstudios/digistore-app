@@ -32,7 +32,7 @@ DsPopup {
             }
 
             DsLabel {
-                text: '@' + getLabel(dsController.loggedUser.username)
+                text: qsTr('Role: ') + getLabel(dsController.loggedUser.role)
                 color: Theme.txtHintColor
                 fontSize: Theme.smFontSize
                 width: parent.width
