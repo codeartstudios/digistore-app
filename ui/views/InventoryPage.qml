@@ -55,7 +55,8 @@ DsPage {
             }
 
             DsIconButton {
-                enabled: dsPermissions.canViewInventory && !getproductrequest.running
+                enabled: dsPermissionManager.canViewInventory &&
+                         !getproductrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -124,6 +125,13 @@ DsPage {
             headerModel: headermodel
             dataModel: datamodel
             busy: getproductrequest.running
+            accessAllowed: dsPermissionManager.canViewInventory
+
+            Component.onCompleted: console.log('Can view inventory? ',
+                                               dsPermissionManager.canViewInventory,
+                                               dsPermissionManager.canCreateInventory,
+                                               dsPermissionManager.canUpdateInventory,
+                                               dsPermissionManager.canDeleteInventory)
 
             onSortBy: function(key) {
                 if(key===sortByKey) {

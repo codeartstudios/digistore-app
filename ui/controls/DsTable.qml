@@ -14,6 +14,11 @@ Rectangle {
     property string headerAcionIconType: IconType.dots
     property string delegateActionIconType: IconType.dots
 
+    property bool accessAllowed: false
+    property string accessDeniedText: qsTr("You don't have access to this view, please contact the organization Admin for assistance.")
+    property string blankDisplayText: qsTr("This view seems to be empty, please reload or try adding some new data!")
+    property string busyDisplayText: qsTr("Hold on, we are feching this data for you.")
+
     property alias listView: listview
     property alias currentIndex: listview.currentIndex
 
@@ -165,6 +170,32 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: tableheader.bottom
+        
+        Column {
+            spacing: Theme.smSpacing
+            width: parent.width * 0.5
+            anchors.centerIn: parent
+
+            DsIcon {
+                iconSize: Theme.lgBtnHeight
+                iconColor: Theme.txtHintColor
+                iconType: busy ? IconType.clock : !accessAllowed ?
+                                     IconType.shieldExclamation :
+                                     IconType.folderExclamation
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            DsLabel {
+                width: parent.width
+                wrapMode: DsLabel.WordWrap
+                color: Theme.txtHintColor
+                fontSize: Theme.baseFontSize
+                horizontalAlignment: DsLabel.AlignHCenter
+                text: busy ? busyDisplayText : !accessAllowed ?
+                                 accessDeniedText : blankDisplayText
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
     }
 
     ListView {

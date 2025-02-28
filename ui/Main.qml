@@ -58,12 +58,12 @@ Window {
 
     Component.onCompleted: {
         // For quick tests ...
-        console.log("organization [write] ? ", dsPermissionManager.hasPermission("organization", "write"))
-        console.log("organization [view] ? ", dsPermissionManager.hasPermission("organization", "view"))
-        console.log("organization [update] ? ", dsPermissionManager.hasPermission("organization", "update"))
-        console.log("inventory [create] ? ", dsPermissionManager.hasPermission("inventory", "create"))
-        console.log("inventory [view] ? ", dsPermissionManager.hasPermission("inventory", "view"))
-        console.log("inventory [update] ? ", dsPermissionManager.hasPermission("inventory", "update"))
+        // console.log("organization [write] ? ", dsPermissionManager.hasPermission("organization", "write"))
+        // console.log("organization [view] ? ", dsPermissionManager.hasPermission("organization", "view"))
+        // console.log("organization [update] ? ", dsPermissionManager.hasPermission("organization", "update"))
+        // console.log("inventory [create] ? ", dsPermissionManager.hasPermission("inventory", "create"))
+        // console.log("inventory [view] ? ", dsPermissionManager.hasPermission("inventory", "view"))
+        // console.log("inventory [update] ? ", dsPermissionManager.hasPermission("inventory", "update"))
         // var j = {
         //     data: {
         //         data: {},
