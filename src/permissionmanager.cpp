@@ -184,6 +184,10 @@ void PermissionManager::checkPermissions()
     setCanCreateUserAccounts(hasUserAccountsPermission("create"));
     setCanUpdateUserAccounts(hasUserAccountsPermission("update"));
     setCanDeleteUserAccounts(hasUserAccountsPermission("delete"));
+
+    // Update user accounts permissions
+    setIsCashier(canViewOrganization() && canViewSales() &&
+                 canCreateSales() && canViewInventory());
 }
 
 bool PermissionManager::canViewSupply() const
@@ -457,4 +461,17 @@ void PermissionManager::setIsAdmin(bool newIsAdmin)
         return;
     m_isAdmin = newIsAdmin;
     emit isAdminChanged();
+}
+
+bool PermissionManager::isCashier() const
+{
+    return m_isCashier;
+}
+
+void PermissionManager::setIsCashier(bool newIsCashier)
+{
+    if (m_isCashier == newIsCashier)
+        return;
+    m_isCashier = newIsCashier;
+    emit isCashierChanged();
 }

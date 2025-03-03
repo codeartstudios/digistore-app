@@ -12,6 +12,8 @@ Item {
     signal textChanged(var text)
     signal accepted(var object)
 
+    property bool searchEnabled: false
+
     property alias busy: busyindicator.running
     property alias model: searchlvresults.model
 
@@ -36,7 +38,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: input.forceActiveFocus()
+        onClicked: if(searchEnabled) input.forceActiveFocus()
     }
 
     Timer {
@@ -72,6 +74,7 @@ Item {
                 placeholderTextColor: Theme.txtDisabledColor
                 font.pixelSize: Theme.xlFontSize
                 echoMode: TextField.Normal
+                readOnly: !searchEnabled
                 background: Item {}
                 onAccepted: searchlvresults.accepted()
 

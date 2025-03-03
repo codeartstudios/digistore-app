@@ -113,6 +113,7 @@
         <file>ui/js/main.js</file>
         <file>configs/permissions-templ.json</file>
         <file>configs/app-config.json</file>
+        <file>ui/controls/DsBusyOrEmptyOrAccessDeniedTableItem.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

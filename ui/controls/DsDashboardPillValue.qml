@@ -33,6 +33,8 @@ Rectangle {
         '3months': 2
     }
 
+    property bool canAccessData: false
+
     // Control signals
     signal clicked()
     signal currentIndexChanged(index: int, label: string)

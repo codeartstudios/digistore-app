@@ -197,14 +197,17 @@ DsPage {
             anchors.horizontalCenter: parent.horizontalCenter
             delegate: DsDashboardPillValue {
                 width: salePillListview.cellWidth
-                label:              model.label
-                value:              model.value
-                ref_value:          model.refValue
-                deviationShown:     model.deviationShown
-                description:        model.description
-                trendIconShown:     model.trendIconShown
+                label: model.label
+                value: model.value
+                ref_value: model.refValue
+                deviationShown: model.deviationShown
+                description: model.description
+                trendIconShown: model.trendIconShown
                 periodSelectorShown: model.periodSelectorShown
-                deviation:          model.calculateFunc(model.value, model.refValue)
+                deviation: model.calculateFunc(model.value, model.refValue)
+                canAccessData: model.canAccess
+
+                onCanAccessDataChanged: console.log('Can Access for ', label, ' is ', canAccessData)
 
                 // Slot connections
                 onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
@@ -386,27 +389,21 @@ DsPage {
 
                 }
 
-                Item {
-                    height: 100
+                DsBusyOrEmptyOrAccessDeniedTableItem {
                     width: parent.width
-                    visible: root.salesModel.count === 0
 
-                    DsLabel {
-                        text: qsTr("Nothing here yet!")
-                        fontSize: Theme.xlFontSize
-                        color: Theme.txtHintColor
-                        isBold: true
-                        elide: DsLabel.ElideRight
-                        bottomPadding: Theme.xsSpacing
-                        topPadding: Theme.xsSpacing
-                        anchors.centerIn: parent
-                    }
+                    itemShown: root.salesModel.count === 0 ||
+                               !dsPermissionManager.canViewSales
+                    busy: fetchLast10SalesDataRequest.running
+                    accessAllowed: dsPermissionManager.canViewSales
                 }
 
                 Repeater {
                     id: rp
                     width: parent.width
                     model: salesModel
+                    visible: root.salesModel.count > 0 &&   // Show for view sales personnel
+                             dsPermissionManager.canViewSales
                     delegate: Rectangle {
                         color: hovered ? withOpacity(Theme.baseAlt1Color, 0.8) : Theme.baseColor
                         height: Theme.btnHeight

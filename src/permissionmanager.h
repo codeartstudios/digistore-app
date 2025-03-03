@@ -19,6 +19,11 @@ public:
     Q_PROPERTY(bool isAdmin READ isAdmin WRITE setIsAdmin NOTIFY isAdminChanged FINAL)
 
     // ------------------------------------------------------------------------------ //
+    // Cashier permissions
+    // ------------------------------------------------------------------------------ //
+    Q_PROPERTY(bool isCashier READ isCashier WRITE setIsCashier NOTIFY isCashierChanged FINAL)
+
+    // ------------------------------------------------------------------------------ //
     // Inventory permissions
     // ------------------------------------------------------------------------------ //
     Q_PROPERTY(bool canViewInventory READ canViewInventory WRITE setCanViewInventory NOTIFY canViewInventoryChanged FINAL)
@@ -29,8 +34,7 @@ public:
     // ------------------------------------------------------------------------------ //
     // Supply permissions
     // ------------------------------------------------------------------------------ //
-    Q_PROPERTY(bool canViewSupply READ canViewSupply WRITE setCanViewSupply
-                   NOTIFY canViewSupplyChanged FINAL)
+    Q_PROPERTY(bool canViewSupply READ canViewSupply WRITE setCanViewSupply NOTIFY canViewSupplyChanged FINAL)
     Q_PROPERTY(bool canCreateSupply READ canCreateSupply WRITE setCanCreateSupply NOTIFY canCreateSupplyChanged FINAL)
     Q_PROPERTY(bool canUpdateSupply READ canUpdateSupply WRITE setCanUpdateSupply NOTIFY canUpdateSupplyChanged FINAL)
     Q_PROPERTY(bool canDeleteSupply READ canDeleteSupply WRITE setCanDeleteSupply NOTIFY canDeleteSupplyChanged FINAL)
@@ -157,6 +161,9 @@ public:
     bool isAdmin() const;
     void setIsAdmin(bool newIsAdmin);
 
+    bool isCashier() const;
+    void setIsCashier(bool newIsCashier);
+
 signals:
     void canViewInventoryChanged();
     void canCreateInventoryChanged();
@@ -189,6 +196,8 @@ signals:
     void canDeleteUserAccountsChanged();
 
     void isAdminChanged();
+
+    void isCashierChanged();
 
 private slots:
     void checkPermissions();
@@ -240,6 +249,7 @@ private:
     bool m_canUpdateUserAccounts;
     bool m_canDeleteUserAccounts;
     bool m_isAdmin;
+    bool m_isCashier;
 };
 
 #endif // PERMISSIONMANAGER_H
