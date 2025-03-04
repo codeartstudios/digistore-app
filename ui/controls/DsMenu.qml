@@ -148,10 +148,12 @@ DsButton {
                         leftIconShown: true
                         iconType: model.icon
                         text: model.label
-                        textColor: Theme.txtPrimaryColor
+                        textColor: _menudelegate.options ? _menudelegate.options.textColor : Theme.txtPrimaryColor
                         bgColor: "transparent"
                         bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+                        property var options: model.options
 
                         onClicked: {
                             // Close the menu popup first so that consecutive

@@ -33,7 +33,6 @@
         <file>ui/controls/DsTable.qml</file>
         <file>ui/controls/DsTableHeaderButton.qml</file>
         <file>ui/controls/DsSideBarListView.qml</file>
-        <file>ui/popups/DsNewProductPopup.qml</file>
         <file>ui/controls/DsBusyIndicator.qml</file>
         <file>ui/flow/AppStackLayout.qml</file>
         <file>ui/flow/DsFlowLoader.qml</file>
@@ -72,7 +71,6 @@
         <file>ui/popups/DsNewSupplyPopup.qml</file>
         <file>ui/controls/DsInputSelectorWithSearch.qml</file>
         <file>ui/controls/DsPopup.qml</file>
-        <file>ui/popups/DsSupplyAddProductPopup.qml</file>
         <file>ui/controls/DsInputSelector.qml</file>
         <file>ui/controls/DsInputWithPreview.qml</file>
         <file>ui/views/auth/Onboarding.qml</file>

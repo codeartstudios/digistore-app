@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     QtWebView::initialize();
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     // Create the dscontroller instance
     DsController dsController;
