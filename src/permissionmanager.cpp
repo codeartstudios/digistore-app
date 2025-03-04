@@ -145,7 +145,7 @@ void PermissionManager::checkPermissions()
 
     // Check if logged in user is an admin
     setIsAdmin(
-        checkIfUserIsNull() && // If user is valid, false otherwise
+        !checkIfUserIsNull() && // If user is valid, false otherwise
         m_dsController->loggedUser().value("role").toString() == "admin"
         );
 
