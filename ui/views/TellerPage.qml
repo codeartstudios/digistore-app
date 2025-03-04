@@ -94,22 +94,18 @@ DsPage {
 
             DsButton {
                 enabled: cartModel.count > 0 &&
-                         loggedUserPermissions.canSellProducts
+                         dsPermissionManager.isCashier
                 iconType: IconType.basketShare
                 text: qsTr("Checkout")
                 Layout.preferredHeight: Theme.lgBtnHeight
 
                 onClicked: {
-                    if(loggedUserPermissions.canSellProducts) {
+                    if(dsPermissionManager.isCashier) {
                         checkoutpopup.open()
                         checkoutpopup.totals = checkoutTotals
                         checkoutpopup.model = cartModel
                     } else {
-                        if(loggedUserPermissions.isAdmin)
-                            toast.warning("Account Admins can't do this action!")
-
-                        else
-                            toast.warning("You don't have permissions to do this action!")
+                        toast.warning("You don't have permissions to do this action!")
                     }
                 }
             }
@@ -118,6 +114,7 @@ DsPage {
         DsSearchInput {
             id: dsSearchInput
             model: searchModel
+            searchEnabled: dsPermissionManager.isCashier
             busy: searchitemrequest.running
             placeHolderText: qsTr("What are you looking for?")
             Layout.preferredHeight: Theme.lgBtnHeight
@@ -128,6 +125,8 @@ DsPage {
             onTextChanged: function (text) {
                 searchItem(text)
             }
+
+            onEnabledChanged: console.log('Enabled Changed: ', enabled, dsPermissionManager.isCashier)
 
             onAccepted: function(obj) {
                 var quantity = 1;
@@ -173,6 +172,7 @@ DsPage {
                 busy: searchitemrequest.running
                 headerAcionIconType: IconType.eraser
                 delegateActionIconType: IconType.shoppingBagEdit
+                accessAllowed: dsPermissionManager.isCashier
                 anchors.fill: parent
 
                 onHeaderActionButtonSelected: {

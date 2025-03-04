@@ -32,11 +32,12 @@ DsPopup {
             }
 
             DsLabel {
-                text: '@' + getLabel(dsController.loggedUser.username)
+                text: qsTr('Role') + `: <b>${getLabel(dsController.loggedUser.role)}</b>`
                 color: Theme.txtHintColor
                 fontSize: Theme.smFontSize
                 width: parent.width
                 elide: DsLabel.ElideRight
+                textFormat: DsLabel.RichText
                 bottomPadding: Theme.smSpacing
             }
 
@@ -57,7 +58,7 @@ DsPopup {
     }
 
     function getLabel(data) {
-        if(!data) return ''
-        return data
+        if(!data || data.trim() === '') return '-----'
+        return Utils.toSentenceCase(data)
     }
 }

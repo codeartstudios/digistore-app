@@ -26,16 +26,6 @@ Popup {
 
     property ListModel datamodel: ListModel{}
 
-    QtObject {
-        id: internal
-        property bool canAddSuppliers: dsController.loggedUser.is_admin ||
-                                       dsController.loggedUser.permissions.can_add_suppliers ||
-                                       dsController.loggedUser.permissions.can_manage_suppliers
-
-        property bool canViewSuppliers: dsController.loggedUser.is_admin ||
-                                        dsController.loggedUser.permissions.can_manage_suppliers
-    }
-
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -95,7 +85,7 @@ Popup {
                 }
 
                 DsButton {
-                    enabled: internal.canAddSuppliers
+                    enabled: dsPermissionManager.canCreateSuppliers
                     iconType: IconType.playlistAdd
                     text: qsTr("New Supplier")
                     onClicked: newsupplierpopup.open()
@@ -248,7 +238,7 @@ Popup {
 
     function getSuppliers(txt='') {
         // Check for permissions before proceeding ...
-        if(!internal.canViewSuppliers) {
+        if(!dsPermissionManager.canViewSuppliers) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;

@@ -76,7 +76,7 @@ DsDrawer {
                 DsLabel {
                     fontSize: Theme.h1
                     color: Theme.txtHintColor
-                    text: `${orgCurrency.symbol} ${internal.totals}`
+                    text: `${orgCurrency.symbol} ${Utils.commafy(internal.totals)}`
                     Layout.alignment: Qt.AlignVCenter
                 }
             }
@@ -131,7 +131,7 @@ DsDrawer {
                         DsLabel {
                             color: Theme.txtPrimaryColor
                             fontSize: Theme.xlFontSize
-                            text: `${orgCurrency.symbol} ${modelData.amount}`
+                            text: `${orgCurrency.symbol} ${Utils.commafy(modelData.amount)}`
                             Layout.alignment: Qt.AlignVCenter
                         }
                     }
@@ -189,7 +189,7 @@ DsDrawer {
                             DsLabel {
                                 color: Theme.txtHintColor
                                 fontSize: Theme.xsFontSize
-                                text: `${model.quantity} x ${orgCurrency.symbol} ${model.selling_price}`
+                                text: `${model.quantity} x ${orgCurrency.symbol} ${Utils.commafy(model.selling_price)}`
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                             }
@@ -197,7 +197,7 @@ DsDrawer {
                             DsLabel {
                                 color: Theme.txtHintColor
                                 fontSize: Theme.xsFontSize
-                                text: `${orgCurrency.symbol} ${model.quantity * model.selling_price}`
+                                text: `${orgCurrency.symbol} ${Utils.commafy(model.quantity * model.selling_price)}`
                                 Layout.alignment: Qt.AlignVCenter
                             }
                         }

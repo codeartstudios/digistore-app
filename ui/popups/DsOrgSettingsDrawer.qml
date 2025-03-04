@@ -78,7 +78,7 @@ DsDrawer {
 
             DsButton {
                 enabled: internal.orgDetailsEdited && !request.running
-                visible: internal.orgDetailsEdited && loggedUserPermissions.canEditOrganization
+                visible: internal.orgDetailsEdited && dsPermissionManager.canUpdateOrganization
                 opacity: visible ? 1 : 0
                 iconType: IconType.pencilCheck
                 busy: request.running
@@ -378,7 +378,7 @@ DsDrawer {
 
     function updateOrganization() {
         // console.log('Updating organization')
-        if(!loggedUserPermissions.canEditOrganization)
+        if(!dsPermissionManager.canUpdateOrganization)
             toast.error(qsTr("You don't have permissions to perform this task, contact org. admin for help."))
 
         var orgId = dsController.organization.id

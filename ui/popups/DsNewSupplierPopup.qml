@@ -16,17 +16,7 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
-    QtObject {
-        id: internal
-        property bool canAddSuppliers: dsController.loggedUser.is_admin ||
-                                       dsController.loggedUser.permissions.can_add_suppliers ||
-                                       dsController.loggedUser.permissions.can_manage_suppliers
-    }
-
-    onOpened: {
-        clearInputs()
-        nameinput.input.forceActiveFocus()
-    }
+    signal supplierAdded()
 
     background: Rectangle {
         color: Theme.bodyColor
@@ -123,7 +113,7 @@ Popup {
                     anchors.right: parent.right
 
                     DsButton {
-                        enabled: internal.canAddSuppliers
+                        enabled: dsPermissionManager.canCreateSuppliers
                         busy: addproductrequest.running
                         text: qsTr("Submit")
                         iconType: IconType.playlistAdd
@@ -142,9 +132,10 @@ Popup {
         method: "POST"
     }
 
+    // Handle sending POST request to create a new supplier
     function addSupplier() {
         // Check for permissions before proceeding ...
-        if(!internal.canAddSuppliers) {
+        if(!dsPermissionManager.canCreateSuppliers) {
             showMessage(qsTr("Yuck!"),
                         qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
@@ -174,8 +165,7 @@ Popup {
         }
 
         if(mobileinput.selectedCountry && parseInt(mobileinput.input.text.trim()) >= 10000000) {
-            console.log("Yaay!")
-            mobile = {
+             mobile = {
                 dial_code: mobileinput.selectedCountry.dial_code,
                 number: parseInt(mobileinput.input.text.trim())
             }
@@ -198,20 +188,26 @@ Popup {
         addproductrequest.clear()
         addproductrequest.body = body
         var res = addproductrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             root.close()
-            // TODO add message toast ...
+            toast.success(qsTr("New supplier was added to your team!"))
+            root.supplierAdded()
         } else {
             showMessage(qsTr("Supplier Error!"), qsTr("Error creating new supplier, error ")+res.status.toString())
         }
     }
 
+    // Clear input fields when called!
     function clearInputs() {
         nameinput.input.text=""
         emailinput.input.text=""
         mobileinput.input.text=""
         mobileinput.clear()
+    }
+
+    onOpened: {
+        clearInputs()
+        nameinput.input.forceActiveFocus()
     }
 }

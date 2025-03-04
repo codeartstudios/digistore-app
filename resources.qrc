@@ -4,7 +4,6 @@
         <file>assets/imgs/logo-nobg.png</file>
         <file>ui/Main.qml</file>
         <file>assets/fonts/tabler-icons.ttf</file>
-        <file>ui/config.json</file>
         <file>ui/controls/DsIcon.qml</file>
         <file>ui/controls/DsButton.qml</file>
         <file>ui/controls/DsIconButton.qml</file>
@@ -112,6 +111,9 @@
         <file>ui/controls/DsMouseArea.qml</file>
         <file>app/digisto/modules/DsModels.qml</file>
         <file>ui/js/main.js</file>
+        <file>configs/permissions-templ.json</file>
+        <file>configs/app-config.json</file>
+        <file>ui/controls/DsBusyOrEmptyOrAccessDeniedTableItem.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

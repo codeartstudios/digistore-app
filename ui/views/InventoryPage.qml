@@ -55,7 +55,8 @@ DsPage {
             }
 
             DsIconButton {
-                enabled: !getproductrequest.running
+                enabled: dsPermissionManager.canViewInventory &&
+                         !getproductrequest.running
                 iconType: IconType.reload
                 textColor: Theme.txtPrimaryColor
                 bgColor: "transparent"
@@ -124,6 +125,7 @@ DsPage {
             headerModel: headermodel
             dataModel: datamodel
             busy: getproductrequest.running
+            accessAllowed: dsPermissionManager.canViewInventory
 
             onSortBy: function(key) {
                 if(key===sortByKey) {
@@ -260,6 +262,8 @@ DsPage {
 
     DsNewSupplierPopup {
         id: newsupplierpopup
+
+        onSupplierAdded: supplierviewpopup.getSuppliers()
     }
 
     DsViewOrEditProductDrawer {
@@ -287,6 +291,11 @@ DsPage {
     }
 
     function getProducts() {
+        if(dsPermissions.canViewInventory) {
+            showPermissionDeniedWarning(toast)
+            return
+        }
+
         var txt = dsSearchInput.text.trim()
         var query = {
             page: pageNo,
@@ -360,6 +369,12 @@ DsPage {
         function onCurrentMenuChanged(index) {
             switch(index) {
             case 0: {
+                // Ensure correct permission for creating inventory
+                if(!dsPermissionManager.canCreateInventory) {
+                    showPermissionDeniedWarning(toast)
+                    return
+                }
+
                 vieworeditdrawer.open()
                 vieworeditdrawer.dataModel = null
                 vieworeditdrawer.isEditing = true
@@ -367,6 +382,11 @@ DsPage {
             }
 
             case 1: {
+                if(!dsPermissionManager.canCreateSupply) {
+                    showPermissionDeniedWarning(toast)
+                    return
+                }
+
                 newsupplierpopup.open()
                 break;
             }
@@ -375,12 +395,22 @@ DsPage {
             case 2: break;
 
             case 3: {
+                if(!dsPermissionManager.canViewSupply) {
+                    showPermissionDeniedWarning(toast)
+                    return
+                }
+
                 supplierviewpopup.open()
                 break;
             }
 
             case 4: {
-                // TODO open this popup
+                // Launch history view popup
+                if(!dsPermissionManager.canViewSupply) {
+                    showPermissionDeniedWarning(toast)
+                    return
+                }
+
                 supplyhistorypopup.open()
                 break;
             }

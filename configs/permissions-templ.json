@@ -1,0 +1,29 @@
+{
+    "admin": {
+        "organization": ["view", "update", "delete"],
+        "user_accounts": ["view", "create", "update", "delete"],
+        "suppliers":    ["view", "create", "update", "delete"],
+        "supply":       ["view", "create", "update", "delete"],
+        "inventory":    ["view", "create", "update", "delete"],
+        "sales":        ["view", "create", "update", "delete"]
+    },
+    "manager": {
+        "organization": ["view", "update"],
+        "user_accounts": ["view"],
+        "suppliers":    ["view", "create", "update"],
+        "supply":       ["view", "create", "update"],
+        "inventory":    ["view", "create", "update"],
+        "sales":        ["view", "create", "update", "delete"]
+    },
+    "cashier": {
+        "organization": ["view"],
+        "sales":        ["view", "create"],
+        "inventory":    ["view"]
+    },
+    "stock_manager": {
+        "organization": ["view"],
+        "suppliers":    ["view"],
+        "supply":       ["view", "create", "update"],
+        "inventory":    ["view", "create", "update"]
+    }
+}

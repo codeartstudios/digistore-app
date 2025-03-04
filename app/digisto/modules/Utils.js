@@ -2,8 +2,15 @@ function error(obj) {
     if(!obj) return qsTr("Unknown Error!")
     if(Object.keys(obj.data).includes('message')) {
         return obj.data.message
+    }    
+    if(Object.keys(obj.data).includes('error')) {
+        return obj.data.message
     }
     return obj.error
+}
+
+function toSentenceCase(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 function maybeJSON(val) {
@@ -69,7 +76,6 @@ function dateToUTCString(date) {
 
     return dt
 }
-
 
 function withOpacity(color, opacity) {
     var r, g, b;

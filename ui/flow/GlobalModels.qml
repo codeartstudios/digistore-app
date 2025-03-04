@@ -47,6 +47,7 @@ Item {
             deviationShown: true
             trendIconShown: true
             periodSelectorShown: true
+            canAccess: false
             calculateFunc: (n,o) => calculateFunc1(n,o)
         }
 
@@ -59,6 +60,7 @@ Item {
             deviationShown: true
             trendIconShown: true
             periodSelectorShown: true
+            canAccess: false
             calculateFunc: (n,o) => calculateFunc1(n,o)
         }
 
@@ -71,6 +73,7 @@ Item {
             deviationShown: true
             trendIconShown: false
             periodSelectorShown: false
+            canAccess: false
             calculateFunc: (n,o) => calculateFunc2(n,o)
         }
 
@@ -83,6 +86,7 @@ Item {
             deviationShown: false
             trendIconShown: false
             periodSelectorShown: false
+            canAccess: false
             calculateFunc: (n,o) => calculateFunc1(n,o)
         }
     }

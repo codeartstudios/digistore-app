@@ -25,7 +25,7 @@ Window {
     property alias toast: toast
 
     // Create UserPermission object: Manage all user permissions centrally
-    property UserPermissions loggedUserPermissions: UserPermissions{}
+    property UserPermissions dsPermissions: UserPermissions{}
 
     // Add Global Models to the mainApp
     property GlobalModels globalModels: GlobalModels{}
@@ -52,25 +52,24 @@ Window {
         onTriggered: currentDateTime = new Date()
     }
 
-    Component.onCompleted: {
-        // For quick tests ...
-        // var j = {
-        //     data: {
-        //         data: {},
-        //         message: "Failed to authenticate.",
-        //         status: 400
-        //     },
-        //     error:"Error transferring http://127.0.0.1:3000/api/collections/tellers/auth-with-password?expand=organization - server replied: Bad Request",
-        //     status:400
-        // }
+    function hasOrgPermissions(access) {
+        return dsPermissionManager.hasPermission("organization", "write")
+    }
 
-        // console.log(Utils.error(j))
+    // Show the toast widget
+    function showPermissionDeniedWarning(toastWidget=null) {
+        if(toastWidget) toastWidget.warning(qsTr("Access denied!"))
+        else toast.warning(qsTr("Access denied!"))
     }
 
     // Convert response object to error string
     function toErrorString(resObj) {
         return Utils.error(resObj)
     }
+
+    // ------------------------------------------------------------------------------ //
+    // Connection for dsController signals
+    // ------------------------------------------------------------------------------ //
 
     // Lets monitor the token changes,
     // TODO remove this before production
@@ -101,5 +100,13 @@ Window {
                                   })
             orgCurrency = currencyObj
         }
+    }
+
+    // ------------------------------------------------------------------------------ //
+    // onCompleted signal handler
+    // ------------------------------------------------------------------------------ //
+
+    Component.onCompleted: {
+        // For quick tests ...
     }
 }

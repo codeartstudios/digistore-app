@@ -14,6 +14,12 @@ Rectangle {
     property string headerAcionIconType: IconType.dots
     property string delegateActionIconType: IconType.dots
 
+    // Busy widget display options
+    property alias accessAllowed: busyEmptyAccessItem.accessAllowed
+    property alias accessDeniedText: busyEmptyAccessItem.accessDeniedText
+    property alias blankDisplayText: busyEmptyAccessItem.blankDisplayText
+    property alias busyDisplayText: busyEmptyAccessItem.busyDisplayText
+
     property alias listView: listview
     property alias currentIndex: listview.currentIndex
 
@@ -159,6 +165,18 @@ Rectangle {
         }
     }
 
+    DsBusyOrEmptyOrAccessDeniedTableItem {
+        id: busyEmptyAccessItem
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.top: tableheader.bottom
+
+        itemShown: dataModel.count === 0
+        busy: root.busy
+        accessAllowed: dsPermissionManager.canViewSales
+    }
+
     ListView {
         id: listview
 
@@ -169,6 +187,7 @@ Rectangle {
         clip: true
         model: dataModel
         currentIndex: -1
+        visible: dataModel.count > 0
         headerPositioning: ListView.OverlayHeader
         anchors.left: parent.left
         anchors.right: parent.right
