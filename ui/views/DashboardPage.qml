@@ -205,9 +205,6 @@ DsPage {
                 trendIconShown: model.trendIconShown
                 periodSelectorShown: model.periodSelectorShown
                 deviation: model.calculateFunc(model.value, model.refValue)
-                canAccessData: model.canAccess
-
-                onCanAccessDataChanged: console.log('Can Access for ', label, ' is ', canAccessData)
 
                 // Slot connections
                 onImplicitHeightChanged: salePillListview.cellHeight = implicitHeight
@@ -601,11 +598,16 @@ DsPage {
 
     // Fetch all dashboard data
     function fetchDashboardData() {
-        Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest,        globalModels.gridModel)
-        Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest,    globalModels.gridModel)
-        Djs.fetchDashboardStockStatus(fetchStockStatusRequest,          globalModels.gridModel)
-        Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest,      globalModels.gridModel)
-        Djs.fetchDashboardLast10Sales(fetchLast10SalesDataRequest,      root.salesModel)
+        if(dsPermissionManager.canViewInventory) {
+            Djs.fetchDashboardStockStatus(fetchStockStatusRequest,          globalModels.gridModel)
+            Djs.fetchDashboardLowStockStats(fetchLowStockStatsRequest,      globalModels.gridModel)
+        }
+
+        if(dsPermissionManager.canViewSales) {
+            Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest,        globalModels.gridModel)
+            Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest,    globalModels.gridModel)
+            Djs.fetchDashboardLast10Sales(fetchLast10SalesDataRequest,      root.salesModel)
+        }
     }
 
     Timer {

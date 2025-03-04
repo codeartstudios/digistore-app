@@ -215,13 +215,13 @@ DsPage {
     // TODO REMOVE
     Timer {
         id: prefillTimer
-        interval: 1000
+        interval: 500
         repeat: false
         triggeredOnStart: true
         onTriggered: {
             if(running) {
                 emailinput.text = 'john@doe.com'
-                passwordinput.text = '12345678'
+                passwordinput.text = '123123123'
             } else {
                 // signIn()
             }

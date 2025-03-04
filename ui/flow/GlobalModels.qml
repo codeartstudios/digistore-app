@@ -189,42 +189,16 @@ Item {
         function onIsLoggedInChanged() {
             if(dsController.isLoggedIn)
                 gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${ mainApp.orgCurrency.symbol }`)
-
-            updatePillViewFlags()
         }
 
         function onOrganizationChanged() {
             if(dsController.organization) {
                 gridModel.setProperty(0, 'description', qsTr("Revenue generated in") + ` ${ mainApp.orgCurrency.symbol }`)
             }
-
-            updatePillViewFlags()
         }
-    }
-
-    Connections {
-        target: dsPermissionManager
-
-        function onCanViewSalesChanged() {
-            updatePillViewFlags()
-        }
-
-        function onCanViewInventoryChanged() {
-            updatePillViewFlags()
-        }
-    }
-
-    function updatePillViewFlags() {
-        console.log('Updating canView property ...', dsPermissionManager.canViewSales, dsPermissionManager.canViewInventory)
-        gridModel.setProperty(0, 'canView', dsPermissionManager.canViewSales)
-        gridModel.setProperty(1, 'canView', dsPermissionManager.canViewSales)
-        gridModel.setProperty(2, 'canView', dsPermissionManager.canViewInventory)
-        gridModel.setProperty(3, 'canView', dsPermissionManager.canViewInventory)
-
     }
 
     Component.onCompleted: {
         populateSideMenuModel()
-        updatePillViewFlags()
     }
 }
