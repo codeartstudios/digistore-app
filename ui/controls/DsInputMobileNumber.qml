@@ -83,7 +83,7 @@ DsInputWithLabel {
                         Layout.alignment: Qt.AlignVCenter
                     }
 
-                    TextField {
+                    DsTextField {
                         id: searchInput
                         padding: 0
                         width: parent.width - Theme.xsSpacing

@@ -112,6 +112,8 @@
         <file>configs/permissions-templ.json</file>
         <file>configs/app-config.json</file>
         <file>ui/controls/DsBusyOrEmptyOrAccessDeniedTableItem.qml</file>
+        <file>ui/controls/DsComboInputWithLabel.qml</file>
+        <file>ui/controls/DsTextField.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

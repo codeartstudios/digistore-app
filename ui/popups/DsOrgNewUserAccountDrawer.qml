@@ -106,6 +106,20 @@ DsDrawer {
                         input.placeholderText: qsTr('70012456')
                     }
 
+                    DsComboInputWithLabel {
+                        id: rolefield
+                        mandatory: true
+                        width: col.width
+                        label: qsTr("User Role")
+                        model: [
+                            {id: 'admin', label: qsTr('Admin')},
+                            {id: 'cashier', label: qsTr('Cashier')},
+                            {id: 'manager', label: qsTr('General Manager')},
+                            {id: 'stock_manager', label: qsTr('Stock Manager')}
+                        ]
+                        placeholderText: qsTr("No role selected")
+                    }
+
                     DsButton {
                         width: col.width
                         busy: request.running
@@ -141,7 +155,7 @@ DsDrawer {
         namefield.input.text=''
         mobilefield.input.text=''
         mobilefield.selectedCountry=null
-
+        rolefield.clear()
     }
 
     function addUser() {
@@ -171,14 +185,18 @@ DsDrawer {
             }
         }
 
+        if (rolefield.currentIndex < 0 || rolefield.currentIndex > rolefield.model.length ) {
+            toast.warning(qsTr("User role is required, can't be empty!"))
+            return;
+        }
+
         const body = {
             email,
             name,
             password: "12345678",
             passwordConfirm: "12345678",
-            permissions: globalModels.userPermissonsTemplate,
+            role: rolefield.model[rolefield.currentIndex].id,
             reset_password_on_login: true,
-            is_admin: false,
             organization: dsController.workspaceId,
             mobile: {
                 dial_code: mobilefield.selectedCountry.dial_code,

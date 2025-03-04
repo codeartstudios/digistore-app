@@ -191,7 +191,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignVCenter
                     }
 
-                    TextField {
+                    DsTextField {
                         id: input
                         padding: 0
                         width: parent.width - Theme.xsSpacing

@@ -67,7 +67,7 @@ Rectangle {
             height: Theme.inputHeight
             width: parent.width
 
-            TextField {
+            DsTextField {
                 id: input
                 padding: 0
                 color: Theme.txtPrimaryColor

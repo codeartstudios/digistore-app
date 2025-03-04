@@ -188,7 +188,7 @@ DsDrawer {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: Theme.smSpacing
+            anchors.bottomMargin: root.isEditing ? 100 : Theme.smSpacing
 
             function scrollToTop() {
                 sv.contentItem.contentY = 0
