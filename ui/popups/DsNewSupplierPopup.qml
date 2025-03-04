@@ -16,6 +16,8 @@ Popup {
     y: (mainApp.height-height)/2
     closePolicy: Popup.NoAutoClose
 
+    signal supplierAdded()
+
     background: Rectangle {
         color: Theme.bodyColor
         radius: Theme.btnRadius
@@ -130,6 +132,7 @@ Popup {
         method: "POST"
     }
 
+    // Handle sending POST request to create a new supplier
     function addSupplier() {
         // Check for permissions before proceeding ...
         if(!dsPermissionManager.canCreateSuppliers) {
@@ -162,8 +165,7 @@ Popup {
         }
 
         if(mobileinput.selectedCountry && parseInt(mobileinput.input.text.trim()) >= 10000000) {
-            console.log("Yaay!")
-            mobile = {
+             mobile = {
                 dial_code: mobileinput.selectedCountry.dial_code,
                 number: parseInt(mobileinput.input.text.trim())
             }
@@ -186,16 +188,17 @@ Popup {
         addproductrequest.clear()
         addproductrequest.body = body
         var res = addproductrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
             root.close()
-            // TODO add message toast ...
+            toast.success(qsTr("New supplier was added to your team!"))
+            root.supplierAdded()
         } else {
             showMessage(qsTr("Supplier Error!"), qsTr("Error creating new supplier, error ")+res.status.toString())
         }
     }
 
+    // Clear input fields when called!
     function clearInputs() {
         nameinput.input.text=""
         emailinput.input.text=""

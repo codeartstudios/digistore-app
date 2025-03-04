@@ -77,7 +77,6 @@ function dateToUTCString(date) {
     return dt
 }
 
-
 function withOpacity(color, opacity) {
     var r, g, b;
 

@@ -58,7 +58,7 @@ DsPopup {
     }
 
     function getLabel(data) {
-        if(!data || data==='') return qsTr('<none>')
+        if(!data || data.trim() === '') return '-----'
         return Utils.toSentenceCase(data)
     }
 }

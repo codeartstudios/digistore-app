@@ -262,6 +262,8 @@ DsPage {
 
     DsNewSupplierPopup {
         id: newsupplierpopup
+
+        onSupplierAdded: supplierviewpopup.getSuppliers()
     }
 
     DsViewOrEditProductDrawer {
