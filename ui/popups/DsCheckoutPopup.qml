@@ -22,8 +22,8 @@ Popup {
     property real totals: 1000
     property var model: null
 
-    property ListModel paymentMethodsModel: ListModel{}
-    property ListModel paymentModel: ListModel{}
+    property ListModel availablePaymentMethodsModel: ListModel{}
+    property ListModel selectedPaymentMethodsModel: ListModel{}
 
     signal checkoutSuccessful()
 
@@ -103,9 +103,9 @@ Popup {
 
                             spacing: Theme.xsSpacing
                             clip: true
-                            model: root.paymentMethodsModel
+                            model: root.availablePaymentMethodsModel
                             delegate: DsButton {
-                                id: paymentModeLvDelegate
+                                id: selectedPaymentMethodsModelvDelegate
                                 width: paymentModesLV.width
                                 height: 150
                                 radius: Theme.btnRadius
@@ -117,8 +117,8 @@ Popup {
                                     var existsAtIndex = -1;
 
                                     // Find the index of the payment method in the payment Model
-                                    for( var i=0; i<root.paymentModel.count; i++ ) {
-                                        if( root.paymentModel.get(i).uid === model.uid ) {
+                                    for( var i=0; i<root.selectedPaymentMethodsModel.count; i++ ) {
+                                        if( root.selectedPaymentMethodsModel.get(i).uid === model.uid ) {
                                             existsAtIndex = i;
                                             break;
                                         }
@@ -127,13 +127,13 @@ Popup {
                                     // If the payment method was not found, lets add it to the model
                                     if( existsAtIndex === -1 ) {
                                         const payment = {
-                                            amount: paymentModel.count===0 ? root.totals : 0,
+                                            amount: selectedPaymentMethodsModel.count===0 ? root.totals : 0,
                                             label: model.label,
                                             uid: model.uid
                                         };
 
-                                        root.paymentModel.append(payment)
-                                        paymentMethodsLV.currentIndex = root.paymentModel.count - 1
+                                        root.selectedPaymentMethodsModel.append(payment)
+                                        paymentMethodsLV.currentIndex = root.selectedPaymentMethodsModel.count - 1
                                     }
 
                                     else {
@@ -169,7 +169,7 @@ Popup {
                                     }
 
                                     Rectangle {
-                                        visible: paymentModeLvDelegate.hovered
+                                        visible: selectedPaymentMethodsModelvDelegate.hovered
                                         anchors.fill: parent
                                         color: Qt.rgba(0,0,0,0.3)
                                         opacity: visible ? 1 : 0
@@ -179,7 +179,7 @@ Popup {
                                         DsIcon {
                                             iconType: IconType.categoryPlus
                                             iconColor: Theme.baseColor
-                                            iconSize: paymentModeLvDelegate.hovered ? Theme.lgBtnHeight : 0
+                                            iconSize: selectedPaymentMethodsModelvDelegate.hovered ? Theme.lgBtnHeight : 0
                                             anchors.centerIn: parent
 
                                             Behavior on iconSize { NumberAnimation{} }
@@ -199,7 +199,7 @@ Popup {
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        visible: root.paymentModel.count === 0
+                        visible: root.selectedPaymentMethodsModel.count === 0
 
                         Column {
                             spacing: Theme.smSpacing
@@ -228,10 +228,10 @@ Popup {
 
                         signal recomputePaydVsTotals
 
-                        visible: root.paymentModel.count > 0
+                        visible: root.selectedPaymentMethodsModel.count > 0
                         currentIndex: -1
                         spacing: Theme.xsSpacing/2.0
-                        model: root.paymentModel
+                        model: root.selectedPaymentMethodsModel
                         delegate: DsCheckoutPaymentMethod {
                             property bool selected: paymentMethodsLV.currentIndex===index
                             property real amountPaid: model.amount
@@ -254,14 +254,14 @@ Popup {
                             function amountUpdated(val) {
                                 var num = parseFloat(val.trim())
                                 val = isNaN(num) ? 0 : num
-                                root.paymentModel.setProperty(index, "amount", val)
+                                root.selectedPaymentMethodsModel.setProperty(index, "amount", val)
 
                                 updateCashPaymentAmount(model.uid)
                                 paymentMethodsLV.recomputePaydVsTotals()
                             }
 
                             function removePaymentMethod() {
-                                root.paymentModel.remove(index)
+                                root.selectedPaymentMethodsModel.remove(index)
                                 updateCashPaymentAmount("")
                                 paymentMethodsLV.recomputePaydVsTotals()
                             }
@@ -310,8 +310,8 @@ Popup {
         function onRecomputePaydVsTotals() {
             var payedSum = 0;
 
-            for(var j=0; j<root.paymentModel.count; j++) {
-                var paymentMethod = root.paymentModel.get(j)
+            for(var j=0; j<root.selectedPaymentMethodsModel.count; j++) {
+                var paymentMethod = root.selectedPaymentMethodsModel.get(j)
                 payedSum += paymentMethod.amount
             }
 
@@ -332,8 +332,8 @@ Popup {
         var cashPayment = 0;
 
         // Compute payment totals vs checkout totals
-        for(var j=0; j<paymentModel.count; j++) {
-            const paymentObject = paymentModel.get(j)
+        for(var j=0; j<selectedPaymentMethodsModel.count; j++) {
+            const paymentObject = selectedPaymentMethodsModel.get(j)
             paymentTotals += paymentObject.amount
 
             // Record cash payment done for computing balance due.
@@ -359,8 +359,8 @@ Popup {
         }
 
         var payments = {}
-        for(let j=0; j<paymentModel.count; j++) {
-            const paymentObject = paymentModel.get(j)
+        for(let j=0; j<selectedPaymentMethodsModel.count; j++) {
+            const paymentObject = selectedPaymentMethodsModel.get(j)
             if(paymentObject.amount > 0) { // Only append if value is non zero
                 // Set the payment uid key to payment object [JSON]
                 payments[paymentObject.uid] = {
@@ -409,8 +409,8 @@ Popup {
 
         checkoutrequest.clear()
         checkoutrequest.body = body
-
         var res = checkoutrequest.send();
+
 
         if(res.status===200) {
             // If we dont have cash payment, just end the session
@@ -438,6 +438,10 @@ Popup {
     function completeCheckoutSession() {
         root.checkoutSuccessful()
         dsController.emitOpenCashDrawer()
+
+        clearInputs()
+        selectedPaymentMethodsModel.clear()
+
         root.close()
     }
 
@@ -447,66 +451,70 @@ Popup {
         paymentMethodsLV.currentIndex = -1
     }
 
-    // TODO
-    // Adding cash later after removing it does not
-    // update cash value to the full
+    /// TODO
+    /// Adding cash later after removing it does not
+    /// update cash value to the full
     function updateCashPaymentAmount(uid) {
         var cash = { index: -1, amount: 0}
         var paidSum = 0;
 
         // Get cash payment data
-        for(var i=0; i<paymentModel.count; i++) {
-            if( paymentModel.get(i).uid === 'cash' ) {
-                cash.amount = paymentModel.get(i).amount
+        for(var i=0; i<selectedPaymentMethodsModel.count; i++) {
+            if( selectedPaymentMethodsModel.get(i).uid === 'cash' ) {
+                cash.amount = selectedPaymentMethodsModel.get(i).amount
                 cash.index = i
             }
 
             else {
-                paidSum += paymentModel.get(i).amount
+                paidSum += selectedPaymentMethodsModel.get(i).amount
             }
         }
 
         if( paidSum <= root.totals && cash.amount > 0 && cash.index >= 0) {
-            root.paymentModel.setProperty(cash.index, "amount", root.totals - paidSum)
+            root.selectedPaymentMethodsModel.setProperty(cash.index, "amount", root.totals - paidSum)
         }
     }
 
     Component.onCompleted: {
-        paymentMethodsModel.clear()
+        availablePaymentMethodsModel.clear()
 
-        paymentMethodsModel.append({
+        availablePaymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/1.jpg",
                                        label: "Cash",
                                        uid: "cash"
                                    })
 
-        paymentMethodsModel.append({
+        availablePaymentMethodsModel.append({
                                        image: "qrc:/assets/imgs/payments/2.jpg",
                                        label: "M-Pesa",
                                        uid: "mpesa"
                                    })
 
-        paymentMethodsModel.append({
-                                       image: "qrc:/assets/imgs/payments/3.png",
-                                       label: "On Credit",
-                                       uid: "credit"
-                                   })
+        // availablePaymentMethodsModel.append({
+        //                                image: "qrc:/assets/imgs/payments/3.png",
+        //                                label: "On Credit",
+        //                                uid: "credit"
+        //                            })
 
-        paymentMethodsModel.append({
-                                       image: "qrc:/assets/imgs/payments/4.png",
-                                       label: "PDQ (Card)",
-                                       uid: "pdq"
-                                   })
+        // availablePaymentMethodsModel.append({
+        //                                image: "qrc:/assets/imgs/payments/4.png",
+        //                                label: "PDQ (Card)",
+        //                                uid: "pdq"
+        //                            })
 
-        paymentMethodsModel.append({
-                                       image: "qrc:/assets/imgs/payments/5.png",
-                                       label: "Cheque",
-                                       uid: "cheque"
-                                   })
+        // availablePaymentMethodsModel.append({
+        //                                image: "qrc:/assets/imgs/payments/5.png",
+        //                                label: "Cheque",
+        //                                uid: "cheque"
+        //                            })
 
     }
 
     onOpened: {
+        // Clear fields
+        clearInputs()
+        selectedPaymentMethodsModel.clear()
+
         // Update flags
         paymentMethodsLV.recomputePaydVsTotals()
         paymentMethodsLV.currentIndex = -1
@@ -514,7 +522,7 @@ Popup {
 
     onClosed: {
         clearInputs()
-        paymentModel.clear()
+        selectedPaymentMethodsModel.clear()
     }
 
     // Popups

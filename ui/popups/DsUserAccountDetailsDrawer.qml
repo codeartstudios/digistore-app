@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.qmlmodels
+import QtQuick.Dialogs
 import app.digisto.modules
 
 import "../controls"
@@ -19,9 +20,6 @@ DsDrawer {
     QtObject {
         id: internal
 
-        property var accountPermissions: null
-        property var accountSwitches: ({})
-
         property bool loaded: false
         property string requestType: ""
 
@@ -30,21 +28,8 @@ DsDrawer {
         property bool isMyAccount: userData!==null &&
                                    userData.id===dsController.loggedUser.id
 
-        property ListModel fieldsModel: ListModel {}
-        property var permissionModel: null
-
         // Check if any input fileds were edited ...
-        // First, check if the window `loaded` flag is set,if not return `false`
-        // If, loaded, check for:
-        //      - Either the `accountSwitches` object has value(s) in it (non empty) -> return true
-        //      - Else, check whether the `userData["permissions"]` & `permissionModel` are not equal
-        property bool fieldsEdited: loaded ? (Object.keys(accountSwitches).length > 0 ||
-                                              (accountPermissions !== null && userData &&
-                                               !Utils.isJSONEqual(userData["permissions"], permissionModel)))
-                                             ? true : false  : false
-
-        // Check if current user has the `is_admin` flag set
-        property bool accountIsAdmin: (userData && userData["is_admin"] === true ) ? true : false
+        property bool edited: false
     }
 
     contentItem: Item {
@@ -86,7 +71,7 @@ DsDrawer {
                     textColor: Theme.baseColor
                     Layout.alignment: Qt.AlignVCenter
 
-                    onClicked: deleteAccount()
+                    onClicked: dialog.open()
                 }
             }
 
@@ -124,7 +109,7 @@ DsDrawer {
                 Layout.fillWidth: true
                 Layout.leftMargin: Theme.baseSpacing
                 Layout.rightMargin: Theme.baseSpacing
-                Layout.bottomMargin: bottomRowLayout.visible ? 0 : Theme.baseSpacing
+                Layout.bottomMargin: Theme.baseSpacing
                 Layout.fillHeight: true
 
                 clip: true
@@ -145,215 +130,68 @@ DsDrawer {
                     width: scrollview.width
                     spacing: Theme.xsSpacing
 
-                    Repeater {
-                        width: scrollview.width
-                        model: internal.fieldsModel
-                        delegate: chooser
+                    DsAccountInfoDelegateLabelItem {
+                        label: qsTr('Name')
+                        value: userData ? userData.name : '---'
+                    }
 
-                        DelegateChooser {
-                            id: chooser
-                            role: "type"
+                    DsAccountInfoDelegateLabelItem {
+                        label: qsTr('Email')
+                        value: userData ? userData.email : '---'
+                    }
 
-                            DelegateChoice {
-                                roleValue: "label"
+                    DsAccountInfoDelegateLabelItem {
+                        label: qsTr('Verified')
+                        value: userData ? userData.verified : false
+                    }
 
-                                Rectangle {
-                                    width: scrollview.width
-                                    height: Theme.btnHeight
+                    DsAccountInfoDelegateLabelItem {
+                        label: qsTr('Mobile')
+                        value: formatText(userData)
 
-                                    RowLayout {
-                                        width: parent.width
-                                        height: Theme.btnHeight
-                                        spacing: Theme.xsSpacing/2
-
-                                        anchors.left: parent.left
-                                        anchors.right: parent.right
-                                        anchors.leftMargin: Theme.xsSpacing
-                                        anchors.rightMargin: Theme.xsSpacing
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        DsLabel {
-                                            color: Theme.txtPrimaryColor
-                                            fontSize: Theme.xlFontSize
-                                            text: model.label
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-
-                                        DsLabel {
-                                            color: Theme.txtPrimaryColor
-                                            fontSize: Theme.xlFontSize
-                                            text: formatText(root.userData)
-                                            Layout.alignment: Qt.AlignVCenter
-
-                                            function formatText(txt) {
-                                                if(!txt) return qsTr("None")
-                                                var m = root.userData[model.key]
-                                                if(model.key==="mobile") {
-                                                    if(!m) return qsTr("None");
-                                                    return `(${m.dial_code})${m.number}`
-                                                }
-                                                return root.userData[model.key]
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            DelegateChoice {
-                                roleValue: "switch"
-
-                                Rectangle {
-                                    width: scrollview.width
-                                    height: Theme.btnHeight
-
-                                    RowLayout {
-                                        width: parent.width
-                                        height: Theme.btnHeight
-                                        spacing: Theme.xsSpacing/2
-
-                                        anchors.left: parent.left
-                                        anchors.right: parent.right
-                                        anchors.leftMargin: Theme.xsSpacing
-                                        anchors.rightMargin: Theme.xsSpacing
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        DsLabel {
-                                            color: Theme.txtPrimaryColor
-                                            fontSize: Theme.xlFontSize
-                                            text: model.label
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-
-                                        // NOTE: We can't edit `verified` field as a normal user
-                                        // only done by admin accounts, in this case, pocketbase
-                                        // admin account not organization admin account
-                                        DsSwitch {
-                                            checked: root.userData ? root.userData[model.key] : false
-                                            enabled: !internal.isMyAccount && model.key!=="verified" &&
-                                                     ((root.userData && root.userData.is_admin) ||
-                                                      dsPermissionManager.canUpdateUserAccounts)
-                                            Layout.alignment: Qt.AlignVCenter
-
-                                            onCheckedChanged: if(internal.loaded && root.userData)
-                                                                  internal.accountSwitches[model.key] = checked
-                                        }
-                                    }
-                                }
-                            }
+                        function formatText(obj) {
+                            if(!obj || obj.mobile) return qsTr("None")
+                            return `(${obj.mobile.dial_code})${obj.mobile.number}`
                         }
                     }
 
-                    // If the user has the `is_admin` flag set,
-                    // hide individual permission flags, not needed.
-                    Column {
-                        width: scrollview.width
-                        spacing: Theme.xsSpacing
-                        visible: !dsPermissionManager.isAdmin   // Show for non-admins
+                    DsAccountInfoDelegateComboItem {
+                        id: rolecb
+                        model: globalModels.rolesModel
+                        currentIndex: getIndex(userData)
+                        label: qsTr('User Role')
+                        hasPermissions: dsPermissionManager.canUpdateUserAccounts &&
+                                        !internal.isMyAccount
 
-                        DsLabel {
-                            color: Theme.txtPrimaryColor
-                            fontSize: Theme.h3
-                            text: qsTr("User Permissions")
-                            topPadding: Theme.xsSpacing
-                            width: scrollview.width
-                        }
-
-                        // The model for the repeater is generated from `permissionModel` JSON
-                        // object keys. When JSON object is null, this throws an error, so we pass
-                        // empty array '[]'
-                        Repeater {
-                            id: productslv
-                            width: scrollview.width
-                            model: internal.permissionModel ? Object.keys(internal.permissionModel) : []
-                            delegate: Rectangle {
-                                id: productlvDelegate
-                                width: scrollview.width
-                                height: Theme.btnHeight
-                                color: Theme.baseColor
-                                radius: Theme.btnRadius
-
-                                property string key: modelData  // JSON Object Key
-                                property string label: getLabel(key)    // Convert the key to a string (remove '_')
-                                property bool value: internal.permissionModel[key]
-
-                                RowLayout {
-                                    width: parent.width
-                                    height: Theme.btnHeight
-                                    spacing: Theme.xsSpacing/2
-
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: Theme.xsSpacing
-                                    anchors.rightMargin: Theme.xsSpacing
-                                    anchors.verticalCenter: parent.verticalCenter
-
-                                    DsLabel {
-                                        color: Theme.txtPrimaryColor
-                                        fontSize: Theme.xlFontSize
-                                        text: productlvDelegate.label
-                                        Layout.fillWidth: true
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-
-                                    // Only allow editing user permissions if the selected user
-                                    // account is not 'myAccount' and logged in user has permission
-                                    // to edit user permissions
-                                    DsSwitch {
-                                        checked: productlvDelegate.value
-                                        enabled: dsPermissionManager.canUpdateUserAccounts &&
-                                                 !internal.isMyAccount
-                                        Layout.alignment: Qt.AlignVCenter
-
-                                        onCheckedChanged: if(internal.loaded) { // Avoid setting model when we are setting up
-                                                              // Insert  if not exits the key and value
-                                                              // If exists, update it
-                                                              // NOTE: This change DOES NOT trigger signal change
-                                                              internal.permissionModel[key] = checked
-
-                                                              // To trigger the permissionModel changed signal, we have
-                                                              // to do an assignment
-                                                              internal.permissionModel = internal.permissionModel
-                                                          }
-                                    }
+                        function getIndex(obj) {
+                            if(!obj || !obj.role) return -1
+                            for(var i=0; i<model.length; i++) {
+                                if(model[i].id===obj.role) {
+                                    return i;
                                 }
                             }
+
+                            return -1
                         }
+
+                        onCurrentIndexChanged: if(internal.loaded)
+                                                   internal.edited=true
                     }
-                }
-            }
 
-            // Show this section only if the fields were changed and
-            // we have permissions to do permissions changes and
-            // we are not editing any user permissions.
-            RowLayout {
-                id: bottomRowLayout
-                visible: !internal.isMyAccount && internal.fieldsEdited &&
-                         dsPermissionManager.canUpdateUserAccounts
-                spacing: Theme.xsSpacing/2
-                Layout.preferredHeight: visible ? Theme.btnHeight : 0
-                Layout.alignment: Qt.AlignRight
-                Layout.leftMargin: Theme.baseSpacing
-                Layout.rightMargin: Theme.baseSpacing
-                Layout.bottomMargin: Theme.xsSpacing
+                    DsButton {
+                        visible: !internal.isMyAccount && internal.edited &&
+                                 dsPermissionManager.canUpdateUserAccounts
+                        width: parent.width
+                        busy: request.running &&
+                              internal.requestType==="updateUser"
+                        enabled: !request.running
+                        text: qsTr("Update User")
+                        bgColor: Theme.successColor
+                        textColor: Theme.baseColor
+                        Layout.alignment: Qt.AlignVCenter
 
-                Behavior on height{ NumberAnimation { easing.type: Easing.InOutQuad }}
-
-                Item {
-                    Layout.fillWidth: true
-                    height: 1
-                }
-
-                DsButton {
-                    busy: request.running && internal.requestType==="updateUser"
-                    enabled: !request.running
-                    text: qsTr("Update User")
-                    bgColor: Theme.successColor
-                    textColor: Theme.baseColor
-                    Layout.alignment: Qt.AlignVCenter
-
-                    onClicked: updateUser()
+                        onClicked: updateUser()
+                    }
                 }
             }
         }
@@ -365,45 +203,37 @@ DsDrawer {
         baseUrl: dsController.baseUrl
     }
 
-    function getLabel(lbl) {
-        return lbl.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+    MessageDialog {
+        id: dialog
+        text: qsTr("Deleting User Account")
+        informativeText: qsTr("Are you sure you want to delete this user? This action can't be undone.")
+        buttons: MessageDialog.Yes | MessageDialog.No
+
+        onButtonClicked: (btn, role) => {
+                             switch(btn) {
+                                 case MessageDialog.Yes:
+                                 deleteAccount()
+                                 break;
+                             }
+                         }
     }
 
-    function populateModel(perm) {
-        internal.permissionModel = perm
+    DsToast{
+        id: toast
+        x: (parent.width - width)/2
+        width: 300
     }
 
+    // ------------------------------------------------ //
     onOpened: {
-        internal.loaded = false
-        internal.fieldsModel.clear()
-        internal.permissionModel = null
+        internal.loaded     = false
+        internal.edited     = false
 
-        internal.fieldsModel.append({ key: "name", label: "Name", type: "label" })
-        internal.fieldsModel.append({ key: "username", label: "Username", type: "label" })
-        internal.fieldsModel.append({ key: "email", label: "Email", type: "label" })
-        internal.fieldsModel.append({ key: "verified", label: "Is Verfied?", type: "switch" })
-        internal.fieldsModel.append({ key: "role", label: "Role", type: "label", fn: function(val) {
-            return val ? `${Utils.toSentenceCase(val)}` : qsTr('<not set>') }})
-        internal.fieldsModel.append({ key: "mobile", label: "Mobile", type: "label", fn: function(val) {
-            return val ? `(${val.dial_code})${val.number}` : 'None'} })
+        // Load the current index for the roles cb
+        rolecb.currentIndex = rolecb.getIndex(userData)
 
-        if(userData) {
-            var perm = null
-
-            // If user has `permission` obj, use it, else
-            // use default permissions template
-            // if(userData["permissions"]) {
-            //     perm = userData["permissions"]
-            // } else {
-            //     perm = globalModels.userPermissonsTemplate
-            // }
-
-            internal.accountPermissions = {}
-            internal.permissionModel = {}
-        }
-
-        // Reset Account Switches
-        internal.accountSwitches = {}
+        // Close any toast if it was left running
+        toast.close()
 
         // Set loaded flag, a.k.a. we are done setting up
         internal.loaded = true
@@ -413,10 +243,12 @@ DsDrawer {
         internal.requestType    = ""
         root.userData           = null
         internal.loaded         = false
+        internal.edited         = true
     }
+    // ------------------------------------------------ //
 
     function deleteAccount() {
-        if(dsPermissionManager.canDeleteUserAccounts) {
+        if(!dsPermissionManager.canDeleteUserAccounts) {
             showPermissionDeniedWarning(toast)
             return
         }
@@ -432,6 +264,7 @@ DsDrawer {
         request.path = `/api/collections/tellers/records/${id}`
         request.method = "DELETE"
         var res = request.send();
+        console.log(Utils.maybeJSON(res))
 
         if(res.status===204) {
             // Show delete message and close drawer ...
@@ -440,42 +273,24 @@ DsDrawer {
         }
 
         else if(res.status === 0) {
-            showMessage(
-                        qsTr("Account Delete Error"),
-                        qsTr("Could not connect to the server, something is'nt right!")
-                        )
-        }
-
-        else if(res.status === 400) {
-            showMessage(
-                        qsTr("Account Delete Error"),
-                        qsTr("Failed to delete record. Make sure that the record is not part of a required relation reference.")
-                        )
-        }
-
-        else if(res.status === 404) {
-            showMessage(
-                        qsTr("Account Delete Error"),
-                        qsTr("The requested resource wasn't found.")
-                        )
+            toast.error(qsTr("Could not connect to the server, something is'nt right!"))
         }
 
         else {
-            showMessage(
-                        qsTr("Account Delete Error"),
-                        res.message ? res.message : qsTr("Yuck! Something not right here!")
-                        )
+            toast.error(Utils.error(res))
         }
     }
 
-    function resetPassword(){
-    }
+    function resetPassword(){ }
 
     function updateUser() {
-        if(dsPermissionManager.canUpdateUserAccounts) {
+        if(!dsPermissionManager.canUpdateUserAccounts) {
             showPermissionDeniedWarning(toast)
             return
         }
+
+        var role = rolecb.model[rolecb.currentIndex].id
+        console.log(role)
 
         // Set request type
         internal.requestType = "updateUser"
@@ -486,17 +301,8 @@ DsDrawer {
         var body = {
             name: root.userData.name,
             mobile: root.userData.mobile,
-            // Overwrite permission to default template if user is admin
-            permissions: internal.accountSwitches['is_admin'] ?
-                globalModels.userPermissonsTemplate : internal.accountPermissions
+            role
         }
-
-        // If we have any account switches, use them to overwrite the switches
-        // in the body
-        var accSwitchKeys = Object.keys(internal.accountSwitches)
-        accSwitchKeys.forEach((key) => {
-                                  body[key] = internal.accountSwitches[key]
-                              })
 
         // Reset Request Data
         request.clear()
@@ -506,30 +312,18 @@ DsDrawer {
         var res = request.send();
 
         if(res.status===200) {
+            internal.edited = true
             // root.close()
             root.userUpdated()
             toast.success(qsTr("User Updated Successfully!"))
         }
 
         else if(res.status === 0) {
-            showMessage(
-                        qsTr("Connection Refused"),
-                        qsTr("Could not connect to the server, something is'nt right!")
-                        )
-        }
-
-        else if(res.status === 403) {
-            showMessage(
-                        qsTr("Authentication Error"),
-                        qsTr("You don't seem to have access rights to perform this action.")
-                        )
+            toast.error(qsTr("Could not connect to the server, something is'nt right!"))
         }
 
         else {
-            showMessage(
-                        qsTr("Error Occured"),
-                        res.message ? res.message : qsTr("Yuck! Something not right here!")
-                        )
+            toast.error(Utils.error(res))
         }
     }
 }

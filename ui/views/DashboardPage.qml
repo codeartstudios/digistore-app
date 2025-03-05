@@ -328,6 +328,7 @@ DsPage {
                     color: Theme.shadowColor
                     width: parent.width
 
+                    // Table Header
                     RowLayout {
                         spacing: Theme.btnRadius
                         anchors.fill: parent
@@ -500,30 +501,37 @@ DsPage {
 
                                 property var paymentPillsModel: model.payments.split(',')
 
-                                Row {
+                                Item {
                                     clip: true
-                                    spacing: Theme.btnRadius
+                                    height: parent.height
                                     width: parent.width - Theme.xsSpacing
                                     anchors.centerIn: parent
 
-                                    Repeater {
-                                        model: paymenttablepills.paymentPillsModel
+                                    Row {
+                                        clip: true
+                                        spacing: Theme.btnRadius
+                                        width: parent.width
+                                        anchors.verticalCenter: parent.verticalCenter
 
-                                        DsLabel {
-                                            text: modelData.trim()
-                                            fontSize: Theme.smFontSize
-                                            color: Theme.txtPrimaryColor
-                                            verticalAlignment: DsLabel.AlignVCenter
-                                            horizontalAlignment: DsLabel.AlignLeft
-                                            leftPadding: implicitHeight/2
-                                            rightPadding: implicitHeight/2
-                                            topPadding: 2
-                                            bottomPadding: 2
-                                            anchors.verticalCenter: parent.verticalCenter
+                                        Repeater {
+                                            model: paymenttablepills.paymentPillsModel
 
-                                            background: Rectangle {
-                                                color: model.teller==='' ? 'transparent' : Theme.infoAltColor
-                                                radius: height/2
+                                            DsLabel {
+                                                text: modelData.trim()
+                                                fontSize: Theme.smFontSize
+                                                color: Theme.txtPrimaryColor
+                                                verticalAlignment: DsLabel.AlignVCenter
+                                                horizontalAlignment: DsLabel.AlignLeft
+                                                leftPadding: implicitHeight/2
+                                                rightPadding: implicitHeight/2
+                                                topPadding: 2
+                                                bottomPadding: 2
+                                                anchors.verticalCenter: parent.verticalCenter
+
+                                                background: Rectangle {
+                                                    color: model.teller==='' ? 'transparent' : Theme.infoAltColor
+                                                    radius: height/2
+                                                }
                                             }
                                         }
                                     }
@@ -607,6 +615,7 @@ DsPage {
             Djs.fetchDashboardTotalSalesSum(fetchSalesTotalsRequest,        globalModels.gridModel)
             Djs.fetchDashboardCompletedSales(fetchCompletedSalesRequest,    globalModels.gridModel)
             Djs.fetchDashboardLast10Sales(fetchLast10SalesDataRequest,      root.salesModel)
+            chartCard.onDurationChanged()
         }
     }
 

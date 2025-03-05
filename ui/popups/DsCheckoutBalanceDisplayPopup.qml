@@ -9,8 +9,8 @@ import "../controls"
 
 Popup {
     id: root
-    width: 600
-    height: 400
+    width: mainApp.width
+    height: mainApp.height
     modal: true
     x: (parent.width-width)/2
     y: (parent.height-height)/2

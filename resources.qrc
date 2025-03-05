@@ -114,6 +114,8 @@
         <file>ui/controls/DsBusyOrEmptyOrAccessDeniedTableItem.qml</file>
         <file>ui/controls/DsComboInputWithLabel.qml</file>
         <file>ui/controls/DsTextField.qml</file>
+        <file>ui/controls/DsAccountInfoDelegateLabelItem.qml</file>
+        <file>ui/controls/DsAccountInfoDelegateComboItem.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

@@ -36,6 +36,13 @@ Item {
     property ListModel sideMenu: ListModel{}
     property ListModel sideMenuExtras: ListModel{}
 
+    property var rolesModel: [
+        {id: 'admin', label: qsTr('Admin')},
+        {id: 'cashier', label: qsTr('Cashier')},
+        {id: 'manager', label: qsTr('General Manager')},
+        {id: 'stock_manager', label: qsTr('Stock Manager')}
+    ]
+
     // Model to hold the top pill data
     property ListModel gridModel: ListModel {
         ListElement {

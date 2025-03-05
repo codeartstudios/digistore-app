@@ -188,7 +188,7 @@ Rectangle {
         id: fetchChartTimer
         repeat: false
         interval: 2000
-        onTriggered: onDurationChanged()
+        onTriggered: if(dsPermissionManager.canViewSales) onDurationChanged()
     }
 
     Component.onCompleted: fetchChartTimer.restart()

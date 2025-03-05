@@ -111,12 +111,7 @@ DsDrawer {
                         mandatory: true
                         width: col.width
                         label: qsTr("User Role")
-                        model: [
-                            {id: 'admin', label: qsTr('Admin')},
-                            {id: 'cashier', label: qsTr('Cashier')},
-                            {id: 'manager', label: qsTr('General Manager')},
-                            {id: 'stock_manager', label: qsTr('Stock Manager')}
-                        ]
+                        model: globalModels.rolesModel
                         placeholderText: qsTr("No role selected")
                     }
 
