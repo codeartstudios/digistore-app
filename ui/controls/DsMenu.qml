@@ -20,7 +20,7 @@ DsButton {
 
     Popup {
         id: popup
-        implicitWidth: Math.max(200, root.width)
+        implicitWidth: Math.max(200, root.width) + Theme.smSpacing
         height: menulv.height + Theme.smSpacing/2
         x: root.width - popup.width
         y: root.height + Theme.smSpacing

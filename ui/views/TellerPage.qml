@@ -30,7 +30,7 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h1
                 color: Theme.txtHintColor
-                text: qsTr("Home")
+                text: qsTr("Digisto")
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -44,7 +44,7 @@ DsPage {
             DsLabel {
                 fontSize: Theme.h2
                 color: Theme.txtPrimaryColor
-                text: qsTr("Teller")
+                text: qsTr("Cashier")
                 Layout.alignment: Qt.AlignVCenter
             }
 

@@ -5,14 +5,12 @@ import app.digisto.modules
 
 import "../controls"
 
-Popup {
+DsPopup {
     id: popup
     width: 400
     height: col.height + Theme.baseSpacing
     closePolicy: Popup.NoAutoClose
     modal: true
-    x: (mainApp.width-width)/2 - mapToGlobal(0, 0).x
-    y: (mainApp.height-height)/2 - mapToGlobal(0, 0).y
 
     property string primaryText: qsTr("Ok")
     property string secondaryText: qsTr("Cancel")

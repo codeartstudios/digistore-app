@@ -116,6 +116,7 @@
         <file>ui/controls/DsTextField.qml</file>
         <file>ui/controls/DsAccountInfoDelegateLabelItem.qml</file>
         <file>ui/controls/DsAccountInfoDelegateComboItem.qml</file>
+        <file>ui/controls/DsSupplyProductEditItem.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>
