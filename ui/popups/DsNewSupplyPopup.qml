@@ -138,10 +138,14 @@ DsPopup {
                     }
 
                     DsSearchInput { // Searchbar
-                        // busy: getproductrequest.running
+                        id: searchBar
+                        busy: getproductrequest.running
+                        searchEnabled: dsPermissionManager.canViewInventory
                         placeHolderText: qsTr("Which item are you looking for?")
                         Layout.fillWidth: true
-                        // onAccepted: getProducts()
+
+                        onTextChanged: (text) => searchItem(text)
+                        onAccepted: (obj) => addOrUpdateItemInModel(obj)
                     } // Searchbar
 
                     DsBusyOrEmptyOrAccessDeniedTableItem {
@@ -159,66 +163,13 @@ DsPopup {
                         spacing: Theme.btnRadius
                         model: root.supplyProductsModel
                         visible: root.supplyProductsModel.count > 0
-                        delegate: Rectangle {
-                            height: Theme.inputHeight + 2*Theme.btnRadius
-                            width: supplyitemsListview.width
-                            color: Theme.baseAlt1Color
-                            radius: Theme.btnRadius
-
-                            RowLayout {
-                                spacing: Theme.xsSpacing
-                                anchors.fill: parent
-                                anchors.margins: Theme.btnRadius
-
-                                // Product Name
-                                DsLabel {
-                                    text: `${model.product.unit} ${model.product.name}`
-                                    color: Theme.txtPrimaryColor
-                                    fontSize: Theme.baseFontSize
-                                    leftPadding: Theme.btnRadius
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
-                                }
-
-                                // Quantity & price
-                                DsLabel {
-                                    text: `${model.quantity} x ${symbol.currency} ${model.buying_price}`
-                                    color: Theme.txtPrimaryColor
-                                    fontSize: Theme.baseFontSize
-                                    Layout.alignment: Qt.AlignVCenter
-                                }
-
-                                DsIconButton {
-                                    iconType: IconType.x
-                                    textColor: Theme.dangerColor
-                                    iconSize: Theme.xsBtnHeight
-                                    bgColor: "transparent"
-                                    bgHover: withOpacity(Theme.dangerAltColor, 0.8)
-                                    bgDown: withOpacity(Theme.dangerAltColor, 0.6)
-
-                                    Layout.preferredWidth: Theme.inputHeight
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignVCenter
-
-                                    onClicked: root.supplyProductsModel.remove(index)
-                                }
-                            }
-                        }
-
-                        onCurrentIndexChanged: {
-                            if(currentIndex===-1)
-                                editCurrentSupplyItem.selectedObject=null
-                            else
-                                editCurrentSupplyItem.selectedObject=root.supplyProductsModel.get(currentIndex)
-                        }
-
-                        DsSupplyProductEditItem {
+                        delegate: DsSupplyProductEditItem {
                             id: editCurrentSupplyItem
-                            currentIndex: editCurrentSupplyItem.currentIndex
+                            selected: supplyitemsListview.currentIndex===index
+                            width: supplyitemsListview.width
                         }
                     }
                 }
-
             }
 
             // Line Separator
@@ -253,12 +204,55 @@ DsPopup {
         }
     }
 
+    DsMessageBox {
+        id: messageBox
+        function showMessage(title="", info="") {
+            messageBox.title = title
+            messageBox.info = info
+            messageBox.open()
+        }
+    }
+
     Requests {
         id: addproductrequest
         method: "POST"
         path: "/fn/create-supply"
         token: dsController.token
         baseUrl: dsController.baseUrl
+    }
+
+    Requests {
+        id: getproductrequest
+        token: dsController.token
+        baseUrl: dsController.baseUrl
+        path: "/api/collections/product/records"
+    }
+
+    function addOrUpdateItemInModel(model) {
+        const id = model.id
+
+        // Check if ID exists in the model already
+        for(var i=0; i<root.supplyProductsModel.count; i++) {
+            if(root.supplyProductsModel.get(i).id===id) {
+                var qty = root.supplyProductsModel.get(i).quantity + 1
+                root.supplyProductsModel.setProperty(i, "quantity", qty)
+                supplyitemsListview.currentIndex = i
+                return
+            }
+        }
+
+        const obj = {
+            id: model.id,
+            quantity: 1,
+            name: model.name,
+            unit: model.unit,
+            barcode: model.barcode,
+            buying_price: model.buying_price,
+            selling_price: model.selling_price
+        }
+
+        root.supplyProductsModel.append(obj)
+        supplyitemsListview.currentIndex = root.supplyProductsModel.count - 1
     }
 
     function addSupply() {
@@ -282,11 +276,11 @@ DsPopup {
         for(var i=0; i<root.supplyProductsModel.count; i++) {
             var p = root.supplyProductsModel.get(i)
             var product = {
-                id: p.product.id,
-                bp: p.product.buying_price,
+                id: p.id,
+                bp: p.buying_price,
                 quantity: p.quantity,
-                unit: p.product.unit,
-                name: p.product.name
+                unit: p.unit,
+                name: p.name
             }
             products.push(product)
         }
@@ -302,11 +296,10 @@ DsPopup {
             body['supplier'] = supplierObj.id;
         }
 
-
         addproductrequest.clear()
         addproductrequest.body = body
         var res = addproductrequest.send();
-        // console.log(JSON.stringify(res))
+        console.log(JSON.stringify(res))
 
         if(res.status===200) {
             clearInputs()
@@ -317,29 +310,41 @@ DsPopup {
         }
     }
 
-    function clearAddProductsInputs() {
-        //qtyiwl.input.clear()
-        //bpiwl.input.clear()
-        //productselector.dataModel.clear()
+    function searchItem(input) {
+        var query = {
+            page: 1,
+            perPage: 50,
+            skipTotal: true,
+            sort: '+name',
+            filter: `organization = '${dsController.workspaceId}' && (barcode ~ '${input}' || name ~ '${input}' || unit ~ '${input}')`
+        }
+
+        getproductrequest.clear()
+        getproductrequest.query = query;
+        var res = getproductrequest.send();
+
+        if(res.status===200) {
+            var data = res.data;
+            var items = data.items;
+
+            searchBar.model.clear()
+
+            for(var i=0; i<items.length; i++) {
+                var obj = items[i]
+                obj['fullname'] = `${obj.unit} ${obj.name}`
+                searchBar.model.append(obj)
+            }
+        }
+
+        else {
+            searchBar.model.clear()
+        }
     }
 
     function clearInputs() {
-        clearAddProductsInputs()
         amountinput.input.clear()
         supplierselector.dataModel.clear()
         fileinput.input.clear()
-    }
-
-    DsMessageBox {
-        id: messageBox
-        z: parent.z
-        x: (root.width-width)/2
-        y: (root.height-height)/2
-
-        function showMessage(title="", info="") {
-            messageBox.title = title
-            messageBox.info = info
-            messageBox.open()
-        }
+        root.supplyProductsModel.clear()
     }
 }
