@@ -163,6 +163,9 @@ DsPopup {
                         spacing: Theme.btnRadius
                         model: root.supplyProductsModel
                         visible: root.supplyProductsModel.count > 0
+
+                        ScrollBar.vertical: ScrollBar{ policy: ScrollBar.AsNeeded }
+
                         delegate: DsSupplyProductEditItem {
                             id: editCurrentSupplyItem
                             selected: supplyitemsListview.currentIndex===index

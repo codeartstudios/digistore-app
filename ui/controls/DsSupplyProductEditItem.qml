@@ -23,7 +23,7 @@ Rectangle {
         width: parent.width
 
         RowLayout {
-            spacing: Theme.btnRadius
+            spacing: Theme.xsSpacing
             width: parent.width - Theme.smSpacing
             height: Theme.lgBtnHeight + Theme.smSpacing
             anchors.horizontalCenter: parent.horizontalCenter
