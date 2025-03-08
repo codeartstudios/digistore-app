@@ -20,7 +20,7 @@ DsButton {
 
     Popup {
         id: popup
-        implicitWidth: Math.max(200, root.width)
+        implicitWidth: Math.max(200, root.width) + Theme.smSpacing
         height: menulv.height + Theme.smSpacing/2
         x: root.width - popup.width
         y: root.height + Theme.smSpacing
@@ -148,10 +148,12 @@ DsButton {
                         leftIconShown: true
                         iconType: model.icon
                         text: model.label
-                        textColor: Theme.txtPrimaryColor
+                        textColor: _menudelegate.options ? _menudelegate.options.textColor : Theme.txtPrimaryColor
                         bgColor: "transparent"
                         bgHover: withOpacity(Theme.baseAlt1Color, 0.8)
                         bgDown: withOpacity(Theme.baseAlt1Color, 0.6)
+
+                        property var options: model.options
 
                         onClicked: {
                             // Close the menu popup first so that consecutive

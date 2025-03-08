@@ -53,7 +53,10 @@ DsDrawer {
         }
     }
 
-    onClosed: resetInputs()
+    onClosed: {
+        resetInputs()
+        toast.close()
+    }
 
     QtObject {
         id: internal
@@ -80,13 +83,112 @@ DsDrawer {
     contentItem: Item {
         anchors.fill: parent
 
+        RowLayout {
+            id: toolbar
+            spacing: Theme.xsSpacing/2
+            height: Theme.lgBtnHeight
+            width: parent.width - 2*Theme.baseSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            DsLabel {
+                fontSize: Theme.h1
+                color: Theme.txtHintColor
+                text: root.dataModel ? qsTr("Product View") : qsTr("Create Product")
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Item {
+                Layout.fillWidth: true
+                height: 1
+            }
+
+            // Product Action Options
+            DsMenu {
+                iconType: IconType.pencilCog
+                text: qsTr("Options")
+                visible: root.dataModel && !root.isEditing
+
+                Component.onCompleted: {
+                    menuModel.clear()
+
+                    menuModel.append({
+                                         label: qsTr("Edit Product"),
+                                         icon: IconType.databaseEdit
+                                     })
+
+                    menuModel.append({
+                                         type: "spacer"
+                                     })
+
+                    menuModel.append({
+                                         label: qsTr("Delete Product"),
+                                         icon: IconType.databaseX,
+                                         options: { textColor: Theme.dangerColor }
+                                     })
+                }
+
+                onCurrentMenuChanged: (ind) => handleDropDownMenuIndexChange(ind)
+
+                function handleDropDownMenuIndexChange(index) {
+                    switch(index) {
+                    case 0: {
+                        if(!dsPermissionManager.canUpdateInventory) {
+                            showPermissionDeniedWarning(toast)
+                            return
+                        }
+
+                        root.isEditing=true
+                        break
+                    }
+
+                    // case 1: is a separator
+
+                    case 2: {
+                        if(!dsPermissionManager.canDeleteInventory) {
+                            showPermissionDeniedWarning(toast)
+                            return
+                        }
+
+                        dialog.open()
+                        break
+                    }
+                    }
+                }
+            }
+
+
+            // Update item button, visible when updating item
+            DsButton {
+                busy: updateproductrequest.running
+                text: qsTr("Update Item")
+                iconType: IconType.databaseEdit
+                enabled: dsPermissionManager.canUpdateInventory
+                visible: internal.toEdit && root.dataModel
+                Layout.alignment: Qt.AlignVCenter
+
+                onClicked: updateItem()
+            }
+
+            // Add item button, visible when only creating item
+            DsButton {
+                busy: addproductrequest.running
+                text: qsTr("Add Item")
+                iconType: IconType.databasePlus
+                enabled: dsPermissionManager.canCreateInventory
+                visible: root.isEditing && !root.dataModel
+                Layout.alignment: Qt.AlignVCenter
+
+                onClicked: addItem()
+            }
+        }
+
         ScrollView {
             id: sv
-            anchors.top: parent.top
+            anchors.top: toolbar.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: btnsitem.top
-            anchors.bottomMargin: Theme.xsSpacing
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: root.isEditing ? 100 : Theme.smSpacing
 
             function scrollToTop() {
                 sv.contentItem.contentY = 0
@@ -96,78 +198,6 @@ DsDrawer {
                 id: col
                 width: sv.width
                 spacing: Theme.smSpacing
-
-                RowLayout {
-                    spacing: Theme.xsSpacing/2
-                    height: Theme.lgBtnHeight
-                    width: parent.width - 2*Theme.baseSpacing
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    DsLabel {
-                        fontSize: Theme.h1
-                        color: Theme.txtHintColor
-                        text: root.dataModel ? qsTr("Product View") : qsTr("Create Product")
-                        Layout.alignment: Qt.AlignVCenter
-                    }
-
-                    Item {
-                        Layout.fillWidth: true
-                        height: 1
-                    }
-
-                    // Product Action Options
-                    DsMenu {
-                        iconType: IconType.pencilCog
-                        text: qsTr("Options")
-                        visible: root.dataModel
-
-                        Component.onCompleted: {
-                            menuModel.clear()
-
-                            menuModel.append({
-                                                 label: qsTr("Edit Product"),
-                                                 icon: IconType.databaseEdit
-                                             })
-
-                            menuModel.append({
-                                                 type: "spacer"
-                                             })
-
-                            menuModel.append({
-                                                 label: qsTr("Delete Product"),
-                                                 icon: IconType.databaseX
-                                             })
-                        }
-
-                        onCurrentMenuChanged: (ind) => handleDropDownMenuIndexChange(ind)
-
-                        function handleDropDownMenuIndexChange(index) {
-                            switch(index) {
-                            case 0: {
-                                if(dsPermissionManager.canUpdateInventory) {
-                                    showPermissionDeniedWarning(toast)
-                                    return
-                                }
-
-                                root.isEditing=true
-                                break
-                            }
-
-                            // case 1: is a separator
-
-                            case 2: {
-                                if(!dsPermissionManager.canDeleteInventory) {
-                                    showPermissionDeniedWarning(toast)
-                                    return
-                                }
-
-                                dialog.open()
-                                break
-                            }
-                            }
-                        }
-                    }
-                }
 
                 DsLabel {
                     color: Theme.txtPrimaryColor
@@ -296,52 +326,10 @@ DsDrawer {
                     label: qsTr("Tags")
                     hintText: qsTr("No tags added yet!")
                     placeHolderText: qsTr("Add new tag here")
-                    allowMultipleSelection: true
+                    allowMultipleSelection: false
                     width: parent.width - 2*Theme.baseSpacing
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
-            }
-        }
-
-        RowLayout {
-            id: btnsitem
-            height: isVisible ? Theme.btnHeight : 0
-            anchors.right: parent.right
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: Theme.baseSpacing
-            anchors.rightMargin: Theme.baseSpacing
-            anchors.bottomMargin: Theme.xsSpacing
-
-            Behavior on height { NumberAnimation {} }
-
-            property bool isVisible: (root.isEditing && !root.dataModel) || (internal.toEdit && root.dataModel)
-
-            Item {
-                Layout.fillWidth: true
-                height: 1
-            }
-
-            // Update item button, visible when updating item
-            DsButton {
-                busy: updateproductrequest.running
-                text: qsTr("Update Item")
-                iconType: IconType.plus
-                enabled: dsPermissionManager.canUpdateInventory
-                visible: internal.toEdit && root.dataModel
-
-                onClicked: updateItem()
-            }
-
-            // Add item button, visible when only creating item
-            DsButton {
-                busy: addproductrequest.running
-                text: qsTr("Add Item")
-                iconType: IconType.plus
-                enabled: dsPermissionManager.canCreateInventory
-                visible: root.isEditing && !root.dataModel
-
-                onClicked: addItem()
             }
         }
     }
@@ -405,11 +393,24 @@ DsDrawer {
         onYesClicked: deleteItem()
     }
 
+    DsToast{
+        id: toast
+        x: (parent.width - width)/2
+        width: 300
+    }
+
+    Timer {
+        id: closePopupDelayTimer
+        interval: 1500
+        repeat: false
+        running: false
+        onTriggered: root.close()
+    }
+
     function addItem() {
         // Check for permissions before proceeding ...
         if(!dsPermissionManager.canCreateInventory) {
-            showMessage(qsTr("Yuck!"),
-                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            toast.error(qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
         }
 
@@ -423,14 +424,12 @@ DsDrawer {
         var tags        = categoryinput.dataModel
 
         if(units.length===0) {
-            showMessage(qsTr("Create Product"),
-                        qsTr("Product unit is missing! i.e. 1kg, 1pc, 20ml, 1pck, etc"))
+            toast.warning(qsTr("Product unit is missing! i.e. 1kg, 1pc, 20ml, 1pck, etc"))
             return;
         }
 
         if(name.length <= 2) {
-            showMessage(qsTr("Create Product"),
-                        qsTr("Product name is too short, atleast 3 characters long!"))
+            toast.warning(qsTr("Product name is too short, atleast 3 characters long!"))
             return;
         }
 
@@ -461,53 +460,51 @@ DsDrawer {
         // console.log(JSON.stringify(res))
 
         if(res.status===200) {
+            toast.success(qsTr('Product added to your inventory!'))
+
             // Emit product add success
-            root.productAdded()
-            root.close()
+            root.productAdded()     // Emit product added signal
+            clearInputs()           // Clear Input Fields
+            closePopupDelayTimer.restart()      // Close drawer after a delay of 1.5s
         } else {
-            showMessage(qsTr("Creating Product Failed"),
-                        qsTr("We encountered an error: ") + `[${res.status}] ${res.data.message}`)
+            toast.error(qsTr("We encountered an error") + `: ${Utils.error(res)}`)
         }
     }
 
     function deleteItem() {
         // Check for permissions before proceeding ...
         if(!dsPermissionManager.canDeleteInventory) {
-            showMessage(qsTr("Yuck!"),
-                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            toast.error(qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
         }
 
         if(!dataModel.id) {
-            showMessage(qsTr("Delete Product"),
-                        qsTr("Unique product id seems to be missing, something is not right here!"))
+            toast.error(qsTr("Unique product id seems to be missing, something is not right here!"))
             return;
         }
 
         deleteproductrequest.clear()
         deleteproductrequest.path = `/api/collections/product/records/${dataModel.id}`
         var res = deleteproductrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===204) {
             var item = `"${dataModel.unit} ${dataModel.name}" `
+            clearInputs()
 
             // Emit product delete success
             root.productDeleted();
-            root.close()
-            showMessage(qsTr("Product Deleted"),
-                        item + qsTr("deleted successfully!"))
+            root.isEditing = false;
+            toast.success(item + qsTr("deleted successfully!"))
+            closePopupDelayTimer.restart()
         } else {
-            showMessage(qsTr("Delete Product Failed"),
-                        qsTr("We encountered an error: ") + `[${res.status}] ${res.data.message}`)
+            toast.error(qsTr("We encountered an error") + `: ${Utils.error(res)}`)
         }
     }
 
     function updateItem() {
         // Check for permissions before proceeding ...
         if(!dsPermissionManager.canUpdateInventory) {
-            showMessage(qsTr("Yuck!"),
-                        qsTr("Seems you don't have access to this feature, check with your admin!"))
+            toast.error(qsTr("Seems you don't have access to this feature, check with your admin!"))
             return;
         }
 
@@ -520,20 +517,17 @@ DsDrawer {
         var tags        = categoryinput.dataModel
 
         if(units.length===0) {
-            showMessage(qsTr("Update Product"),
-                        qsTr("Product unit is missing! i.e. 1kg, 1pc, 20ml, 1pck, etc"))
+            toast.warning(qsTr("Product unit is missing! i.e. 1kg, 1pc, 20ml, 1pck, etc"))
             return;
         }
 
         if(name.length <= 2) {
-            showMessage(qsTr("Update Product"),
-                        qsTr("Product name is too short, atleast 3 characters long!"))
+            toast.warning(qsTr("Product name is too short, atleast 3 characters long!"))
             return;
         }
 
         if(!dataModel.id) {
-            showMessage(qsTr("Update Product"),
-                        qsTr("Unique product id seems to be missing, something is not right here!"))
+            toast.warning(qsTr("Unique product id seems to be missing, something is not right here!"))
             return;
         }
 
@@ -559,29 +553,27 @@ DsDrawer {
         updateproductrequest.clear()
 
         if(thumbnail!=="" && dataModel.thumbnail!==thumbnailinput.file && thumbnailinput.file!=="") {
-            // console.log("Thumbnail added/updated")
             updateproductrequest.files = {
                 thumbnail
             }
         }
 
         if(thumbnail==="") {
-            // console.log("Thumbnail removed")
             body["thumbnail"] = null
         }
 
         updateproductrequest.body = body
         updateproductrequest.path = `/api/collections/product/records/${dataModel.id}`
         var res = updateproductrequest.send();
-        // console.log(JSON.stringify(res))
 
         if(res.status===200) {
+            toast.success(qsTr("Prouduct updated successfully!"))
+
             // Emit product update success
             root.productUpdated();
             root.isEditing = false;
         } else {
-            showMessage(qsTr("Update Product Failed"),
-                        qsTr("We encountered an error: ") + `[${res.status}] ${res.data.message}`)
+            toast.error(qsTr("We encountered an error") + `: ${Utils.error(res)}`)
         }
     }
 

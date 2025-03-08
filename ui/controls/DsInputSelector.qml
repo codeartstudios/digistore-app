@@ -173,7 +173,7 @@ Rectangle {
                 height: Theme.btnHeight
                 anchors.centerIn: parent
 
-                TextField {
+                DsTextField {
                     id: input
                     padding: 0
                     width: parent.width - Theme.xsSpacing

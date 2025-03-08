@@ -151,6 +151,7 @@ Item {
             ListView {
                 id: searchlvresults
                 clip: true
+                model: ListModel{}
                 keyNavigationEnabled: true
                 keyNavigationWraps: true
                 anchors.fill: parent

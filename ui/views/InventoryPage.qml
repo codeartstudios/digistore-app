@@ -77,16 +77,35 @@ DsPage {
                 id: toolsMenu
                 iconType: IconType.databaseCog
                 text: qsTr("Options")
+                menuPopup.width: 250
+
+                onCurrentMenuChanged: (ind) => {
+                                          if(menuModel.get(ind).id) {
+                                              handleInventoryMenuChanged(menuModel.get(ind).id)
+                                          }
+                                      }
 
                 Component.onCompleted: {
                     menuModel.clear()
 
                     menuModel.append({
+                                         id: 'new-product',
                                          label: "Add New Product",
                                          icon: IconType.databasePlus
                                      })
 
+                    menuModel.append({ type: "spacer" })
+
                     menuModel.append({
+                                         id: 'new-supply',
+                                         label: "Add New Stock/Supply",
+                                         icon: IconType.databasePlus
+                                     })
+
+                    menuModel.append({ type: "spacer" })
+
+                    menuModel.append({
+                                         id: 'new-supplier',
                                          label: "Add New Supplier",
                                          icon: IconType.playlistAdd
                                      })
@@ -94,12 +113,14 @@ DsPage {
                     menuModel.append({ type: "spacer" })
 
                     menuModel.append({
+                                         id: 'suppliers',
                                          label: "View All Suppliers",
                                          icon: IconType.layoutList
                                      })
 
                     menuModel.append({
-                                         label: "Supply History",
+                                         id: 'supply-history',
+                                         label: "View Supply History",
                                          icon: IconType.databaseImport
                                      })
                 }
@@ -283,6 +304,11 @@ DsPage {
         id: supplyhistorypopup
     }
 
+    // New Supply Addition
+    DsNewSupplyPopup {
+        id: newsupplypopup
+    }
+
     Requests {
         id: getproductrequest
         token: dsController.token
@@ -363,58 +389,61 @@ DsPage {
     Component.onCompleted: getProducts()
 
     // Handle menu selection in the products tab
-    Connections {
-        target: toolsMenu
-
-        function onCurrentMenuChanged(index) {
-            switch(index) {
-            case 0: {
-                // Ensure correct permission for creating inventory
-                if(!dsPermissionManager.canCreateInventory) {
-                    showPermissionDeniedWarning(toast)
-                    return
-                }
-
-                vieworeditdrawer.open()
-                vieworeditdrawer.dataModel = null
-                vieworeditdrawer.isEditing = true
-                break;
+    function handleInventoryMenuChanged(id) {
+        switch(id) {
+        case 'new-product': {
+            // Ensure correct permission for creating inventory
+            if(!dsPermissionManager.canCreateInventory) {
+                showPermissionDeniedWarning(toast)
+                return
             }
 
-            case 1: {
-                if(!dsPermissionManager.canCreateSupply) {
-                    showPermissionDeniedWarning(toast)
-                    return
-                }
+            vieworeditdrawer.open()
+            vieworeditdrawer.dataModel = null
+            vieworeditdrawer.isEditing = true
+            break;
+        }
 
-                newsupplierpopup.open()
-                break;
+        case 'new-supply': {
+            if(!dsPermissionManager.canCreateSupply) {
+                showPermissionDeniedWarning(toast)
+                return
             }
 
-            // This is a spacer item
-            case 2: break;
+            newsupplypopup.open()
+            break;
+        }
 
-            case 3: {
-                if(!dsPermissionManager.canViewSupply) {
-                    showPermissionDeniedWarning(toast)
-                    return
-                }
-
-                supplierviewpopup.open()
-                break;
+        case 'new-supplier': {
+            if(!dsPermissionManager.canCreateSuppliers) {
+                showPermissionDeniedWarning(toast)
+                return
             }
 
-            case 4: {
-                // Launch history view popup
-                if(!dsPermissionManager.canViewSupply) {
-                    showPermissionDeniedWarning(toast)
-                    return
-                }
+            newsupplierpopup.open()
+            break;
+        }
 
-                supplyhistorypopup.open()
-                break;
+        case 'suppliers': {
+            if(!dsPermissionManager.canViewSupply) {
+                showPermissionDeniedWarning(toast)
+                return
             }
+
+            supplierviewpopup.open()
+            break;
+        }
+
+        case 'supply-history': {
+            // Launch history view popup
+            if(!dsPermissionManager.canViewSupply) {
+                showPermissionDeniedWarning(toast)
+                return
             }
+
+            supplyhistorypopup.open()
+            break;
+        }
         }
     }
 }

@@ -33,7 +33,6 @@
         <file>ui/controls/DsTable.qml</file>
         <file>ui/controls/DsTableHeaderButton.qml</file>
         <file>ui/controls/DsSideBarListView.qml</file>
-        <file>ui/popups/DsNewProductPopup.qml</file>
         <file>ui/controls/DsBusyIndicator.qml</file>
         <file>ui/flow/AppStackLayout.qml</file>
         <file>ui/flow/DsFlowLoader.qml</file>
@@ -72,7 +71,6 @@
         <file>ui/popups/DsNewSupplyPopup.qml</file>
         <file>ui/controls/DsInputSelectorWithSearch.qml</file>
         <file>ui/controls/DsPopup.qml</file>
-        <file>ui/popups/DsSupplyAddProductPopup.qml</file>
         <file>ui/controls/DsInputSelector.qml</file>
         <file>ui/controls/DsInputWithPreview.qml</file>
         <file>ui/views/auth/Onboarding.qml</file>
@@ -114,6 +112,11 @@
         <file>configs/permissions-templ.json</file>
         <file>configs/app-config.json</file>
         <file>ui/controls/DsBusyOrEmptyOrAccessDeniedTableItem.qml</file>
+        <file>ui/controls/DsComboInputWithLabel.qml</file>
+        <file>ui/controls/DsTextField.qml</file>
+        <file>ui/controls/DsAccountInfoDelegateLabelItem.qml</file>
+        <file>ui/controls/DsAccountInfoDelegateComboItem.qml</file>
+        <file>ui/controls/DsSupplyProductEditItem.qml</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

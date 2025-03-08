@@ -8,8 +8,8 @@ Popup {
     id: root
     implicitWidth: 200
     implicitHeight: 100
-    x: (mainApp.width-width)/2
-    y: (mainApp.height-height)/2
+    x: getXCoord(mainApp.width, width)
+    y: getYCoord(mainApp.height, height)
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
     property alias radius: bg.radius
@@ -40,5 +40,21 @@ Popup {
         radius: Theme.btnRadius
         border.color: borderColor
         border.width: borderWidth
+    }
+
+    // ------------------------------------------------------- //
+    // Functions to compute the precise x,y cord that makes    //
+    // the popup centered correctly.                           //
+    // ------------------------------------------------------- //
+    function getXCoord(appW, itemW) {
+        var localPos = mapToItem(mainApp.contentItem, 0,0)
+        var centerX = (appW - itemW) / 2;
+        return centerX - localPos.x
+    }
+
+    function getYCoord(appH, itemH) {
+        var localPos = mapToItem(mainApp.contentItem, 0,0)
+        var centerY = (appH - itemH) / 2;
+        return centerY - localPos.y;
     }
 }

@@ -1,4 +1,4 @@
-// DsInputWithLabel Control
+// DsComboInputWithLabel Control
 // Displays `TextInput` control with a label
 // on top of it. The label can be used to show
 // purpose of the text input below it.
@@ -33,14 +33,7 @@ Rectangle {
     property string label: qsTr("Input")
 
     // TextInput Alias & placeholder text
-    property alias input: input
     property alias placeholderText: input.placeholderText
-
-    // Text alias to the input text
-    property alias text: input.text
-
-    // Toggle text input password visibility
-    property bool isPasswordInput: false
 
     // Expose the text input validator property
     property alias validator: input.validator
@@ -50,13 +43,14 @@ Rectangle {
     property string errorString: ""
 
     property bool mandatory: false
-    property bool readOnly: false
 
     // Secondary action label, shown beside the label
     property alias secondaryActionLabel: secondaryActionLabel
 
     // Toggle the label & secondary action label visibility
     property alias labelShown: labelrowly.visible
+    property alias model: listview.model
+    property alias currentIndex: listview.currentIndex
 
     // Before & After items
     property alias before: before
@@ -74,21 +68,6 @@ Rectangle {
     function showError() { tt.show(errorString) }
     function closeError() { tt.close() }
     onHasErrorChanged: hasError ? showError() : closeError()
-
-    // MouseArea placed before items of the control are added, that way,
-    // the mousearea does not take over all mouse actions making text input
-    // impossible to do.
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            // Propagate the clicked signal only when
-            // the control is enabled
-            if(control.enabled) {
-                input.forceActiveFocus();
-                control.clicked()
-            }
-        }
-    }
 
     Column {
         id: col
@@ -155,22 +134,10 @@ Rectangle {
                 color: Theme.txtPrimaryColor
                 placeholderTextColor: Theme.txtDisabledColor
                 font.pixelSize: Theme.lgFontSize
-                echoMode: isPasswordInput ? TextField.Password : TextField.Normal
+                echoMode: TextField.Normal
                 background: Item{}
-                readOnly: control.readOnly
+                readOnly: true
                 Layout.fillWidth: true
-
-                onAccepted: control.textAccepted()
-
-                DsToolTip {
-                    id: tt
-                    text: errorString
-                    delay: 0
-                    width: parent.width
-                    side: DsToolTip.Bottom
-                    bgRect.color: Theme.warningColor
-                    onClosed: hasError=false
-                }
             }
 
             Row {
@@ -179,5 +146,87 @@ Rectangle {
                 Layout.alignment: Qt.AlignVCenter
             }
         }
+    }
+
+    // MouseArea placed after the items to capture all items
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            // Propagate the clicked signal only when
+            // the control is enabled
+            if(control.enabled) {
+                popup.open()
+            }
+        }
+    }
+
+    Popup {
+        id: popup
+        y: control.height - 1
+        width: control.width
+        implicitHeight: contentItem.implicitHeight
+        padding: 1
+
+        contentItem: ListView {
+            id: listview
+            clip: true
+            implicitHeight: contentHeight
+            currentIndex: -1
+
+            ScrollIndicator.vertical: ScrollIndicator { }
+
+            delegate: DsButton {
+                id: btndlgt
+
+                required property var model
+                required property int index
+
+                bgColor: control.highlightedIndex === index ?
+                             Theme.baseAlt1Color : "transparent"
+                bgHover: control.highlightedIndex === index ?
+                             Qt.lighter(Theme.baseAlt1Color, 0.8) : Qt.lighter(Theme.baseAlt1Color, 0.6)
+                bgDown: bgHover
+                textColor: Theme.txtPrimaryColor
+                width: control.width
+                fontSize: Theme.smFontSize
+                text: model.label
+
+                onClicked: {
+                    listview.currentIndex = index
+                    input.text = model.label
+                    popup.close()
+                }
+
+                contentItem: Item {
+                    DsLabel {
+                        fontSize: btndlgt.fontSize
+                        color: btndlgt.textColor
+                        text: btndlgt.text
+                        width: parent.width
+                        elide: DsLabel.ElideRight
+                        leftPadding: Theme.xsSpacing/2
+                        rightPadding: Theme.xsSpacing/2
+                        anchors.verticalCenter: parent.verticalCenter
+                        horizontalAlignment: DsLabel.AlignLeft
+                    }
+                }
+            }
+        }
+
+        background: Rectangle {
+            radius: Theme.btnRadius
+            color: Theme.bodyColor
+            border.width: 1
+            border.color: Theme.shadowColor
+        }
+    }
+
+    // ------------------------------------- //
+    // HELPER FUNCTIONS
+    // ------------------------------------- //
+
+    function clear() {
+        input.text = ''
+        listview.currentIndex = -1
     }
 }
