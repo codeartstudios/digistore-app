@@ -117,6 +117,12 @@
         <file>ui/controls/DsAccountInfoDelegateLabelItem.qml</file>
         <file>ui/controls/DsAccountInfoDelegateComboItem.qml</file>
         <file>ui/controls/DsSupplyProductEditItem.qml</file>
+        <file>pb/hooks/checkout.pb.js</file>
+        <file>pb/hooks/dashboard.pb.js</file>
+        <file>pb/hooks/main.pb.js</file>
+        <file>pb/hooks/organization.pb.js</file>
+        <file>pb/hooks/supply.pb.js</file>
+        <file>pb/hooks/utils.js</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>

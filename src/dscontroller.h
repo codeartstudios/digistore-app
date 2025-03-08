@@ -12,6 +12,8 @@
 #include <memory>
 #include <QSysInfo>
 #include <QCryptographicHash>
+#include <QDir>
+#include <QFileInfo>
 
 class DsController : public QObject
 {
@@ -78,6 +80,9 @@ public:
 
     QVariantMap loggedUser() const;
     void setLoggedUser(const QVariantMap &newLoggedUser);
+
+public:
+    bool extractFileFromQRC(const QString &resourcePath, const QString &destination);
 
 public slots:
     void onTokenChanged();
