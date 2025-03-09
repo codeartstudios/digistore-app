@@ -45,22 +45,22 @@ module.exports = {
 
         // Check if the inputs are null
         if (role === '' || collection === '' || action === '')
-            return false
+        return false
 
         try {
             // Get all keys
             const keys = Object.keys(permissionTemplate)
             if (!keys.includes(role))
-                return false
+            return false
 
             var p = permissionTemplate[role]
             const col = p[collection]
             if (col.includes(action))
-                return true;
+            return true;
 
             // Check if 'overrides' is null
             if (JSON.stringify(overrides) === 'null')
-                return false
+            return false
 
             if (overrides[collection].includes(action)) {
                 return true;

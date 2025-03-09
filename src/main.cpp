@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QtWebview/QtWebView>
 #include <QMessageBox>
+#include <QObject>
 
 // User defined headers
 #include "dscontroller.h"
@@ -39,10 +40,30 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
 #ifdef STANDALONE_SYSTEM
+    int port = 0;
+
+    if(qEnvironmentVariableIsSet("KG_DIGISTO_LOCAL_PORT")) {
+        bool ok;
+        int p = qEnvironmentVariableIntValue("KG_DIGISTO_LOCAL_PORT", &ok);
+
+        if(ok) {
+            port = p;
+            qDebug() << "KG_DIGISTO_LOCAL_PORT = " << port;
+        } else {
+            port = dsController.findFreePort();
+            qDebug() << "KG_DIGISTO_LOCAL_PORT = <INVALID>";
+        }
+    } else {
+        port = dsController.findFreePort();
+    }
+
+    QString serverUrl(QString("http://127.0.0.1:%1").arg(port));
+
     // Create local server instance
-    LocalServer lServer{ &dsController };
+    LocalServer lServer{ port, &dsController };
     if(!lServer.run()) {
         QMessageBox msgBox;
+
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.setText(
             QString(QObject::tr("We could not start the server, exitting ...!\n"))
@@ -51,11 +72,37 @@ int main(int argc, char *argv[])
         return 127;
     }
 
-    // Set default server URL, override where applicable
-    dsController.setBaseUrl("http://127.0.0.1:3000");
+    // Set default server serverUrl, override where applicable
+    dsController.setBaseUrl(serverUrl);
+
+    // Create and wire up shared pointer
+    QSharedPointer<QThread> localServerThread = QSharedPointer<QThread>::create();
+    QObject::connect(localServerThread.data(), &QThread::finished,
+                     &lServer, &LocalServer::close);
+    QObject::connect(localServerThread.data(), &QThread::finished,
+                     localServerThread.data(), &QObject::deleteLater);
+
+    QObject::connect(&app, &QApplication::aboutToQuit, [&]() {
+        qDebug() << "Closing PB Thread...";
+        localServerThread->quit();  // Exit event loop if used
+        localServerThread->wait();  // Wait for cleanup
+    });
+
+    // Move local server to thread and start the thread
+    lServer.moveToThread(localServerThread.data());
+    localServerThread->start();
+
 #else
-    // Set default server URL, override where applicable
-    dsController.setBaseUrl("https://apps.digisto.app");
+    if(qEnvironmentVariableIsSet("KG_DIGISTO_ENDPOINT")) {
+        bool ok;
+        QString url = qEnvironmentVariableIntValue("KG_DIGISTO_ENDPOINT", &ok);
+
+        dsController.setBaseUrl(url);
+        qDebug() << "Clinet URL Endpoint Set to: " << url;
+    } else {
+        // Set default server URL, override where applicable
+        dsController.setBaseUrl("https://apps.digisto.app");
+    }
 #endif
 
     // Register dscontroller to QML

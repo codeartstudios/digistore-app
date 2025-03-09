@@ -10,7 +10,8 @@ class LocalServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit LocalServer(DsController* dsController, QObject *parent = nullptr);
+    explicit LocalServer(int port, DsController* dsController, QObject *parent = nullptr);
+    ~LocalServer();
 
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged FINAL)
 
@@ -43,6 +44,9 @@ public:
     int port() const;
     void setPort(int newPort);
 
+public slots:
+    void close();
+
 signals:
     void pbHooksDirChanged();
     void pbDataDirChanged();
@@ -50,8 +54,16 @@ signals:
     void pbPublicDirChanged();
 
     void isServerRunningChanged();
-
     void portChanged();
+
+public slots:
+    void onReadyReadOutput();
+    void onReadyReadError();
+
+private:
+    void loadCollectionSchema();
+    bool startPocketBaseServer();
+    bool deleteFolder(const QString &folderPath);
 
 private:
     DsController* m_dsController;
@@ -64,6 +76,7 @@ private:
 
     QProcess *m_pbRunner;
     int m_port;
+    QString m_pocketbaseExec;
 };
 
 #endif // LOCALSERVER_H

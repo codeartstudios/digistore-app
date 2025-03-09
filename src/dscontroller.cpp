@@ -276,3 +276,15 @@ bool DsController::extractFileFromQRC(const QString &resourcePath, const QString
         return false;
     }
 }
+
+quint16 DsController::findFreePort(quint16 startPort, quint16 endPort) {
+    QTcpServer server;
+    for (quint16 port = startPort; port <= endPort; ++port) {
+        if (server.listen(QHostAddress::Any, port)) {
+            quint16 freePort = server.serverPort();
+            server.close();  // Release the port
+            return freePort;
+        }
+    }
+    return 0; // No free port found
+}

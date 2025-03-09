@@ -14,6 +14,8 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFileInfo>
+#include <QTcpServer>
+#include <QHostAddress>
 
 class DsController : public QObject
 {
@@ -83,6 +85,8 @@ public:
 
 public:
     bool extractFileFromQRC(const QString &resourcePath, const QString &destination);
+
+    quint16 findFreePort(quint16 startPort = 10500, quint16 endPort = 65535);
 
 public slots:
     void onTokenChanged();

@@ -1,20 +1,25 @@
 #include "localserver.h"
 #include <QDebug>
 #include <QStandardPaths>
+#include <QSharedPointer>
 
-LocalServer::LocalServer(DsController* dsController, QObject *parent)
+LocalServer::LocalServer(int port, DsController* dsController, QObject *parent)
     : QObject{parent},
     m_dsController(dsController),
-    m_port(15234)
+    m_port(port),
+    m_pbRunner(new QProcess(this)),
+    m_pocketbaseExec(QString("%1/api/pocketbase").arg(QCoreApplication::applicationDirPath()))
 {
     QString localAppDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
-    qDebug() << localAppDataDir;
 
     setPbHooksDir(QString("%1/hooks").arg(localAppDataDir));
     setPbDataDir(QString("%1/data").arg(localAppDataDir));
     setPbMigrationsDir(QString("%1/migrations").arg(localAppDataDir));
     setPbPublicDir(QString("%1/public").arg(localAppDataDir));
+
+    // Delete existing folders ...
+    deleteFolder(m_pbHooksDir);
+    deleteFolder(m_pbMigrationsDir);
 
     // Extract hooks from QRC
     m_dsController->extractFileFromQRC(":/pb/hooks/checkout.pb.js", m_pbHooksDir + "/checkout.pb.js");
@@ -24,36 +29,22 @@ LocalServer::LocalServer(DsController* dsController, QObject *parent)
     m_dsController->extractFileFromQRC(":/pb/hooks/supply.pb.js", m_pbHooksDir + "/supply.pb.js");
     m_dsController->extractFileFromQRC(":/pb/hooks/utils.js", m_pbHooksDir + "/utils.js");
 
-    // Get executable path for pocketbase
-    QString pbExec = QString("%1/api/pocketbase").arg(QCoreApplication::applicationDirPath());
+    // Extract Migration Files
+    m_dsController->extractFileFromQRC(":/pb/migrations/collections_snapshot.js", m_pbMigrationsDir + "/collections_snapshot.js");
+    m_dsController->extractFileFromQRC(":/pb/migrations/admin.pb.js", m_pbMigrationsDir + "/admin.js");
 
-    QStringList args;
-    // .\bin\win\pocketbase.exe serve 3000"
-    args << "serve";
-    args << QString("--http=\"127.0.0.1:%1\"").arg(m_port);
-    args << "--hooksDir" << m_pbHooksDir;
-    args << "--migrationsDir" << m_pbMigrationsDir;
-    args << "--dir" << m_pbDataDir;
-    args << "--publicDir" << m_pbPublicDir;
-    args << "--automigrate";
+    // Signal connections
+    connect(m_pbRunner, &QProcess::readyReadStandardOutput, this, &LocalServer::onReadyReadOutput);
+    connect(m_pbRunner, &QProcess::readyReadStandardError, this, &LocalServer::onReadyReadError);
+}
 
-#ifdef QT_DEBUG
-    args << "--dev --hooksWatch";
-#endif
-
-    m_pbRunner = new QProcess(this);
-    m_pbRunner->start(pbExec, args);
+LocalServer::~LocalServer() {
+    close();
 }
 
 bool LocalServer::run()
 {
-    // Ensure server is running ...
-    if(!m_pbRunner->waitForStarted()) {
-        qDebug() << "Could not start server ...";
-        return false;
-    }
-
-    return true;
+    return startPocketBaseServer();
 }
 
 QString LocalServer::pbHooksDir() const
@@ -132,4 +123,89 @@ void LocalServer::setPort(int newPort)
         return;
     m_port = newPort;
     emit portChanged();
+}
+
+void LocalServer::close() {
+    if(m_pbRunner->isOpen())
+        m_pbRunner->close();
+}
+
+void LocalServer::onReadyReadOutput()
+{
+    while(m_pbRunner->canReadLine()) {
+        auto d = m_pbRunner->readLine();
+        qDebug() << "[PB STDOUT] " << d.trimmed().data();
+    }
+}
+
+void LocalServer::onReadyReadError()
+{
+    while(m_pbRunner->canReadLine()) {
+        auto d = m_pbRunner->readLine();
+        qDebug() << "PB [STDERR] " << d.trimmed().data();
+    }
+}
+
+void LocalServer::loadCollectionSchema()
+{
+    QStringList args;
+    args << "migrate up";
+    args << "--hooksDir"        << m_pbHooksDir;
+    args << "--migrationsDir"   << m_pbMigrationsDir;
+    args << "--dir"             << m_pbDataDir;
+    args << "--automigrate";
+
+    QSharedPointer<QProcess> migrator =
+        QSharedPointer<QProcess>(new QProcess, &QObject::deleteLater);
+    migrator->start(m_pocketbaseExec, args);
+
+    if(!migrator->waitForStarted()) {
+        qDebug() << "Failed to apply migrations ...";
+    }
+}
+
+bool LocalServer::startPocketBaseServer()
+{
+    QStringList args;
+    args << "serve";
+    args << QString("--http=127.0.0.1:%1").arg(m_port);
+    args << "--hooksDir"        << m_pbHooksDir;
+    args << "--migrationsDir"   << m_pbMigrationsDir;
+    args << "--dir"             << m_pbDataDir;
+    args << "--publicDir"       << m_pbPublicDir;
+    args << "--automigrate";
+
+#ifdef QT_DEBUG
+    args << "--dev";
+    args << "--hooksWatch";
+#endif
+
+    m_pbRunner->start(m_pocketbaseExec, args);
+
+    // Ensure server is running ...
+    if(!m_pbRunner->waitForStarted()) {
+        qDebug() << "Could not start server ...";
+        setIsServerRunning(false);
+        return false;
+    }
+
+    setIsServerRunning(true);
+    return true;
+}
+
+bool LocalServer::deleteFolder(const QString &folderPath) {
+    QDir dir(folderPath);
+
+    if (!dir.exists()) {
+        qWarning() << "Folder does not exist:" << folderPath;
+        return false;
+    }
+
+    if (dir.removeRecursively()) {
+        qDebug() << "Deleted folder:" << folderPath;
+        return true;
+    } else {
+        qWarning() << "Failed to delete folder:" << folderPath;
+        return false;
+    }
 }

@@ -123,6 +123,8 @@
         <file>pb/hooks/organization.pb.js</file>
         <file>pb/hooks/supply.pb.js</file>
         <file>pb/hooks/utils.js</file>
+        <file>pb/migrations/admin.pb.js</file>
+        <file>pb/migrations/collections_snapshot.js</file>
     </qresource>
     <qresource prefix="/qt/qml"/>
 </RCC>
