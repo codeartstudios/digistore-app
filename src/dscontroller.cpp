@@ -15,9 +15,14 @@ DsController::DsController(QObject *parent)
 
     QVariantMap configurations=QJsonDocument::fromJson(file.readAll()).toVariant().toMap();
 
-    qApp->setApplicationName(configurations["title"].toString());
+#ifdef STANDALONE_SYSTEM
+    qApp->setApplicationName(configurations["title"].toString() + " - Standalone");
+#else
+    qApp->setApplicationName(configurations["title"].toString() + " - Client");
+#endif
+
     qApp->setApplicationVersion(configurations["versionname"].toString());
-    qApp->setApplicationDisplayName(configurations["title"].toString() + " v" + configurations["versionname"].toString());
+    qApp->setApplicationDisplayName(qApp->applicationName() + " v" + configurations["versionname"].toString());
     qApp->setOrganizationName(configurations["organization_name"].toString());
     qApp->setWindowIcon(QIcon(":/assets/imgs/logo.png"));
     qApp->setOrganizationDomain(configurations["organization_domain"].toString());
@@ -250,4 +255,36 @@ void DsController::setLoggedUser(const QVariantMap &newLoggedUser)
 {
     m_loggedUser = newLoggedUser;
     emit loggedUserChanged();
+}
+
+bool DsController::extractFileFromQRC(const QString &resourcePath, const QString &destination) {
+    QFile file(resourcePath);
+    if (!file.exists()) {
+        qWarning() << "Resource not found:" << resourcePath;
+        return false;
+    }
+
+    // Ensure the target directory exists
+    QDir dir;
+    dir.mkpath(QFileInfo(destination).absolutePath());
+
+    if (file.copy(destination)) {
+        qDebug() << "Extracted:" << destination;
+        return true;
+    } else {
+        qWarning() << "Failed to extract" << resourcePath;
+        return false;
+    }
+}
+
+quint16 DsController::findFreePort(quint16 startPort, quint16 endPort) {
+    QTcpServer server;
+    for (quint16 port = startPort; port <= endPort; ++port) {
+        if (server.listen(QHostAddress::Any, port)) {
+            quint16 freePort = server.serverPort();
+            server.close();  // Release the port
+            return freePort;
+        }
+    }
+    return 0; // No free port found
 }
