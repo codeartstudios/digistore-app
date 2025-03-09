@@ -43,9 +43,9 @@ if(STANDALONE_SYSTEM)
         pb/hooks/utils.js
     )
 
-add_custom_target(copy_assets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/api ${CMAKE_BINARY_DIR}/api
-)
+    add_custom_target(copy_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/api ${CMAKE_BINARY_DIR}/api
+    )
 else()
     set(BUILD_MODE "client")
 endif()
@@ -142,10 +142,10 @@ if (WIN32)
     file(MAKE_DIRECTORY ${DEPLOY_DIR})
 
     # Copy icon assets
-    add_custom_command(TARGET digisto POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/assets/imgs/logo.ico" "${DEPLOY_DIR}/"
-        COMMENT "📂 Copying logo.ico to deploy directory"
-    )
+    # add_custom_command(TARGET digisto POST_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/assets/imgs/logo.ico" "${DEPLOY_DIR}/"
+    #     COMMENT "📂 Copying logo.ico to deploy directory"
+    # )
 
     # Run windeployqt to deploy dependencies
     add_custom_command(TARGET digisto POST_BUILD
@@ -155,7 +155,7 @@ if (WIN32)
 
 # Run windeployqt to deploy dependencies
 add_custom_command(TARGET digisto POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E tar "cf" ${ZIP_OUTPUT} --format=zip ${DEPLOY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E tar "cf" ${OUTPUT_DIR}.zip --format=zip ${DEPLOY_DIR}
     COMMENT "Zipping folder ..."
 )
 
