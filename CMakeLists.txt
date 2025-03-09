@@ -40,7 +40,8 @@ endif()
 
 qt_add_executable(digisto ${SOURCES}
     src/singleinstanceguard.h src/singleinstanceguard.cpp
-    pb/hooks/checkout.pb.js pb/hooks/dashboard.pb.js pb/hooks/main.pb.js pb/hooks/organization.pb.js pb/hooks/supply.pb.js pb/hooks/utils.js)
+    pb/hooks/checkout.pb.js pb/hooks/dashboard.pb.js pb/hooks/main.pb.js pb/hooks/organization.pb.js pb/hooks/supply.pb.js pb/hooks/utils.js
+    src/globals.h)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

@@ -10,6 +10,7 @@
 #include "requests.h"
 #include "permissionmanager.h"
 #include "singleinstanceguard.h"
+#include "globals.h"
 
 #ifdef STANDALONE_SYSTEM
 #include "localserver.h"
@@ -17,9 +18,11 @@
 
 int main(int argc, char *argv[])
 {
-    QtWebView::initialize();
+    QtWebView::initialize();        // WebEngine init
+    QApplication app(argc, argv);   // App init
 
-    QApplication app(argc, argv);
+    // Register message handler
+    qInstallMessageHandler(Configurator::messageHandler);
 
     // Make sure there is no other instance running
     SingleInstanceGuard instance("Digisto");
