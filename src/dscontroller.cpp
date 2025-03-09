@@ -11,7 +11,13 @@ DsController::DsController(QObject *parent)
     m_isLoggedIn(false)
 {
     QFile file(QStringLiteral(":/configs/app-config.json"));
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+
+    if (!file.exists()) {
+        qDebug() << "Resource file missing!";
+    }
+
+    auto ok = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(ok);
 
     QVariantMap configurations=QJsonDocument::fromJson(file.readAll()).toVariant().toMap();
 

@@ -9,7 +9,8 @@ PermissionManager::PermissionManager(DsController *dsController, QObject *parent
 {
     // Load permission template from the json file
     QFile file(QStringLiteral(":/configs/permissions-templ.json"));
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    auto ok = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(ok);
 
     // Create QVariantMap out of the template json
     m_permissionTemplate =

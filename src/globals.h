@@ -4,6 +4,8 @@
 #include <QStandardPaths>
 #include <QDateTime>
 #include <QFile>
+#include <QProcessEnvironment>
+
 
 class Configurator {
 public:
@@ -16,7 +18,6 @@ public:
     static QString appDataDir() {
         return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     }
-
 
     static void messageHandler(QtMsgType msgType,
                                const QMessageLogContext &context,
