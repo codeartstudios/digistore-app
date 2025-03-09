@@ -213,22 +213,22 @@ DsPage {
     }
 
     // TODO REMOVE
-    Timer {
-        id: prefillTimer
-        interval: 500
-        repeat: false
-        triggeredOnStart: true
-        onTriggered: {
-            if(running) {
-                emailinput.text = 'allan@digisto.app'
-                passwordinput.text = '123123123'
-            } else {
-                signIn()
-            }
-        }
-    }
+    // Timer {
+    //     id: prefillTimer
+    //     interval: 500
+    //     repeat: false
+    //     triggeredOnStart: true
+    //     onTriggered: {
+    //         if(running) {
+    //             emailinput.text = 'allan@digisto.app'
+    //             passwordinput.text = '123123123'
+    //         } else {
+    //             signIn()
+    //         }
+    //     }
+    // }
 
-    Component.onCompleted: {
-        prefillTimer.restart()
-    }
+    // Component.onCompleted: {
+    //     prefillTimer.restart()
+    // }
 }

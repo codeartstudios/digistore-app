@@ -50,7 +50,7 @@ Button {
                 id: ico
                 iconType: control.iconType
                 iconSize: lbl.fontSize * 1.3
-                color: lbl.color
+                iconColor: lbl.color
                 anchors.verticalCenter: parent.verticalCenter
             }
 
