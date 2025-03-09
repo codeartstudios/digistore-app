@@ -73,3 +73,6 @@ CMakeLists.txt.user*
 
 # build directory
 build
+
+# Unignore all contents of tools
+!tools/
