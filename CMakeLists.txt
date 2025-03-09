@@ -19,18 +19,27 @@ option(STANDALONE_SYSTEM "Enable standalone offline system" ON)
 set(SOURCES
     src/main.cpp
     resources.qrc
+    src/globals.h
     src/dscontroller.cpp src/dscontroller.h
     src/requests.cpp src/requests.h
     src/qaesencryption.h src/qaesencryption.cpp
     src/localserver.h src/localserver.cpp
     src/permissionmanager.h src/permissionmanager.cpp
+    src/singleinstanceguard.h src/singleinstanceguard.cpp
 )
 
 if(STANDALONE_SYSTEM)
     add_compile_definitions(STANDALONE_SYSTEM)
 
     list(APPEND SOURCES
-        src/localserver.h src/localserver.cpp
+        src/localserver.h
+        src/localserver.cpp
+        pb/hooks/checkout.pb.js
+        pb/hooks/dashboard.pb.js
+        pb/hooks/main.pb.js
+        pb/hooks/organization.pb.js
+        pb/hooks/supply.pb.js
+        pb/hooks/utils.js
     )
 
     add_custom_target(copy_assets ALL
@@ -38,10 +47,7 @@ if(STANDALONE_SYSTEM)
     )
 endif()
 
-qt_add_executable(digisto ${SOURCES}
-    src/singleinstanceguard.h src/singleinstanceguard.cpp
-    pb/hooks/checkout.pb.js pb/hooks/dashboard.pb.js pb/hooks/main.pb.js pb/hooks/organization.pb.js pb/hooks/supply.pb.js pb/hooks/utils.js
-    src/globals.h)
+qt_add_executable(digisto ${SOURCES})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

@@ -3,6 +3,8 @@
 #include <QStandardPaths>
 #include <QSharedPointer>
 
+#include "globals.h"
+
 LocalServer::LocalServer(int port, DsController* dsController, QObject *parent)
     : QObject{parent},
     m_dsController(dsController),
@@ -10,7 +12,7 @@ LocalServer::LocalServer(int port, DsController* dsController, QObject *parent)
     m_pbRunner(new QProcess(this)),
     m_pocketbaseExec(QString("%1/api/pocketbase").arg(QCoreApplication::applicationDirPath()))
 {
-    QString localAppDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QString localAppDataDir = Configurator::appDataDir();
 
     setPbHooksDir(QString("%1/hooks").arg(localAppDataDir));
     setPbDataDir(QString("%1/data").arg(localAppDataDir));
@@ -22,20 +24,30 @@ LocalServer::LocalServer(int port, DsController* dsController, QObject *parent)
     deleteFolder(m_pbMigrationsDir);
 
     // Extract hooks from QRC
-    m_dsController->extractFileFromQRC(":/pb/hooks/checkout.pb.js", m_pbHooksDir + "/checkout.pb.js");
-    m_dsController->extractFileFromQRC(":/pb/hooks/dashboard.pb.js", m_pbHooksDir + "/dashboard.pb.js");
-    m_dsController->extractFileFromQRC(":/pb/hooks/main.pb.js", m_pbHooksDir + "/main.pb.js");
-    m_dsController->extractFileFromQRC(":/pb/hooks/organization.pb.js", m_pbHooksDir + "/organization.pb.js");
-    m_dsController->extractFileFromQRC(":/pb/hooks/supply.pb.js", m_pbHooksDir + "/supply.pb.js");
-    m_dsController->extractFileFromQRC(":/pb/hooks/utils.js", m_pbHooksDir + "/utils.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/checkout.pb.js",
+                                       m_pbHooksDir + "/checkout.pb.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/dashboard.pb.js",
+                                       m_pbHooksDir + "/dashboard.pb.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/main.pb.js",
+                                       m_pbHooksDir + "/main.pb.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/organization.pb.js",
+                                       m_pbHooksDir + "/organization.pb.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/supply.pb.js",
+                                       m_pbHooksDir + "/supply.pb.js");
+    m_dsController->extractFileFromQRC(":/pb/hooks/utils.js",
+                                       m_pbHooksDir + "/utils.js");
 
     // Extract Migration Files
-    m_dsController->extractFileFromQRC(":/pb/migrations/collections_snapshot.js", m_pbMigrationsDir + "/collections_snapshot.js");
-    m_dsController->extractFileFromQRC(":/pb/migrations/admin.pb.js", m_pbMigrationsDir + "/admin.js");
+    m_dsController->extractFileFromQRC(":/pb/migrations/collections_snapshot.js",
+                                       m_pbMigrationsDir + "/collections_snapshot.js");
+    m_dsController->extractFileFromQRC(":/pb/migrations/admin.pb.js",
+                                       m_pbMigrationsDir + "/admin.js");
 
     // Signal connections
-    connect(m_pbRunner, &QProcess::readyReadStandardOutput, this, &LocalServer::onReadyReadOutput);
-    connect(m_pbRunner, &QProcess::readyReadStandardError, this, &LocalServer::onReadyReadError);
+    connect(m_pbRunner, &QProcess::readyReadStandardOutput,
+            this, &LocalServer::onReadyReadOutput);
+    connect(m_pbRunner, &QProcess::readyReadStandardError,
+            this, &LocalServer::onReadyReadError);
 }
 
 LocalServer::~LocalServer() {
