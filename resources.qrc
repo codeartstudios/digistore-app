@@ -87,7 +87,6 @@
         <file>ui/flow/GlobalModels.qml</file>
         <file>ui/popups/DsOrgUserAccountDrawer.qml</file>
         <file>ui/popups/DsOrgSettingsDrawer.qml</file>
-        <file>ui/popups/DsOrgPocketbaseAminDrawer.qml</file>
         <file>ui/controls/DsSettingsCard.qml</file>
         <file>ui/controls/DsSettingsRowLabel.qml</file>
         <file>ui/popups/DsOrgNewUserAccountDrawer.qml</file>

@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.16)
 project(digistoapp VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(DIGISTO_APP_VERSION "0.25.0310")    # App Version
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS
     Core
     Quick
     Widgets
-    WebView
 )
 
 qt_standard_project_setup()
@@ -73,7 +73,6 @@ target_link_libraries(digisto
     Qt6::Core
     Qt6::Quick
     Qt6::Widgets
-    Qt6::WebView
 )
 
 include(GNUInstallDirs)
@@ -87,8 +86,10 @@ install(TARGETS digisto
 # Set output directory format <platform>-<build type>
 if (WIN32)
     set(PLATFORM_NAME "win64")
+    set(CQTDEPLOYER "${CMAKE_SOURCE_DIR}/tools/cqtdeployer-win/CQtDeployer.bat")
 elseif (UNIX)
     set(PLATFORM_NAME "linux")
+    set(CQTDEPLOYER "${CMAKE_SOURCE_DIR}/tools/cqtdeployer-linux/CQtDeployer.sh")
 else()
     set(PLATFORM_NAME "unknown")
 endif()
@@ -134,29 +135,36 @@ set(QMLDIR ${CMAKE_SOURCE_DIR}/ui)
 if (WIN32)
 
     set(QT_BIN_DIR "${CMAKE_PREFIX_PATH}/bin")
-    set(QTPATHS "${QT_BIN_DIR}/qtpaths.exe")
-    set(WINDEPLOYQT_BIN "${QT_BIN_DIR}/windeployqt.exe")
+    set(QMAKE "${QT_BIN_DIR}/qmake.exe")
 
     # Set output directory for deployment
     set(DEPLOY_DIR "${OUTPUT_DIR}")
     file(MAKE_DIRECTORY ${DEPLOY_DIR})
+    file(MAKE_DIRECTORY ${DEPLOY_DIR}/assets)
 
     # Copy icon assets
-    # add_custom_command(TARGET digisto POST_BUILD
-    #     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/assets/imgs/logo.ico" "${DEPLOY_DIR}/"
-    #     COMMENT "📂 Copying logo.ico to deploy directory"
-    # )
-
-    # Run windeployqt to deploy dependencies
     add_custom_command(TARGET digisto POST_BUILD
-        COMMAND ${WINDEPLOYQT_BIN} --qmldir ${QMLDIR} --qtpaths ${QTPATHS} --dir ${DEPLOY_DIR} "${DEPLOY_DIR}/digisto.exe"
-        COMMENT "🚀 Running windeployqt..."
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/assets/imgs/logo.ico" "${CMAKE_SOURCE_DIR}/assets/imgs/logo.png" "${DEPLOY_DIR}/assets"
+        COMMENT "📂 Copying logos to deploy directory"
     )
 
+    # Run windeployqt to deploy dependencies
+    # add_custom_command(TARGET digisto POST_BUILD
+    #     COMMAND ${CQTDEPLOYER} -bin "${DEPLOY_DIR}/digisto.exe"
+    #         -qmlDir ${QMLDIR} -qmake ${QMAKE}
+    #         -deployVersion ${DIGISTO_APP_VERSION}
+    #         -icon "${CMAKE_SOURCE_DIR}/assets/img/logo.ico"
+    #         -name ${DEPLOY_DIR}_${DIGISTO_APP_VERSION}
+    #         -extraData "${CMAKE_SOURCE_DIR}/api/pocketbase.exe"
+    #         -extraDataOut "./api/"
+    #         # -dirOut ${ZIP_OUTPUT}
+    #     COMMENT "🚀 Running cqtdeploer..."
+    # )
+
 # Run windeployqt to deploy dependencies
-add_custom_command(TARGET digisto POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E tar "cf" ${OUTPUT_DIR}.zip --format=zip ${DEPLOY_DIR}
-    COMMENT "Zipping folder ..."
-)
+# add_custom_command(TARGET digisto POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E tar "cf" ${OUTPUT_DIR}.zip --format=zip ${DEPLOY_DIR}
+#     COMMENT "Zipping folder ..."
+# )
 
 endif()

@@ -1,9 +1,9 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QtWebview/QtWebView>
 #include <QMessageBox>
 #include <QObject>
+#include <QThread>
 
 // User defined headers
 #include "dscontroller.h"
@@ -18,7 +18,6 @@
 
 int main(int argc, char *argv[])
 {
-    QtWebView::initialize();        // WebEngine init
     QApplication app(argc, argv);   // App init
 
 #ifdef STANDALONE_SYSTEM

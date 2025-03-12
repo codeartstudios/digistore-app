@@ -14,7 +14,7 @@ DsPage {
 
     property ListModel orgTabModel: ListModel{}
 
-    property alias orgpbadminDrawer: orgpbadminDrawer
+    // property alias orgpbadminDrawer: orgpbadminDrawer
     property alias orgaccountsDrawer: orgaccountsDrawer
     property alias orgsettingsDrawer: orgsettingsDrawer
 
@@ -111,7 +111,7 @@ DsPage {
         onReloadOrganization: organizationinfopage.fetchOrganizationDetails()
     }
     DsOrgUserAccountDrawer { id: orgaccountsDrawer }
-    DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
+    // DsOrgPocketbaseAminDrawer { id: orgpbadminDrawer }
 
     function openDrawer(ind) {
         switch(ind) {
@@ -121,7 +121,8 @@ DsPage {
                 return
             }
 
-            orgpbadminDrawer.open()
+            // orgpbadminDrawer.open()
+            Qt.openUrlExternally(`${dsController.baseUrl}/_/`)
             break;
         }
 
